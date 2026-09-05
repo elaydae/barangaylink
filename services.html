@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Services | BarangayLink</title>
+    <meta name="description" content="Barangay document services available in BarangayLink." />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand" aria-label="BarangayLink home page">
+          <span class="brand-mark">BL</span>
+          <span>BarangayLink</span>
+        </a>
+
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <nav class="top-nav" aria-label="Main navigation">
+          <a href="index.html">Home</a>
+          <a href="services.html" class="active">Services</a>
+          <a href="tracking.html">Tracking</a>
+          <a href="history.html">History</a>
+          <a href="profile.html">Profile</a>
+        </nav>
+
+        <div class="nav-actions">
+          <a href="login.html" class="btn btn-ghost">Log In</a>
+          <a href="register.html" class="btn btn-primary">Register</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <div class="container">
+        <section class="page-head services-head">
+          <div>
+            <p class="eyebrow">Available services</p>
+            <h1>Barangay services, in one place</h1>
+            <p>Find the right service, review what you need, and start a request through one consistent process.</p>
+          </div>
+          <div class="service-count" aria-live="polite"><strong data-service-count>18</strong><span>services available</span></div>
+        </section>
+
+        <section class="service-browser" aria-label="Browse barangay services">
+          <div class="service-tools">
+            <div class="search-field">
+              <label for="service-search">Search services</label>
+              <input id="service-search" type="search" placeholder="Search barangay services..." autocomplete="off" />
+            </div>
+            <div class="category-tabs" role="tablist" aria-label="Service categories">
+              <button class="category-tab active" type="button" role="tab" aria-selected="true" data-category="all">All Services</button>
+              <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Certificates & Clearances">Certificates &amp; Clearances</button>
+              <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Business & Permits">Business &amp; Permits</button>
+              <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Community Services">Community Services</button>
+              <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Resident Services">Resident Services</button>
+            </div>
+          </div>
+          <div class="service-grid" data-service-grid aria-live="polite"></div>
+          <p class="empty-state hidden" data-service-empty>No services match your search.</p>
+        </section>
+
+        <section class="service-detail hidden" id="service-detail" aria-live="polite">
+          <div class="service-detail-main">
+            <div class="service-detail-heading"><span class="service-icon" data-detail-icon aria-hidden="true"></span><div><p class="eyebrow" data-detail-category></p><h2 data-detail-name></h2></div></div>
+            <p data-detail-description></p>
+            <div class="detail-columns">
+              <div><h3>Requirements</h3><ul class="check-list" data-detail-requirements></ul></div>
+              <div><h3>Who may request</h3><p data-detail-who></p><h3>Information needed</h3><p data-detail-information></p></div>
+            </div>
+          </div>
+          <aside class="service-detail-aside"><span class="mini-label">Processing information</span><strong data-detail-processing></strong><p>Requests follow the standard Pending, Under Review, Approved or Rejected, Ready for Release, and Released status flow.</p><a class="btn btn-primary block-btn" data-detail-request href="request.html">Start Request</a></aside>
+        </section>
+      </div>
+    </main>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>

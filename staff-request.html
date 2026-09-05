@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Review Request | BarangayLink</title>
+    <meta name="description" content="Review and process a barangay resident request." />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="staff-layout">
+      <aside class="sidebar" aria-label="Staff sidebar navigation">
+        <div class="staff-brand">
+          <span class="brand-mark">BL</span>
+          <span>BarangayLink</span>
+        </div>
+
+        <nav class="staff-nav" aria-label="Staff menu">
+          <a href="staff-dashboard.html">Dashboard</a>
+          <a href="staff-dashboard.html">Requests</a>
+          <a href="staff-dashboard.html">Pending Requests</a>
+          <a href="staff-dashboard.html">Ready for Release</a>
+          <a href="staff-dashboard.html">Residents</a>
+          <a href="staff-dashboard.html">Request History</a>
+          <a href="profile.html">Profile</a>
+          <a href="index.html">Logout</a>
+        </nav>
+      </aside>
+
+      <main class="staff-main">
+        <div class="page-head">
+          <p class="eyebrow">Request review</p>
+          <h1>Resident Request Details</h1>
+          <p>Review requirements, resident information, and decide on the final status.</p>
+        </div>
+
+        <section class="request-card">
+          <div class="request-details">
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span>Request ID</span>
+                <strong>REQ-2026-00124</strong>
+              </div>
+              <div class="detail-item">
+                <span>Resident</span>
+                <strong>Juan Dela Cruz</strong>
+              </div>
+              <div class="detail-item">
+                <span>Address</span>
+                <strong>123 Rizal Street, Barangay San Isidro</strong>
+              </div>
+              <div class="detail-item">
+                <span>Contact Number</span>
+                <strong>0917-123-4567</strong>
+              </div>
+              <div class="detail-item">
+                <span>Email</span>
+                <strong>juan.delacruz@email.com</strong>
+              </div>
+              <div class="detail-item">
+                <span>Document Type</span>
+                <strong>Barangay Clearance</strong>
+              </div>
+              <div class="detail-item">
+                <span>Purpose</span>
+                <strong>Employment requirement</strong>
+              </div>
+              <div class="detail-item">
+                <span>Date Submitted</span>
+                <strong>September 2, 2026</strong>
+              </div>
+            </div>
+
+            <div class="requirements-box requirements-box--compact">
+              <h3>Requirements Checklist</h3>
+              <ul class="check-list">
+                <li>Valid government-issued ID submitted</li>
+                <li>Proof of residence uploaded</li>
+                <li>Purpose reviewed and valid</li>
+                <li>Supporting document attached</li>
+              </ul>
+            </div>
+
+            <div class="field">
+              <label for="status-select">Status</label>
+              <select id="status-select" name="status">
+                <option value="pending">Pending</option>
+                <option value="review" selected>Under Review</option>
+                <option value="approved">Approved</option>
+                <option value="ready">Ready for Release</option>
+                <option value="released">Released</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+
+            <div class="action-row">
+              <button type="button" class="btn btn-success" data-confirm="Approve this request?">Approve</button>
+              <button type="button" class="btn btn-danger" data-confirm="Reject this request?">Reject</button>
+              <button type="button" class="btn btn-info" data-confirm="Request additional information from the resident?">Request Additional Information</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>

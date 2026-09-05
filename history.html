@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Request History | BarangayLink</title>
+    <meta name="description" content="Resident request history for BarangayLink." />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a href="index.html" class="brand" aria-label="BarangayLink home page">
+          <span class="brand-mark">BL</span>
+          <span>BarangayLink</span>
+        </a>
+
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <nav class="top-nav" aria-label="Resident navigation">
+          <a href="dashboard.html">Dashboard</a>
+          <a href="services.html">Services</a>
+          <a href="tracking.html">Tracking</a>
+          <a href="history.html" class="active">History</a>
+          <a href="profile.html">Profile</a>
+        </nav>
+
+        <div class="nav-actions">
+          <a href="profile.html" class="btn btn-ghost">Profile</a>
+          <a href="index.html" class="btn btn-primary">Logout</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <div class="container">
+        <section class="page-head">
+          <p class="eyebrow">Request history</p>
+          <h1>My Requests</h1>
+          <p>Review all submitted barangay requests and their latest updates.</p>
+        </section>
+
+        <section class="table-card">
+          <div class="search-filter-row">
+            <div class="field">
+              <label for="request-search">Search</label>
+              <input id="request-search" type="search" placeholder="Search by request ID" />
+            </div>
+
+            <div class="field">
+              <label for="documentFilter">Document Type</label>
+              <select id="documentFilter">
+                <option value="all">All Documents</option>
+                <option value="Barangay Clearance">Barangay Clearance</option>
+                <option value="Certificate of Residency">Certificate of Residency</option>
+                <option value="Certificate of Indigency">Certificate of Indigency</option>
+                <option value="Business Permit">Business Permit</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="statusFilter">Status</label>
+              <select id="statusFilter">
+                <option value="all">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="review">Under Review</option>
+                <option value="approved">Approved</option>
+                <option value="ready">Ready for Release</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table" aria-label="Request history table">
+              <thead>
+                <tr>
+                  <th>Request ID</th>
+                  <th>Document</th>
+                  <th>Date Requested</th>
+                  <th>Status</th>
+                  <th>Date Updated</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-status="review" data-document="Barangay Clearance">
+                  <td>REQ-2026-00124</td>
+                  <td>Barangay Clearance</td>
+                  <td>September 2, 2026</td>
+                  <td><span class="status-badge status-review">Under Review</span></td>
+                  <td>September 3, 2026</td>
+                  <td><a href="tracking.html" class="action-link">View</a></td>
+                </tr>
+                <tr data-status="ready" data-document="Certificate of Residency">
+                  <td>REQ-2026-00118</td>
+                  <td>Certificate of Residency</td>
+                  <td>August 18, 2026</td>
+                  <td><span class="status-badge status-ready">Ready for Release</span></td>
+                  <td>August 21, 2026</td>
+                  <td><a href="tracking.html" class="action-link">View</a></td>
+                </tr>
+                <tr data-status="approved" data-document="Certificate of Indigency">
+                  <td>REQ-2026-00092</td>
+                  <td>Certificate of Indigency</td>
+                  <td>June 24, 2026</td>
+                  <td><span class="status-badge status-approved">Approved</span></td>
+                  <td>June 26, 2026</td>
+                  <td><a href="tracking.html" class="action-link">View</a></td>
+                </tr>
+                <tr data-status="rejected" data-document="Business Permit">
+                  <td>REQ-2026-00041</td>
+                  <td>Business Permit</td>
+                  <td>May 12, 2026</td>
+                  <td><span class="status-badge status-rejected">Rejected</span></td>
+                  <td>May 13, 2026</td>
+                  <td><a href="tracking.html" class="action-link">View</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
