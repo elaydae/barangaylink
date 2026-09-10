@@ -15,28 +15,32 @@
           <span>BarangayLink</span>
         </a>
 
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation menu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-
-        <nav class="top-nav" aria-label="Main navigation">
-          <a href="index.html">Home</a>
-          <a href="services.html" class="active">Services</a>
-          <a href="tracking.html">Tracking</a>
-          <a href="history.html">History</a>
-          <a href="profile.html">Profile</a>
-        </nav>
-
         <div class="nav-actions">
-          <a href="login.html" class="btn btn-ghost">Log In</a>
-          <a href="register.html" class="btn btn-primary">Register</a>
+          <a href="profile.html" class="btn btn-ghost">Profile</a>
+          <a href="index.html" class="btn btn-primary">Logout</a>
         </div>
       </div>
     </header>
 
-    <main class="page-shell">
+    <div class="resident-layout">
+      <aside class="sidebar" aria-label="Resident sidebar navigation">
+        <div class="staff-brand">
+          <span class="brand-mark">BL</span>
+          <span>BarangayLink</span>
+        </div>
+
+        <nav class="side-nav" aria-label="Resident menu">
+          <a href="dashboard.html">Dashboard</a>
+          <a href="services.html" class="active">Services</a>
+          <a href="concerns.html">Report Concern</a>
+          <a href="tracking.html">Tracking</a>
+          <a href="history.html">History</a>
+          <a href="emergency.html">Emergency</a>
+          <a href="barangay-info.html">Barangay Info</a>
+        </nav>
+      </aside>
+
+      <main class="page-shell">
       <div class="container">
         <section class="page-head services-head">
           <div>
@@ -78,6 +82,7 @@
         </section>
       </div>
     </main>
+    </div>
 
     <script src="js/app.js"></script>
   </body>

@@ -163,6 +163,16 @@ p {
   gap: 1.25rem;
 }
 
+@media (max-width: 1180px) {
+  .top-nav {
+    gap: 0.85rem;
+  }
+
+  .top-nav a {
+    font-size: 0.9rem;
+  }
+}
+
 .top-nav a {
   color: var(--text);
   font-weight: 600;
@@ -805,6 +815,14 @@ textarea {
   padding: 1.5rem;
 }
 
+.panel-card + .panel-card {
+  margin-top: 1.5rem;
+}
+
+.panel-card h2 {
+  margin-top: 0;
+}
+
 .request-list {
   display: grid;
   gap: 1rem;
@@ -1084,6 +1102,37 @@ textarea {
   padding: 2rem 1.5rem 3rem;
 }
 
+.resident-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  align-items: start;
+}
+
+.resident-layout .sidebar {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+}
+
+.side-nav {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.side-nav a {
+  display: block;
+  color: #dfeaf1;
+  padding: 0.8rem 0.9rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.side-nav a.active,
+.side-nav a:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
 .staff-summary {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   margin-bottom: 2rem;
@@ -1192,6 +1241,334 @@ textarea {
   display: none !important;
 }
 
+/* Dashboard: announcements, shortcuts, community updates, emergency snapshot */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.update-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.update-item {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+}
+
+.update-item .update-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.update-item h4 {
+  margin: 0;
+}
+
+.update-item .update-date {
+  color: var(--muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.update-item p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--soft-green);
+  color: var(--primary);
+  margin-bottom: 0.35rem;
+}
+
+.tag-urgent {
+  background: #fdeaea;
+  color: var(--danger);
+}
+
+.tag-info {
+  background: var(--soft-blue);
+  color: var(--info);
+}
+
+.shortcut-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.shortcut-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border-radius: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.shortcut-card:hover {
+  transform: translateY(-2px);
+}
+
+.shortcut-icon {
+  font-size: 1.6rem;
+}
+
+.shortcut-card strong {
+  font-size: 1rem;
+}
+
+.shortcut-card span {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.emergency-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, #fdeaea, #fff5f5);
+  border: 1px solid #f6c9c9;
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.emergency-banner .banner-text strong {
+  display: block;
+  color: var(--danger);
+  font-size: 1.1rem;
+}
+
+.emergency-banner .banner-text p {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+}
+
+/* Emergency contacts page */
+.emergency-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 1.75rem 2rem;
+  margin-bottom: 2rem;
+}
+
+.emergency-hero h2 {
+  margin: 0 0 0.35rem;
+}
+
+.emergency-hero p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.emergency-hero .btn-primary {
+  background: #fff;
+  color: var(--primary);
+  box-shadow: none;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.contact-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.contact-card .contact-icon {
+  font-size: 1.8rem;
+}
+
+.contact-card h3 {
+  margin: 0;
+}
+
+.contact-card .contact-role {
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin: -0.4rem 0 0;
+}
+
+.contact-card .contact-number {
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--primary);
+}
+
+.contact-card .contact-note {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.contact-card-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 0.6rem;
+}
+
+.contact-category {
+  margin-top: 2.5rem;
+}
+
+.contact-category:first-of-type {
+  margin-top: 0;
+}
+
+.contact-category h2 {
+  margin-bottom: 1rem;
+}
+
+/* Barangay information page */
+.officials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.official-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.official-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  margin: 0 auto 0.75rem;
+}
+
+.official-card h3 {
+  margin: 0 0 0.15rem;
+}
+
+.official-card .official-role {
+  color: var(--secondary);
+  font-weight: 700;
+  font-size: 0.88rem;
+  margin: 0 0 0.5rem;
+}
+
+.official-card .official-contact {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.hours-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.hours-table th,
+.hours-table td {
+  text-align: left;
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.info-columns {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.map-embed {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  height: 260px;
+}
+
+.map-embed iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.service-category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.service-category-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.service-category-card h4 {
+  margin: 0 0 0.2rem;
+}
+
+.service-category-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* Concerns page */
+.concern-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
 @media (max-width: 980px) {
   .service-grid,
   .service-detail,
@@ -1214,6 +1591,29 @@ textarea {
   }
 
   .staff-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-grid,
+  .shortcut-grid,
+  .contact-grid,
+  .officials-grid,
+  .info-columns,
+  .service-category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .resident-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .resident-layout .sidebar {
+    position: static;
+    min-height: 0;
+    padding: 1rem;
+  }
+
+  .side-nav {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -1288,6 +1688,25 @@ textarea {
   .step-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .dashboard-grid,
+  .shortcut-grid,
+  .contact-grid,
+  .officials-grid,
+  .info-columns,
+  .service-category-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .emergency-hero,
+  .emergency-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .side-nav {
+    grid-template-columns: 1fr;
   }
 }
 

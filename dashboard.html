@@ -15,20 +15,6 @@
           <span>BarangayLink</span>
         </a>
 
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation menu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-
-        <nav class="top-nav" aria-label="Resident navigation">
-          <a href="dashboard.html" class="active">Dashboard</a>
-          <a href="services.html">Services</a>
-          <a href="tracking.html">Tracking</a>
-          <a href="history.html">History</a>
-          <a href="profile.html">Profile</a>
-        </nav>
-
         <div class="nav-actions">
           <a href="profile.html" class="btn btn-ghost">Profile</a>
           <a href="index.html" class="btn btn-primary">Logout</a>
@@ -36,13 +22,64 @@
       </div>
     </header>
 
-    <main class="page-shell">
+    <div class="resident-layout">
+      <aside class="sidebar" aria-label="Resident sidebar navigation">
+        <div class="staff-brand">
+          <span class="brand-mark">BL</span>
+          <span>BarangayLink</span>
+        </div>
+
+        <nav class="side-nav" aria-label="Resident menu">
+          <a href="dashboard.html" class="active">Dashboard</a>
+          <a href="services.html">Services</a>
+          <a href="concerns.html">Report Concern</a>
+          <a href="tracking.html">Tracking</a>
+          <a href="history.html">History</a>
+          <a href="emergency.html">Emergency</a>
+          <a href="barangay-info.html">Barangay Info</a>
+        </nav>
+      </aside>
+
+      <main class="page-shell">
       <div class="container">
         <section class="page-head">
           <p class="eyebrow">Resident dashboard</p>
           <h1>Welcome, Juan Dela Cruz</h1>
           <p>Here is an overview of your barangay requests.</p>
           <a href="request.html" class="btn btn-primary">+ Request a Document</a>
+        </section>
+
+        <section class="emergency-banner" aria-label="Emergency information">
+          <div class="banner-text">
+            <strong>🚨 Need urgent help?</strong>
+            <p>Barangay Emergency Hotline: 0917-000-1122 (24/7) &middot; Reach police, fire, and medical contacts anytime.</p>
+          </div>
+          <a href="emergency.html" class="btn btn-primary">View Emergency Contacts</a>
+        </section>
+
+        <section aria-label="Quick service shortcuts">
+          <div class="shortcut-grid">
+            <a class="shortcut-card" href="request.html">
+              <span class="shortcut-icon" aria-hidden="true">📄</span>
+              <strong>Request a Document</strong>
+              <span>Clearance, residency, indigency, and more</span>
+            </a>
+            <a class="shortcut-card" href="concerns.html">
+              <span class="shortcut-icon" aria-hidden="true">📢</span>
+              <strong>Report a Concern</strong>
+              <span>Road, streetlight, garbage, drainage, noise</span>
+            </a>
+            <a class="shortcut-card" href="tracking.html">
+              <span class="shortcut-icon" aria-hidden="true">🔍</span>
+              <strong>Track a Request</strong>
+              <span>Check the status of a document request</span>
+            </a>
+            <a class="shortcut-card" href="barangay-info.html">
+              <span class="shortcut-icon" aria-hidden="true">🏛️</span>
+              <strong>Barangay Information</strong>
+              <span>Officials, office hours, and services</span>
+            </a>
+          </div>
         </section>
 
         <section class="summary-grid" aria-label="Request summary">
@@ -130,14 +167,87 @@
             <h3>Quick Links</h3>
             <ul class="check-list">
               <li><a href="request.html">Submit a request</a></li>
+              <li><a href="concerns.html">Report a concern</a></li>
               <li><a href="tracking.html">Track a request</a></li>
               <li><a href="services.html">View services</a></li>
+              <li><a href="emergency.html">Emergency contacts</a></li>
               <li><a href="profile.html">Update profile</a></li>
             </ul>
           </aside>
         </section>
+
+        <section class="dashboard-grid">
+          <article class="panel-card">
+            <div class="status-row">
+              <h2>Announcements</h2>
+              <a href="barangay-info.html" class="text-link">View barangay info</a>
+            </div>
+
+            <div class="update-list">
+              <article class="update-item">
+                <div class="update-top">
+                  <h4>Barangay Assembly this Saturday</h4>
+                  <span class="update-date">Sep 5, 2026</span>
+                </div>
+                <span class="tag tag-urgent">Announcement</span>
+                <p>All household representatives are requested to attend the quarterly barangay assembly at the covered court, 9:00 AM.</p>
+              </article>
+
+              <article class="update-item">
+                <div class="update-top">
+                  <h4>Online Requests Now Accept Digital Payment</h4>
+                  <span class="update-date">Sep 1, 2026</span>
+                </div>
+                <span class="tag">Announcement</span>
+                <p>Document request fees can now be settled through GCash upon approval, in addition to over-the-counter payment.</p>
+              </article>
+
+              <article class="update-item">
+                <div class="update-top">
+                  <h4>Office Closed on September 11 for Skills Training</h4>
+                  <span class="update-date">Aug 28, 2026</span>
+                </div>
+                <span class="tag tag-info">Notice</span>
+                <p>Barangay staff will be attending a service-training seminar. Kiosk and hotline requests will resume the next working day.</p>
+              </article>
+            </div>
+          </article>
+
+          <article class="panel-card">
+            <div class="status-row">
+              <h2>Community Updates</h2>
+            </div>
+
+            <div class="update-list">
+              <article class="update-item">
+                <div class="update-top">
+                  <h4>Free Anti-Rabies Vaccination Drive</h4>
+                  <span class="update-date">Sep 12, 2026</span>
+                </div>
+                <p>Bring your pets to the barangay health center from 8:00 AM to 3:00 PM. First come, first served.</p>
+              </article>
+
+              <article class="update-item">
+                <div class="update-top">
+                  <h4>Coastal and Creek Clean-up Drive</h4>
+                  <span class="update-date">Sep 20, 2026</span>
+                </div>
+                <p>Volunteers may register at the barangay hall. Gloves and trash bags will be provided.</p>
+              </article>
+
+              <article class="update-item">
+                <div class="update-top">
+                  <h4>Scheduled Water Interruption</h4>
+                  <span class="update-date">Sep 9, 2026</span>
+                </div>
+                <p>Water service will be temporarily interrupted from 10:00 PM to 5:00 AM for pipeline maintenance.</p>
+              </article>
+            </div>
+          </article>
+        </section>
       </div>
     </main>
+    </div>
 
     <script src="js/app.js"></script>
   </body>

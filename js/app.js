@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const message = document.querySelector('.form-message');
       if (message) {
-        message.textContent = 'Your request has been submitted successfully. Please review your status in tracking.';
+        message.textContent = requestForm.dataset.successMessage || 'Your request has been submitted successfully. Please review your status in tracking.';
         message.classList.add('show');
       }
     });
