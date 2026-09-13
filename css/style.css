@@ -985,6 +985,92 @@ textarea {
   padding: 1.5rem;
 }
 
+.resident-layout {
+  min-height: 100vh;
+}
+
+.officials-grid,
+.contact-grid,
+.service-category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.official-card,
+.contact-card,
+.service-category-card {
+  padding: 1.25rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.official-avatar,
+.contact-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0.75rem;
+  border-radius: 50%;
+  background: var(--soft-green);
+  font-size: 1.4rem;
+}
+
+.official-role,
+.contact-role,
+.contact-note {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.official-contact,
+.contact-number {
+  color: var(--secondary);
+  font-weight: 700;
+}
+
+.contact-category {
+  margin-top: 2rem;
+}
+
+.contact-card-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.9rem;
+}
+
+.emergency-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  background: var(--danger);
+  color: #fff;
+}
+
+.emergency-hero h2,
+.emergency-hero p {
+  color: #fff;
+}
+
+.info-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.concern-list {
+  display: grid;
+  gap: 1rem;
+}
+
 .request-list {
   display: grid;
   gap: 1rem;
@@ -1400,6 +1486,13 @@ textarea {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .officials-grid,
+  .contact-grid,
+  .service-category-grid,
+  .info-columns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .sidebar {
     padding: 1rem;
   }
@@ -1478,6 +1571,18 @@ textarea {
   .two-columns,
   .detail-grid {
     grid-template-columns: 1fr;
+  }
+
+  .officials-grid,
+  .contact-grid,
+  .service-category-grid,
+  .info-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .emergency-hero {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .summary-grid {

@@ -103,6 +103,7 @@ function initRequest() {
   const form = document.querySelector('.request-form');
   if (!form) return;
   const select = form.querySelector('#document-type');
+  if (!select) return;
   const profile = getProfile();
   const queryService = new URLSearchParams(window.location.search).get('service');
   select.innerHTML = '<option value="">Select a service</option>' + serviceCatalog.map((service) => `<option value="${escapeHtml(service.name)}">${escapeHtml(service.name)}</option>`).join('');
@@ -117,6 +118,19 @@ function initRequest() {
   select.addEventListener('change', updateRequirements);
   form.addEventListener('submit', (event) => { event.preventDefault(); if (!validateRequest(form, 2)) { current = 2; updateUI(); return; } const profileData = { name: form.querySelector('#req-full-name').value.trim(), address: form.querySelector('#req-address').value.trim(), contact: form.querySelector('#req-contact-number').value.trim(), email: form.querySelector('#req-email').value.trim() }; const sequence = Number(localStorage.getItem(STORAGE_KEYS.sequence) || 124) + 1; localStorage.setItem(STORAGE_KEYS.sequence, String(sequence)); const reference = `BL-${new Date().getFullYear()}-${String(sequence).padStart(5, '0')}`; const request = { reference, ...profileData, document: select.value, purpose: form.querySelector('#request-purpose').value.trim(), submittedAt: new Date().toISOString(), updatedAt: new Date().toISOString(), status: 'pending', rejectionReason: '' }; saveRequests([request, ...getRequests()]); saveProfile(profileData); form.querySelector('[data-submission-reference]').textContent = reference; form.querySelector('[data-submission-track]').href = `tracking.html?reference=${encodeURIComponent(reference)}`; form.querySelector('[data-submission-success]').classList.remove('hidden'); form.querySelectorAll('.step-actions, .step-panel').forEach((element) => element.classList.add('hidden')); showToast('Request submitted successfully'); });
   updateUI();
+}
+
+function initAdditionalRequestForms() {
+  document.querySelectorAll('.request-form[data-success-message]').forEach((form) => {
+    const steps = Array.from(form.querySelectorAll('.step-panel'));
+    let current = 0;
+    const update = () => { steps.forEach((step, index) => step.classList.toggle('active', index === current)); form.querySelector('[data-step-label]').textContent = `Step ${current + 1} of ${steps.length}`; form.querySelectorAll('[data-next]').forEach((button) => button.classList.toggle('hidden', current === steps.length - 1)); form.querySelector('[data-submit]').classList.toggle('hidden', current !== steps.length - 1); form.querySelectorAll('[data-prev]').forEach((button) => button.classList.toggle('hidden', current === 0)); };
+    const validate = () => { let valid = true; form.querySelectorAll('.step-panel.active [required]').forEach((field) => { clearFieldError(field); if (!field.value.trim()) { setFieldError(field, 'This field is required.'); if (valid) field.focus(); valid = false; } }); if (!valid) showToast('Please complete all required fields.', 'error'); return valid; };
+    form.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => { if (!validate()) return; current = Math.min(current + 1, steps.length - 1); update(); }));
+    form.querySelectorAll('[data-prev]').forEach((button) => button.addEventListener('click', () => { current = Math.max(current - 1, 0); update(); }));
+    form.addEventListener('submit', (event) => { event.preventDefault(); if (!validate()) return; const message = form.querySelector('.form-message'); if (message) { message.textContent = form.dataset.successMessage; message.classList.add('show'); } showToast('Concern submitted successfully.'); });
+    update();
+  });
 }
 
 function statusClass(status) { return `status-${status === 'review' ? 'review' : status}`; }
@@ -135,7 +149,7 @@ function initProfile() { const form = document.querySelector('[data-profile-form
 function initAuth() { document.querySelectorAll('.auth-form').forEach((form) => form.addEventListener('submit', (event) => { event.preventDefault(); let valid = true; form.querySelectorAll('[required]').forEach((field) => { clearFieldError(field); if (!field.value.trim()) { setFieldError(field, 'This field is required.'); valid = false; } }); const email = form.querySelector('input[type="email"]'); if (email && email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) { setFieldError(email, 'Please enter a valid email address.'); valid = false; } const password = form.querySelector('input[name="password"]'); const confirm = form.querySelector('input[name="confirmPassword"]'); if (confirm && password.value !== confirm.value) { setFieldError(confirm, 'Passwords do not match.'); valid = false; } if (valid) showToast(form.closest('.auth-card')?.querySelector('h1')?.textContent === 'Register' ? 'Account form completed for this prototype.' : 'Login form completed for this prototype.'); })); }
 
 document.addEventListener('DOMContentLoaded', () => {
-  initNavigation(); initServices(); initRequest(); renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); initStaffRequest(); initProfile(); initAuth();
+  initNavigation(); initServices(); initRequest(); initAdditionalRequestForms(); renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); initStaffRequest(); initProfile(); initAuth();
   document.querySelectorAll('.toggle-password').forEach((button) => button.addEventListener('click', () => { const input = button.parentElement.querySelector('input'); const visible = input.type === 'password'; input.type = visible ? 'text' : 'password'; button.textContent = visible ? 'Hide' : 'Show'; button.setAttribute('aria-label', visible ? 'Hide password' : 'Show password'); }));
   const modal = document.querySelector('.modal'); const trigger = document.querySelector('[data-open-modal]'); const close = document.querySelector('[data-close-modal]'); if (trigger && modal) trigger.addEventListener('click', () => modal.classList.add('show')); if (close && modal) close.addEventListener('click', () => modal.classList.remove('show')); if (modal) { modal.addEventListener('click', (event) => { if (event.target === modal) modal.classList.remove('show'); }); document.addEventListener('keydown', (event) => { if (event.key === 'Escape') modal.classList.remove('show'); }); }
   window.addEventListener('barangaylink:data', () => { renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); });
