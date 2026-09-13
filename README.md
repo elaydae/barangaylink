@@ -21,7 +21,7 @@ dashboard.html
 ## 👨‍💼 Staff/Admin Demo
 
 ```text
-Email: staff@b.com
+Email: staff@bl.com
 Password: 123456
 Role: Staff/Admin
 ```
