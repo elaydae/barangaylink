@@ -253,6 +253,16 @@ p {
   margin-top: 1.25rem;
 }
 
+.dashboard-sidebar-nav .nav-section {
+  margin: 0.8rem 0 0.15rem;
+  padding: 0 1rem;
+  color: rgba(223, 234, 241, 0.68);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .dashboard-sidebar-nav a {
   display: block;
   padding: 0.85rem 1rem;
