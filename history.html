@@ -3,38 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="assets/images/barangaylink-favicon.png" />
     <title>Request History | BarangayLink</title>
     <meta name="description" content="Resident request history for BarangayLink." />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <header class="site-header">
+    <header class="site-header resident-header">
       <div class="container nav-wrap">
-        <a href="index.html" class="brand" aria-label="BarangayLink home page">
-          <span class="brand-mark">BL</span>
-          <span>BarangayLink</span>
-        </a>
-
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-label="Toggle navigation menu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-
-        <nav class="top-nav" aria-label="Resident navigation">
-          <a href="dashboard.html">Dashboard</a>
-          <a href="services.html">Services</a>
-          <a href="tracking.html">Tracking</a>
-          <a href="history.html" class="active">History</a>
-          <a href="profile.html">Profile</a>
-        </nav>
-
-        <div class="nav-actions">
-          <a href="profile.html" class="btn btn-ghost">Profile</a>
-          <a href="index.html" class="btn btn-primary">Logout</a>
-        </div>
+        <button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="resident-sidebar" aria-label="Open navigation menu"><span aria-hidden="true">☰</span></button>
+        <a href="index.html" class="brand" aria-label="BarangayLink home page">BarangayLink</a>
+        <div class="nav-actions"><a href="profile.html" class="btn btn-ghost">Profile</a><a href="index.html" class="btn btn-primary">Logout</a></div>
       </div>
     </header>
+    <button class="dashboard-menu-overlay" type="button" aria-label="Close navigation menu" hidden></button>
+    <aside class="dashboard-sidebar" id="resident-sidebar" aria-label="Resident navigation" aria-hidden="true">
+      <div class="dashboard-sidebar-header"><h2>Menu</h2><button class="dashboard-sidebar-close" type="button" aria-label="Close navigation menu">×</button></div>
+      <nav class="dashboard-sidebar-nav" aria-label="Resident navigation"><a href="dashboard.html">Dashboard</a><a href="services.html">Services</a><a href="tracking.html">Tracking</a><a href="history.html">History</a><a href="profile.html">Profile</a><a href="index.html">Logout</a></nav>
+    </aside>
 
     <main class="page-shell">
       <div class="container">
@@ -87,7 +73,7 @@
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody data-history-rows>
                 <tr data-status="review" data-document="Barangay Clearance">
                   <td>REQ-2026-00124</td>
                   <td>Barangay Clearance</td>
@@ -122,6 +108,11 @@
                 </tr>
               </tbody>
             </table>
+            <div class="empty-state hidden" data-history-empty>
+              <h2>No Request History</h2>
+              <p>You haven't submitted any barangay document requests yet.</p>
+              <a class="btn btn-primary" href="services.html">Browse Services</a>
+            </div>
           </div>
         </section>
       </div>

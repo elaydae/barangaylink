@@ -3,28 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="assets/images/barangaylink-favicon.png" />
     <title>Staff Dashboard | BarangayLink</title>
     <meta name="description" content="Barangay staff dashboard for reviewing requests." />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
     <div class="staff-layout">
-      <aside class="sidebar" aria-label="Staff sidebar navigation">
-        <div class="staff-brand">
-          <span class="brand-mark">BL</span>
-          <span>BarangayLink</span>
+      <header class="site-header staff-header">
+        <div class="container nav-wrap">
+          <button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="staff-sidebar" aria-label="Open navigation menu"><span aria-hidden="true">☰</span></button>
+          <a href="staff-dashboard.html" class="brand" aria-label="BarangayLink staff dashboard">BarangayLink</a>
         </div>
-
-        <nav class="staff-nav" aria-label="Staff menu">
-          <a href="staff-dashboard.html" class="active">Dashboard</a>
-          <a href="staff-dashboard.html">Requests</a>
-          <a href="staff-dashboard.html">Pending Requests</a>
-          <a href="staff-dashboard.html">Ready for Release</a>
-          <a href="staff-dashboard.html">Residents</a>
-          <a href="staff-dashboard.html">Request History</a>
-          <a href="profile.html">Profile</a>
-          <a href="index.html">Logout</a>
-        </nav>
+      </header>
+      <button class="dashboard-menu-overlay" type="button" aria-label="Close navigation menu" hidden></button>
+      <aside class="dashboard-sidebar staff-sidebar" id="staff-sidebar" aria-label="Staff navigation" aria-hidden="true">
+        <div class="dashboard-sidebar-header"><h2>BarangayLink</h2><button class="dashboard-sidebar-close" type="button" aria-label="Close navigation menu">×</button></div>
+        <nav class="dashboard-sidebar-nav" aria-label="Staff navigation"><a href="staff-dashboard.html">Staff Dashboard</a><a href="staff-dashboard.html">Request Queue</a><a href="staff-dashboard.html">Residents / Registry</a><a href="staff-request.html">Request Review</a><a href="index.html">Logout</a></nav>
       </aside>
 
       <main class="staff-main">
@@ -34,26 +29,30 @@
           <p>Review incoming resident requests and update processing status.</p>
         </div>
 
-        <section class="staff-summary" aria-label="Request summary cards">
+        <section class="staff-summary" aria-label="Request summary cards" data-staff-stats>
           <article class="summary-tile">
             <div class="label">Total Requests</div>
-            <div class="value">42</div>
+            <div class="value" data-staff-stat="total">0</div>
           </article>
           <article class="summary-tile">
             <div class="label">Pending</div>
-            <div class="value">12</div>
+            <div class="value" data-staff-stat="pending">0</div>
           </article>
           <article class="summary-tile">
             <div class="label">Under Review</div>
-            <div class="value">8</div>
+            <div class="value" data-staff-stat="review">0</div>
           </article>
           <article class="summary-tile">
             <div class="label">Approved</div>
-            <div class="value">15</div>
+            <div class="value" data-staff-stat="approved">0</div>
           </article>
           <article class="summary-tile">
             <div class="label">Ready for Release</div>
-            <div class="value">7</div>
+            <div class="value" data-staff-stat="ready">0</div>
+          </article>
+          <article class="summary-tile">
+            <div class="label">Rejected</div>
+            <div class="value" data-staff-stat="rejected">0</div>
           </article>
         </section>
 
@@ -100,7 +99,7 @@
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody data-staff-rows>
                 <tr data-status="review" data-document="Barangay Clearance">
                   <td>REQ-2026-00124</td>
                   <td>Juan Dela Cruz</td>
@@ -135,6 +134,10 @@
                 </tr>
               </tbody>
             </table>
+            <div class="empty-state hidden" data-staff-empty>
+              <h2>No requests in the queue</h2>
+              <p>Resident submissions will appear here for review.</p>
+            </div>
           </div>
         </section>
       </main>

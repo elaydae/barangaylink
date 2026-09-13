@@ -3,28 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="assets/images/barangaylink-favicon.png" />
     <title>Review Request | BarangayLink</title>
     <meta name="description" content="Review and process a barangay resident request." />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
     <div class="staff-layout">
-      <aside class="sidebar" aria-label="Staff sidebar navigation">
-        <div class="staff-brand">
-          <span class="brand-mark">BL</span>
-          <span>BarangayLink</span>
+      <header class="site-header staff-header">
+        <div class="container nav-wrap">
+          <button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="staff-sidebar" aria-label="Open navigation menu"><span aria-hidden="true">☰</span></button>
+          <a href="staff-dashboard.html" class="brand" aria-label="BarangayLink staff dashboard">BarangayLink</a>
         </div>
-
-        <nav class="staff-nav" aria-label="Staff menu">
-          <a href="staff-dashboard.html">Dashboard</a>
-          <a href="staff-dashboard.html">Requests</a>
-          <a href="staff-dashboard.html">Pending Requests</a>
-          <a href="staff-dashboard.html">Ready for Release</a>
-          <a href="staff-dashboard.html">Residents</a>
-          <a href="staff-dashboard.html">Request History</a>
-          <a href="profile.html">Profile</a>
-          <a href="index.html">Logout</a>
-        </nav>
+      </header>
+      <button class="dashboard-menu-overlay" type="button" aria-label="Close navigation menu" hidden></button>
+      <aside class="dashboard-sidebar staff-sidebar" id="staff-sidebar" aria-label="Staff navigation" aria-hidden="true">
+        <div class="dashboard-sidebar-header"><h2>BarangayLink</h2><button class="dashboard-sidebar-close" type="button" aria-label="Close navigation menu">×</button></div>
+        <nav class="dashboard-sidebar-nav" aria-label="Staff navigation"><a href="staff-dashboard.html">Staff Dashboard</a><a href="staff-dashboard.html">Request Queue</a><a href="staff-dashboard.html">Residents / Registry</a><a href="staff-request.html">Request Review</a><a href="index.html">Logout</a></nav>
       </aside>
 
       <main class="staff-main">
@@ -39,35 +34,35 @@
             <div class="detail-grid">
               <div class="detail-item">
                 <span>Request ID</span>
-                <strong>REQ-2026-00124</strong>
+                <strong data-staff-detail="reference">No request selected</strong>
               </div>
               <div class="detail-item">
                 <span>Resident</span>
-                <strong>Juan Dela Cruz</strong>
+                <strong data-staff-detail="name">-</strong>
               </div>
               <div class="detail-item">
                 <span>Address</span>
-                <strong>123 Rizal Street, Barangay San Isidro</strong>
+                <strong data-staff-detail="address">-</strong>
               </div>
               <div class="detail-item">
                 <span>Contact Number</span>
-                <strong>0917-123-4567</strong>
+                <strong data-staff-detail="contact">-</strong>
               </div>
               <div class="detail-item">
                 <span>Email</span>
-                <strong>juan.delacruz@email.com</strong>
+                <strong data-staff-detail="email">-</strong>
               </div>
               <div class="detail-item">
                 <span>Document Type</span>
-                <strong>Barangay Clearance</strong>
+                <strong data-staff-detail="document">-</strong>
               </div>
               <div class="detail-item">
                 <span>Purpose</span>
-                <strong>Employment requirement</strong>
+                <strong data-staff-detail="purpose">-</strong>
               </div>
               <div class="detail-item">
                 <span>Date Submitted</span>
-                <strong>September 2, 2026</strong>
+                <strong data-staff-detail="date">-</strong>
               </div>
             </div>
 
@@ -93,10 +88,18 @@
               </select>
             </div>
 
+            <div class="field hidden" data-rejection-field>
+              <label for="rejection-reason">Rejection reason</label>
+              <textarea id="rejection-reason" placeholder="Please provide a reason for rejecting this request."></textarea>
+              <p class="field-error" data-rejection-error></p>
+            </div>
+
             <div class="action-row">
-              <button type="button" class="btn btn-success" data-confirm="Approve this request?">Approve</button>
-              <button type="button" class="btn btn-danger" data-confirm="Reject this request?">Reject</button>
-              <button type="button" class="btn btn-info" data-confirm="Request additional information from the resident?">Request Additional Information</button>
+              <button type="button" class="btn btn-success" data-status-action="approved">Approve</button>
+              <button type="button" class="btn btn-danger" data-status-action="rejected">Reject</button>
+              <button type="button" class="btn btn-info" data-status-action="review">Mark Under Review</button>
+              <button type="button" class="btn btn-info" data-status-action="ready">Mark Ready for Release</button>
+              <button type="button" class="btn btn-info" data-status-action="released">Mark Released</button>
             </div>
           </div>
         </section>

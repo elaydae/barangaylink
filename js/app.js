@@ -1,275 +1,142 @@
 const serviceCatalog = [
-  { name: 'Barangay Clearance', category: 'Certificates & Clearances', icon: '📄', description: 'Request a barangay clearance for applicable personal, employment, business, or other purposes.', requirements: ['Valid identification', 'Complete resident information', 'Purpose of request'], who: 'Residents of the barangay and authorized representatives.', information: 'Purpose, current address, and contact details.', processing: '2 to 3 working days', core: true },
-  { name: 'Certificate of Residency', category: 'Certificates & Clearances', icon: '🏠', description: 'Confirm your current address and residency status within the barangay.', requirements: ['Valid government ID', 'Current address details', 'Purpose of request'], who: 'Residents who need proof of their barangay address.', information: 'Length of residency and current address.', processing: '2 to 3 working days', core: true },
-  { name: 'Certificate of Indigency', category: 'Certificates & Clearances', icon: '🤝', description: 'Request certification commonly used for support programs, scholarships, and financial assistance.', requirements: ['Valid ID', 'Complete household information', 'Supporting income document, if applicable'], who: 'Residents requesting assistance or program support.', information: 'Household details and reason for assistance.', processing: '3 to 5 working days', core: true },
-  { name: 'Certificate of Good Moral Character', category: 'Certificates & Clearances', icon: '⭐', description: 'Obtain a certification of good standing for school, employment, or other official purposes.', requirements: ['Valid government ID', 'Complete resident information', 'Purpose of request'], who: 'Residents with a verifiable barangay record.', information: 'Purpose and requesting organization.', processing: '3 to 5 working days' },
-  { name: 'Certificate of No Pending Case', category: 'Certificates & Clearances', icon: '🛡️', description: 'Request certification that confirms your barangay case status for an official transaction.', requirements: ['Valid government ID', 'Complete resident information', 'Purpose of request'], who: 'Residents requesting status certification.', information: 'Purpose and organization requiring the document.', processing: '3 to 5 working days' },
-  { name: 'General Barangay Certification', category: 'Certificates & Clearances', icon: '📜', description: 'Request a general certification for a purpose not covered by another document type.', requirements: ['Valid government ID', 'Complete resident information', 'Detailed purpose statement'], who: 'Residents with a valid barangay certification request.', information: 'Specific certification wording or purpose.', processing: '3 to 5 working days' },
-  { name: 'Barangay Business Clearance', category: 'Business & Permits', icon: '🏪', description: 'Request barangay clearance for a business operating or applying to operate in the community.', requirements: ['Owner valid ID', 'Business name and address', 'Proof of business registration, if available'], who: 'Business owners or authorized representatives.', information: 'Business activity, location, and ownership details.', processing: '3 to 5 working days' },
-  { name: 'Business Permit', category: 'Business & Permits', icon: '📦', description: 'Request barangay approval or validation for a business permit and local operations.', requirements: ['Business name and address', 'Owner identification', 'Supporting business documents'], who: 'Business owners or authorized representatives.', information: 'Business activity, location, and ownership details.', processing: '3 to 5 working days', core: true },
-  { name: 'Business Permit Assistance', category: 'Business & Permits', icon: '🧾', description: 'Get guidance and assistance in preparing a local business permit request.', requirements: ['Owner valid ID', 'Business name and address', 'Available business documents'], who: 'Business owners and aspiring entrepreneurs.', information: 'Business type, location, and assistance needed.', processing: '1 to 2 working days' },
-  { name: 'Business Location Certification', category: 'Business & Permits', icon: '📍', description: 'Request certification of a business location within the barangay.', requirements: ['Owner valid ID', 'Complete business address', 'Proof of occupancy or ownership'], who: 'Business owners or authorized representatives.', information: 'Exact location and nature of business.', processing: '3 to 5 working days' },
-  { name: 'First-Time Job Seeker Certification', category: 'Community Services', icon: '💼', description: 'Request certification for qualified first-time job seekers applying for employment documents.', requirements: ['Valid government ID', 'Resident information', 'First-time job seeker declaration'], who: 'Qualified first-time job seekers who are barangay residents.', information: 'Target employer and employment requirements.', processing: '2 to 3 working days' },
-  { name: 'Solo Parent Certification Assistance', category: 'Community Services', icon: '👤', description: 'Request assistance with the certification process for solo parents.', requirements: ['Valid ID', 'Proof of solo parent status', 'Complete household information'], who: 'Residents applying for solo parent support.', information: 'Household details and supporting circumstances.', processing: '3 to 5 working days' },
-  { name: 'Senior Citizen Assistance Request', category: 'Community Services', icon: '🧓', description: 'Submit a request for barangay assistance and support for a senior citizen.', requirements: ['Senior citizen valid ID', 'Resident information', 'Description of assistance needed'], who: 'Senior citizens or their authorized representatives.', information: 'Type of assistance and preferred contact details.', processing: '3 to 5 working days' },
-  { name: 'Community Assistance Request', category: 'Community Services', icon: '🫱', description: 'Request help from the barangay for a community or household concern.', requirements: ['Valid government ID', 'Complete resident information', 'Detailed assistance request'], who: 'Barangay residents with a documented need for assistance.', information: 'Situation details and requested support.', processing: '3 to 5 working days' },
-  { name: 'Barangay ID Request', category: 'Resident Services', icon: '🪪', description: 'Request a barangay identification card for local transactions and resident verification.', requirements: ['Valid government ID', 'Recent photo, if required', 'Complete resident information'], who: 'Registered residents of the barangay.', information: 'Address, contact details, and emergency contact.', processing: '5 to 7 working days' },
-  { name: 'Resident Information Update', category: 'Resident Services', icon: '✏️', description: 'Request an update to your resident profile or barangay records.', requirements: ['Valid government ID', 'Updated information', 'Supporting document for the change'], who: 'Registered residents updating their records.', information: 'Field to update and the corrected details.', processing: '2 to 3 working days' },
-  { name: 'Document Correction Request', category: 'Resident Services', icon: '📝', description: 'Request correction of an error in a previously issued barangay document.', requirements: ['Valid government ID', 'Copy of document to correct', 'Proof of correct information'], who: 'Residents with an issued document containing an error.', information: 'Incorrect entry, corrected entry, and reason.', processing: '3 to 5 working days' },
-  { name: 'General Certification Request', category: 'Resident Services', icon: '📁', description: 'Start a request for a resident certification not listed as a specific service.', requirements: ['Valid government ID', 'Complete resident information', 'Detailed purpose statement'], who: 'Residents with a valid certification request.', information: 'Requested certification and intended use.', processing: '3 to 5 working days' }
+  { name: 'Barangay Clearance', category: 'Certificates & Clearances', icon: '📄', description: 'Request a barangay clearance for applicable personal, employment, business, or other purposes.', requirements: ['Valid identification', 'Complete resident information', 'Purpose of request'], processing: '2 to 3 working days', core: true },
+  { name: 'Certificate of Residency', category: 'Certificates & Clearances', icon: '🏠', description: 'Confirm your current address and residency status within the barangay.', requirements: ['Valid government ID', 'Current address details', 'Purpose of request'], processing: '2 to 3 working days', core: true },
+  { name: 'Certificate of Indigency', category: 'Certificates & Clearances', icon: '🤝', description: 'Request certification commonly used for support programs, scholarships, and financial assistance.', requirements: ['Valid ID', 'Complete household information', 'Supporting income document, if applicable'], processing: '3 to 5 working days', core: true },
+  { name: 'Certificate of Good Moral Character', category: 'Certificates & Clearances', icon: '⭐', description: 'Obtain a certification of good standing for school, employment, or another official purpose.', requirements: ['Valid government ID', 'Complete resident information', 'Purpose of request'], processing: '3 to 5 working days' },
+  { name: 'Certificate of No Pending Case', category: 'Certificates & Clearances', icon: '🛡️', description: 'Request certification that confirms your barangay case status for an official transaction.', requirements: ['Valid government ID', 'Complete resident information', 'Purpose of request'], processing: '3 to 5 working days' },
+  { name: 'General Barangay Certification', category: 'Certificates & Clearances', icon: '📜', description: 'Request a general certification for a purpose not covered by another document type.', requirements: ['Valid government ID', 'Complete resident information', 'Detailed purpose statement'], processing: '3 to 5 working days' },
+  { name: 'Barangay Business Clearance', category: 'Business & Permits', icon: '🏪', description: 'Request barangay clearance for a business operating or applying to operate in the community.', requirements: ['Owner valid ID', 'Business name and address', 'Proof of business registration, if available'], processing: '3 to 5 working days' },
+  { name: 'Business Permit', category: 'Business & Permits', icon: '📦', description: 'Request barangay approval or validation for a business permit and local operations.', requirements: ['Business name and address', 'Owner identification', 'Supporting business documents'], processing: '3 to 5 working days', core: true },
+  { name: 'Business Permit Assistance', category: 'Business & Permits', icon: '🧾', description: 'Get guidance and assistance in preparing a local business permit request.', requirements: ['Owner valid ID', 'Business name and address', 'Available business documents'], processing: '1 to 2 working days' },
+  { name: 'Business Location Certification', category: 'Business & Permits', icon: '📍', description: 'Request certification of a business location within the barangay.', requirements: ['Owner valid ID', 'Complete business address', 'Proof of occupancy or ownership'], processing: '3 to 5 working days' },
+  { name: 'First-Time Job Seeker Certification', category: 'Community Services', icon: '💼', description: 'Request certification for qualified first-time job seekers applying for employment documents.', requirements: ['Valid government ID', 'Resident information', 'First-time job seeker declaration'], processing: '2 to 3 working days' },
+  { name: 'Solo Parent Certification Assistance', category: 'Community Services', icon: '👤', description: 'Request assistance with the certification process for solo parents.', requirements: ['Valid ID', 'Proof of solo parent status', 'Complete household information'], processing: '3 to 5 working days' },
+  { name: 'Senior Citizen Assistance Request', category: 'Community Services', icon: '🧓', description: 'Submit a request for barangay assistance and support for a senior citizen.', requirements: ['Senior citizen valid ID', 'Resident information', 'Description of assistance needed'], processing: '3 to 5 working days' },
+  { name: 'Community Assistance Request', category: 'Community Services', icon: '🫱', description: 'Request help from the barangay for a community or household concern.', requirements: ['Valid government ID', 'Complete resident information', 'Detailed assistance request'], processing: '3 to 5 working days' },
+  { name: 'Barangay ID Request', category: 'Resident Services', icon: '🪪', description: 'Request a barangay identification card for local transactions and resident verification.', requirements: ['Valid government ID', 'Recent photo, if required', 'Complete resident information'], processing: '5 to 7 working days' },
+  { name: 'Resident Information Update', category: 'Resident Services', icon: '✏️', description: 'Request an update to your resident profile or barangay records.', requirements: ['Valid government ID', 'Updated information', 'Supporting document for the change'], processing: '2 to 3 working days' },
+  { name: 'Document Correction Request', category: 'Resident Services', icon: '📝', description: 'Request correction of an error in a previously issued barangay document.', requirements: ['Valid government ID', 'Copy of document to correct', 'Proof of correct information'], processing: '3 to 5 working days' },
+  { name: 'General Certification Request', category: 'Resident Services', icon: '📁', description: 'Start a request for a resident certification not listed as a specific service.', requirements: ['Valid government ID', 'Complete resident information', 'Detailed purpose statement'], processing: '3 to 5 working days' }
 ];
 
+const STORAGE_KEYS = { requests: 'barangaylink.requests', profile: 'barangaylink.profile', sequence: 'barangaylink.sequence' };
+const STATUS_LABELS = { pending: 'Pending Review', review: 'Under Review', approved: 'Approved', rejected: 'Rejected', ready: 'Ready for Release', released: 'Released' };
+const STATUS_ORDER = ['pending', 'review', 'approved', 'ready', 'released'];
+const defaultProfile = { name: 'Juan Dela Cruz', address: '123 Rizal Street, Barangay San Isidro', contact: '0917-123-4567', email: 'juan.delacruz@email.com' };
+
+function readStorage(key, fallback) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key));
+    return value === null ? fallback : value;
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function writeStorage(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (error) { showToast('Your browser could not save this change.', 'error'); }
+}
+
+function getRequests() { const requests = readStorage(STORAGE_KEYS.requests, []); return Array.isArray(requests) ? requests : []; }
+function saveRequests(requests) { writeStorage(STORAGE_KEYS.requests, requests); window.dispatchEvent(new Event('barangaylink:data')); }
+function getProfile() { const profile = readStorage(STORAGE_KEYS.profile, {}); return { ...defaultProfile, ...(profile && typeof profile === 'object' && !Array.isArray(profile) ? profile : {}) }; }
+function saveProfile(profile) { writeStorage(STORAGE_KEYS.profile, profile); window.dispatchEvent(new Event('barangaylink:data')); }
+function escapeHtml(value) { return String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character])); }
+function formatDate(value) { return value ? new Date(value).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : '-'; }
+function getService(name) { return serviceCatalog.find((service) => service.name === name); }
+
+function showToast(message, type = 'success') {
+  let toast = document.querySelector('[data-toast]');
+  if (!toast) { toast = document.createElement('div'); toast.dataset.toast = 'true'; toast.setAttribute('role', 'status'); toast.setAttribute('aria-live', 'polite'); document.body.appendChild(toast); }
+  toast.textContent = message;
+  toast.className = `toast toast-${type} show`;
+  window.clearTimeout(showToast.timeout);
+  showToast.timeout = window.setTimeout(() => toast.classList.remove('show'), 3600);
+}
+
+function initNavigation() {
+  const toggle = document.querySelector('.dashboard-nav-toggle');
+  const sidebar = document.querySelector('#resident-sidebar, #staff-sidebar');
+  const close = document.querySelector('.dashboard-sidebar-close');
+  const overlay = document.querySelector('.dashboard-menu-overlay');
+  if (!toggle || !sidebar || !close || !overlay) return;
+  const closeMenu = (restoreFocus = true) => { toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-label', 'Open navigation menu'); sidebar.setAttribute('aria-hidden', 'true'); sidebar.classList.remove('is-open'); overlay.classList.remove('is-open'); overlay.hidden = true; document.body.classList.remove('menu-open'); if (restoreFocus) toggle.focus(); };
+  const openMenu = () => { toggle.setAttribute('aria-expanded', 'true'); toggle.setAttribute('aria-label', 'Close navigation menu'); sidebar.setAttribute('aria-hidden', 'false'); sidebar.classList.add('is-open'); overlay.hidden = false; overlay.classList.add('is-open'); document.body.classList.add('menu-open'); window.setTimeout(() => close.focus(), 50); };
+  toggle.addEventListener('click', () => toggle.getAttribute('aria-expanded') === 'true' ? closeMenu() : openMenu());
+  close.addEventListener('click', () => closeMenu());
+  overlay.addEventListener('click', () => closeMenu());
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') closeMenu(); });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  const activePage = currentPage === 'request.html' ? 'services.html' : currentPage;
+  let assigned = false;
+  sidebar.querySelectorAll('a[href]').forEach((link) => { const active = link.getAttribute('href') === activePage && !assigned; link.classList.toggle('active', active); if (active) { link.setAttribute('aria-current', 'page'); assigned = true; } else link.removeAttribute('aria-current'); });
+}
+
+function initServices() {
+  const grid = document.querySelector('[data-service-grid]');
+  if (!grid) return;
+  const search = document.querySelector('#service-search');
+  const empty = document.querySelector('[data-service-empty]');
+  const count = document.querySelector('[data-service-count]');
+  const detail = document.querySelector('#service-detail');
+  let category = 'all';
+  const renderDetail = (service) => { if (!detail || !service) return; detail.classList.remove('hidden'); detail.querySelector('[data-detail-icon]').textContent = service.icon; detail.querySelector('[data-detail-category]').textContent = service.category; detail.querySelector('[data-detail-name]').textContent = service.name; detail.querySelector('[data-detail-description]').textContent = service.description; detail.querySelector('[data-detail-processing]').textContent = service.processing; detail.querySelector('[data-detail-requirements]').innerHTML = service.requirements.map((item) => `<li>${escapeHtml(item)}</li>`).join(''); detail.querySelector('[data-detail-request]').href = `request.html?service=${encodeURIComponent(service.name)}`; detail.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  const render = () => { const query = search ? search.value.trim().toLowerCase() : ''; const items = serviceCatalog.filter((service) => (category === 'all' || service.category === category) && (!query || `${service.name} ${service.category} ${service.description}`.toLowerCase().includes(query))); grid.innerHTML = items.map((service) => `<article class="service-card"><div class="service-icon" aria-hidden="true">${service.icon}</div><span class="category-label">${escapeHtml(service.category)}</span><h3>${escapeHtml(service.name)}</h3><p>${escapeHtml(service.description)}</p><ul>${service.requirements.slice(0, 3).map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul><span class="processing-time">Estimated: ${escapeHtml(service.processing)}</span><div class="card-actions"><button class="btn btn-ghost small" type="button" data-view-service="${escapeHtml(service.name)}">View Requirements</button><a class="btn btn-primary small" href="request.html?service=${encodeURIComponent(service.name)}">Request Service</a></div></article>`).join(''); if (count) count.textContent = items.length; if (empty) empty.classList.toggle('hidden', items.length > 0); grid.querySelectorAll('[data-view-service]').forEach((button) => button.addEventListener('click', () => renderDetail(getService(button.dataset.viewService)))); };
+  document.querySelectorAll('[data-category]').forEach((button) => button.addEventListener('click', () => { category = button.dataset.category; document.querySelectorAll('[data-category]').forEach((tab) => { const active = tab === button; tab.classList.toggle('active', active); tab.setAttribute('aria-selected', String(active)); }); render(); }));
+  if (search) search.addEventListener('input', render);
+  const clear = document.querySelector('[data-clear-search]');
+  if (clear) clear.addEventListener('click', () => { search.value = ''; category = 'all'; document.querySelector('[data-category="all"]').click(); });
+  render();
+}
+
+function setFieldError(field, message) { let error = field.parentElement.querySelector('.field-error'); if (!error) { error = document.createElement('p'); error.className = 'field-error'; field.parentElement.appendChild(error); } error.textContent = message; field.setAttribute('aria-invalid', 'true'); }
+function clearFieldError(field) { const error = field.parentElement.querySelector('.field-error'); if (error) error.textContent = ''; field.removeAttribute('aria-invalid'); }
+function validateRequest(form, step) {
+  const fields = step === 0 ? [form.querySelector('#document-type')] : step === 2 ? Array.from(form.querySelectorAll('.step-panel.active input[required]')) : [];
+  let valid = true;
+  fields.forEach((field) => { clearFieldError(field); if (!field.value.trim()) { setFieldError(field, field.id === 'document-type' ? 'Please select a document.' : `Please enter your ${field.name === 'fullName' ? 'full name' : field.name === 'contactNumber' ? 'contact number' : field.name}.`); if (valid) field.focus(); valid = false; } });
+  if (step === 2) { const email = form.querySelector('#req-email'); const contact = form.querySelector('#req-contact-number'); if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) { setFieldError(email, 'Please enter a valid email address.'); valid = false; } if (contact.value && !/^[0-9+()\-\s]{7,20}$/.test(contact.value)) { setFieldError(contact, 'Please enter a valid contact number.'); valid = false; } const purpose = form.querySelector('#request-purpose'); if (!purpose.value.trim()) { setFieldError(purpose, 'Please enter the purpose of your request.'); valid = false; } }
+  return valid;
+}
+
+function initRequest() {
+  const form = document.querySelector('.request-form');
+  if (!form) return;
+  const select = form.querySelector('#document-type');
+  const profile = getProfile();
+  const queryService = new URLSearchParams(window.location.search).get('service');
+  select.innerHTML = '<option value="">Select a service</option>' + serviceCatalog.map((service) => `<option value="${escapeHtml(service.name)}">${escapeHtml(service.name)}</option>`).join('');
+  if (queryService && getService(queryService)) select.value = queryService;
+  ['full-name', 'address', 'contact-number', 'req-email'].forEach((id) => { const field = form.querySelector(`#${id}`); if (field && !field.value) field.value = id === 'full-name' ? profile.name : id === 'address' ? profile.address : id === 'contact-number' ? profile.contact : profile.email; });
+  const steps = Array.from(form.querySelectorAll('.step-panel')); let current = 0;
+  const updateRequirements = () => { const service = getService(select.value); const list = form.querySelector('[data-request-requirements]'); const intro = form.querySelector('[data-request-requirement-intro]'); if (service) { intro.textContent = `${service.name} requirements`; list.innerHTML = service.requirements.map((item) => `<li>${escapeHtml(item)}</li>`).join(''); } else { intro.textContent = 'Select a service to view requirements'; list.innerHTML = ''; } };
+  const updateReview = () => { const values = { document: select.value || '-', name: form.querySelector('#req-full-name').value || '-', address: form.querySelector('#req-address').value || '-', contact: form.querySelector('#req-contact-number').value || '-', email: form.querySelector('#req-email').value || '-', purpose: form.querySelector('#request-purpose').value || '-' }; Object.keys(values).forEach((key) => { const target = form.querySelector(`[data-review-${key}]`); if (target) target.textContent = values[key]; }); };
+  const updateUI = () => { steps.forEach((step, index) => step.classList.toggle('active', index === current)); form.querySelector('[data-step-label]').textContent = `Step ${current + 1} of ${steps.length}`; form.querySelectorAll('[data-next]').forEach((button) => button.classList.toggle('hidden', current === steps.length - 1)); form.querySelector('[data-submit]').classList.toggle('hidden', current !== steps.length - 1); form.querySelectorAll('[data-prev]').forEach((button) => button.classList.toggle('hidden', current === 0)); updateRequirements(); if (current === steps.length - 1) updateReview(); };
+  form.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => { if (current === 0 && !validateRequest(form, 0)) return; if (current === 2 && !validateRequest(form, 2)) return; current = Math.min(current + 1, steps.length - 1); updateUI(); }));
+  form.querySelectorAll('[data-prev]').forEach((button) => button.addEventListener('click', () => { current = Math.max(current - 1, 0); updateUI(); }));
+  select.addEventListener('change', updateRequirements);
+  form.addEventListener('submit', (event) => { event.preventDefault(); if (!validateRequest(form, 2)) { current = 2; updateUI(); return; } const profileData = { name: form.querySelector('#req-full-name').value.trim(), address: form.querySelector('#req-address').value.trim(), contact: form.querySelector('#req-contact-number').value.trim(), email: form.querySelector('#req-email').value.trim() }; const sequence = Number(localStorage.getItem(STORAGE_KEYS.sequence) || 124) + 1; localStorage.setItem(STORAGE_KEYS.sequence, String(sequence)); const reference = `BL-${new Date().getFullYear()}-${String(sequence).padStart(5, '0')}`; const request = { reference, ...profileData, document: select.value, purpose: form.querySelector('#request-purpose').value.trim(), submittedAt: new Date().toISOString(), updatedAt: new Date().toISOString(), status: 'pending', rejectionReason: '' }; saveRequests([request, ...getRequests()]); saveProfile(profileData); form.querySelector('[data-submission-reference]').textContent = reference; form.querySelector('[data-submission-track]').href = `tracking.html?reference=${encodeURIComponent(reference)}`; form.querySelector('[data-submission-success]').classList.remove('hidden'); form.querySelectorAll('.step-actions, .step-panel').forEach((element) => element.classList.add('hidden')); showToast('Request submitted successfully'); });
+  updateUI();
+}
+
+function statusClass(status) { return `status-${status === 'review' ? 'review' : status}`; }
+function renderDashboard() { const container = document.querySelector('[data-dashboard-requests]'); if (!container) return; const requests = getRequests(); const stats = { total: requests.length, pending: 0, review: 0, approved: 0, ready: 0, released: 0 }; requests.forEach((request) => { if (stats[request.status] !== undefined) stats[request.status] += 1; }); Object.keys(stats).forEach((key) => { const element = document.querySelector(`[data-stat="${key}"]`); if (element) element.textContent = stats[key]; }); container.innerHTML = requests.slice(0, 5).map((request) => `<article class="request-item"><div class="request-top"><div><h3>${escapeHtml(request.document)}</h3><p>${escapeHtml(request.reference)}</p></div><span class="status-badge ${statusClass(request.status)}">${escapeHtml(STATUS_LABELS[request.status] || request.status)}</span></div><div class="request-meta"><p>Date: ${escapeHtml(formatDate(request.submittedAt))}</p><p>Status: ${escapeHtml(STATUS_LABELS[request.status] || request.status)}</p></div><div class="table-actions"><a class="btn btn-ghost small" href="tracking.html?reference=${encodeURIComponent(request.reference)}">Track Request</a></div></article>`).join(''); const empty = document.querySelector('[data-dashboard-empty]'); if (empty) empty.classList.toggle('hidden', requests.length > 0); }
+
+function renderHistory() { const body = document.querySelector('[data-history-rows]'); if (!body) return; const requests = getRequests(); body.innerHTML = requests.map((request) => `<tr data-status="${escapeHtml(request.status)}" data-document="${escapeHtml(request.document)}"><td>${escapeHtml(request.reference)}</td><td>${escapeHtml(request.document)}</td><td>${escapeHtml(formatDate(request.submittedAt))}</td><td><span class="status-badge ${statusClass(request.status)}">${escapeHtml(STATUS_LABELS[request.status] || request.status)}</span></td><td>${escapeHtml(formatDate(request.updatedAt))}</td><td><a href="tracking.html?reference=${encodeURIComponent(request.reference)}" class="action-link">View / Track</a></td></tr>`).join(''); const empty = document.querySelector('[data-history-empty]'); if (empty) empty.classList.toggle('hidden', requests.length > 0); const search = document.querySelector('#request-search'); const status = document.querySelector('#statusFilter'); const documentFilter = document.querySelector('#documentFilter'); const filter = () => body.querySelectorAll('tr').forEach((row) => { const query = search ? search.value.toLowerCase() : ''; row.hidden = !(`${row.textContent}`.toLowerCase().includes(query) && (!status || status.value === 'all' || row.dataset.status === status.value) && (!documentFilter || documentFilter.value === 'all' || row.dataset.document === documentFilter.value)); }); [search, status, documentFilter].filter(Boolean).forEach((field) => field.addEventListener('input', filter)); filter(); }
+
+function renderTracking() { const form = document.querySelector('.track-form'); if (!form) return; const input = form.querySelector('input'); const result = document.querySelector('[data-track-result]'); const empty = document.querySelector('[data-track-empty]'); const show = (reference) => { const request = getRequests().find((item) => item.reference.toLowerCase() === reference.trim().toLowerCase()); if (!request) { result.classList.add('hidden'); empty.classList.remove('hidden'); showToast('Request not found. Check your reference number.', 'error'); return; } empty.classList.add('hidden'); result.classList.remove('hidden'); document.querySelector('[data-track-reference]').textContent = request.reference; document.querySelector('[data-track-document]').textContent = request.document; document.querySelector('[data-track-applicant]').textContent = request.name; document.querySelector('[data-track-date]').textContent = formatDate(request.submittedAt); document.querySelector('[data-track-status]').textContent = STATUS_LABELS[request.status] || request.status; const timeline = document.querySelector('[data-track-timeline]'); const currentIndex = request.status === 'rejected' ? -1 : STATUS_ORDER.indexOf(request.status); timeline.innerHTML = ['Submitted', 'Received', 'Under Review', 'Approved', 'Ready for Release', 'Released'].map((label, index) => `<div class="timeline-item ${index <= currentIndex + 1 ? 'done' : ''} ${index === currentIndex + 1 ? 'active' : ''}"><span class="timeline-dot" aria-hidden="true"></span><div><strong>${label}</strong></div></div>`).join(''); result.scrollIntoView({ behavior: 'smooth', block: 'start' }); }; form.addEventListener('submit', (event) => { event.preventDefault(); if (!input.value.trim()) { input.setAttribute('aria-invalid', 'true'); showToast('Enter a request reference number.', 'error'); return; } show(input.value); }); const queryReference = new URLSearchParams(window.location.search).get('reference'); if (queryReference) { input.value = queryReference; show(queryReference); } }
+
+function renderStaffDashboard() { const body = document.querySelector('[data-staff-rows]'); if (!body) return; const requests = getRequests(); const counts = { total: requests.length, pending: 0, review: 0, approved: 0, rejected: 0, ready: 0 }; requests.forEach((request) => { if (counts[request.status] !== undefined) counts[request.status] += 1; }); Object.keys(counts).forEach((key) => { const element = document.querySelector(`[data-staff-stat="${key}"]`); if (element) element.textContent = counts[key]; }); body.innerHTML = requests.map((request) => `<tr data-status="${escapeHtml(request.status)}" data-document="${escapeHtml(request.document)}"><td>${escapeHtml(request.reference)}</td><td>${escapeHtml(request.name)}</td><td>${escapeHtml(request.document)}</td><td>${escapeHtml(formatDate(request.submittedAt))}</td><td><span class="status-badge ${statusClass(request.status)}">${escapeHtml(STATUS_LABELS[request.status] || request.status)}</span></td><td><a href="staff-request.html?reference=${encodeURIComponent(request.reference)}" class="action-link">Review</a></td></tr>`).join(''); const empty = document.querySelector('[data-staff-empty]'); if (empty) empty.classList.toggle('hidden', requests.length > 0); const search = document.querySelector('#staff-search'); const status = document.querySelector('#staff-status-filter'); const documentFilter = document.querySelector('#staff-doc-filter'); const filter = () => body.querySelectorAll('tr').forEach((row) => { const query = search ? search.value.toLowerCase() : ''; row.hidden = !(`${row.textContent}`.toLowerCase().includes(query) && (!status || status.value === 'all' || row.dataset.status === status.value) && (!documentFilter || documentFilter.value === 'all' || row.dataset.document === documentFilter.value)); }); [search, status, documentFilter].filter(Boolean).forEach((field) => field.addEventListener('input', filter)); filter(); }
+
+function initStaffRequest() { const actions = document.querySelectorAll('[data-status-action]'); if (!actions.length) return; const reference = new URLSearchParams(window.location.search).get('reference') || getRequests()[0]?.reference; let request = getRequests().find((item) => item.reference === reference); const display = (key, value) => { const element = document.querySelector(`[data-staff-detail="${key}"]`); if (element) element.textContent = value || '-'; }; const load = () => { request = getRequests().find((item) => item.reference === reference); if (!request) return; Object.entries({ reference: request.reference, name: request.name, address: request.address, contact: request.contact, email: request.email, document: request.document, purpose: request.purpose, date: formatDate(request.submittedAt) }).forEach(([key, value]) => display(key, value)); const select = document.querySelector('#status-select'); if (select) select.value = request.status; }; actions.forEach((button) => button.addEventListener('click', () => { if (!request) { showToast('No request selected.', 'error'); return; } const status = button.dataset.statusAction; const rejectionField = document.querySelector('[data-rejection-field]'); if (status === 'rejected') { rejectionField.classList.remove('hidden'); const reason = document.querySelector('#rejection-reason').value.trim(); if (!reason) { document.querySelector('[data-rejection-error]').textContent = 'Please provide a reason for rejecting this request.'; document.querySelector('#rejection-reason').focus(); return; } } if (!window.confirm(`Update this request to ${STATUS_LABELS[status]}?`)) return; const requests = getRequests(); const target = requests.find((item) => item.reference === request.reference); target.status = status; target.updatedAt = new Date().toISOString(); target.rejectionReason = status === 'rejected' ? document.querySelector('#rejection-reason').value.trim() : ''; saveRequests(requests); load(); showToast(status === 'rejected' ? 'Request rejected.' : 'Request status updated.'); })); load(); }
+
+function initProfile() { const form = document.querySelector('[data-profile-form]'); if (!form) return; const load = () => { const profile = getProfile(); Object.entries(profile).forEach(([key, value]) => { const input = form.elements[key]; if (input) input.value = value; const display = document.querySelector(`[data-profile-display="${key}"]`); if (display) display.textContent = value; }); document.querySelectorAll('[data-profile-name]').forEach((element) => element.textContent = profile.name); }; form.addEventListener('submit', (event) => { event.preventDefault(); const data = Object.fromEntries(new FormData(form)); let valid = true; Object.entries(data).forEach(([key, value]) => { const field = form.elements[key]; clearFieldError(field); if (!String(value).trim()) { setFieldError(field, 'This field is required.'); valid = false; } }); if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) { setFieldError(form.elements.email, 'Please enter a valid email address.'); valid = false; } if (!valid) return; saveProfile(data); load(); document.querySelector('.modal')?.classList.remove('show'); showToast('Profile updated.'); }); load(); }
+
+function initAuth() { document.querySelectorAll('.auth-form').forEach((form) => form.addEventListener('submit', (event) => { event.preventDefault(); let valid = true; form.querySelectorAll('[required]').forEach((field) => { clearFieldError(field); if (!field.value.trim()) { setFieldError(field, 'This field is required.'); valid = false; } }); const email = form.querySelector('input[type="email"]'); if (email && email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) { setFieldError(email, 'Please enter a valid email address.'); valid = false; } const password = form.querySelector('input[name="password"]'); const confirm = form.querySelector('input[name="confirmPassword"]'); if (confirm && password.value !== confirm.value) { setFieldError(confirm, 'Passwords do not match.'); valid = false; } if (valid) showToast(form.closest('.auth-card')?.querySelector('h1')?.textContent === 'Register' ? 'Account form completed for this prototype.' : 'Login form completed for this prototype.'); })); }
+
 document.addEventListener('DOMContentLoaded', () => {
-  const siteHeader = document.querySelector('.site-header');
-  const navToggle = document.querySelector('.nav-toggle');
-
-  const serviceGrid = document.querySelector('[data-service-grid]');
-  if (serviceGrid) {
-    const searchInput = document.querySelector('#service-search');
-    const emptyState = document.querySelector('[data-service-empty]');
-    const count = document.querySelector('[data-service-count]');
-    const detail = document.querySelector('#service-detail');
-    let activeCategory = 'all';
-
-    function showServiceDetail(service) {
-      if (!detail) return;
-      detail.classList.remove('hidden');
-      detail.querySelector('[data-detail-icon]').textContent = service.icon;
-      detail.querySelector('[data-detail-category]').textContent = service.category;
-      detail.querySelector('[data-detail-name]').textContent = service.name;
-      detail.querySelector('[data-detail-description]').textContent = service.description;
-      detail.querySelector('[data-detail-who]').textContent = service.who;
-      detail.querySelector('[data-detail-information]').textContent = service.information;
-      detail.querySelector('[data-detail-processing]').textContent = service.processing;
-      detail.querySelector('[data-detail-requirements]').innerHTML = service.requirements.map((requirement) => `<li>${requirement}</li>`).join('');
-      detail.querySelector('[data-detail-request]').href = `request.html?service=${encodeURIComponent(service.name)}`;
-      detail.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-
-    function renderServices() {
-      const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
-      const filtered = serviceCatalog.filter((service) => {
-        const matchesCategory = activeCategory === 'all' || service.category === activeCategory;
-        const matchesSearch = !query || `${service.name} ${service.category} ${service.description}`.toLowerCase().includes(query);
-        return matchesCategory && matchesSearch;
-      });
-      serviceGrid.innerHTML = filtered.map((service) => `<article class="service-card"><div class="service-icon" aria-hidden="true">${service.icon}</div><span class="category-label">${service.category}</span><h3>${service.name}</h3><p>${service.description}</p><ul>${service.requirements.slice(0, 3).map((requirement) => `<li>${requirement}</li>`).join('')}</ul><span class="processing-time">Estimated: ${service.processing}</span><div class="card-actions"><button class="btn btn-ghost small" type="button" data-view-service="${service.name}">View Requirements</button><a class="btn btn-primary small" href="request.html?service=${encodeURIComponent(service.name)}">Request Service</a></div></article>`).join('');
-      if (count) count.textContent = filtered.length;
-      if (emptyState) emptyState.classList.toggle('hidden', filtered.length > 0);
-      serviceGrid.querySelectorAll('[data-view-service]').forEach((button) => {
-        button.addEventListener('click', () => showServiceDetail(serviceCatalog.find((service) => service.name === button.dataset.viewService)));
-      });
-    }
-
-    document.querySelectorAll('[data-category]').forEach((button) => {
-      button.addEventListener('click', () => {
-        activeCategory = button.dataset.category;
-        document.querySelectorAll('[data-category]').forEach((tab) => {
-          const isActive = tab === button;
-          tab.classList.toggle('active', isActive);
-          tab.setAttribute('aria-selected', String(isActive));
-        });
-        renderServices();
-      });
-    });
-    if (searchInput) searchInput.addEventListener('input', renderServices);
-    renderServices();
-  }
-
-  const documentType = document.querySelector('#document-type');
-  if (documentType) {
-    const selectedService = new URLSearchParams(window.location.search).get('service');
-    documentType.innerHTML = '<option value="">Select a service</option>' + serviceCatalog.map((service) => `<option value="${service.name}">${service.name}</option>`).join('');
-    if (selectedService && serviceCatalog.some((service) => service.name === selectedService)) documentType.value = selectedService;
-    const requirementsList = document.querySelector('[data-request-requirements]');
-    const requirementIntro = document.querySelector('[data-request-requirement-intro]');
-    function updateRequestRequirements() {
-      const service = serviceCatalog.find((item) => item.name === documentType.value) || serviceCatalog[0];
-      if (requirementsList) requirementsList.innerHTML = service.requirements.map((requirement) => `<li>${requirement}</li>`).join('');
-      if (requirementIntro) requirementIntro.textContent = `${service.name} requirements`;
-    }
-    documentType.addEventListener('change', updateRequestRequirements);
-    updateRequestRequirements();
-  }
-
-  if (navToggle && siteHeader) {
-    navToggle.addEventListener('click', () => {
-      const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-      navToggle.setAttribute('aria-expanded', String(!expanded));
-      siteHeader.classList.toggle('nav-open');
-    });
-  }
-
-  document.querySelectorAll('.toggle-password').forEach((button) => {
-    button.addEventListener('click', () => {
-      const input = button.parentElement.querySelector('input');
-      if (!input) return;
-
-      const isPassword = input.type === 'password';
-      input.type = isPassword ? 'text' : 'password';
-      button.textContent = isPassword ? 'Hide' : 'Show';
-      button.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
-    });
-  });
-
-  const requestForm = document.querySelector('.request-form');
-  if (requestForm) {
-    const steps = Array.from(requestForm.querySelectorAll('.step-panel'));
-    const nextButtons = requestForm.querySelectorAll('[data-next]');
-    const prevButtons = requestForm.querySelectorAll('[data-prev]');
-    const stepLabel = requestForm.querySelector('[data-step-label]');
-    let currentStep = 0;
-
-    function validateStep(stepIndex) {
-      const currentPanel = steps[stepIndex];
-      const fields = currentPanel.querySelectorAll('input, select, textarea');
-
-      for (const field of fields) {
-        if (field.required && !field.value.trim()) {
-          field.focus();
-          field.reportValidity();
-          return false;
-        }
-      }
-
-      return true;
-    }
-
-    function updateStepUI() {
-      steps.forEach((step, index) => {
-        step.classList.toggle('active', index === currentStep);
-      });
-
-      if (stepLabel) {
-        stepLabel.textContent = `Step ${currentStep + 1} of ${steps.length}`;
-      }
-
-      const isLastStep = currentStep === steps.length - 1;
-      const submitButton = requestForm.querySelector('[data-submit]');
-      if (submitButton) {
-        submitButton.classList.toggle('hidden', !isLastStep);
-      }
-
-      requestForm.querySelectorAll('[data-next]').forEach((button) => {
-        button.classList.toggle('hidden', isLastStep);
-      });
-
-      requestForm.querySelectorAll('[data-prev]').forEach((button) => {
-        button.classList.toggle('hidden', currentStep === 0);
-      });
-    }
-
-    nextButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        if (!validateStep(currentStep)) return;
-        currentStep += 1;
-        updateStepUI();
-      });
-    });
-
-    prevButtons.forEach((button) => {
-      button.addEventListener('click', () => {
-        currentStep -= 1;
-        updateStepUI();
-      });
-    });
-
-    requestForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-
-      if (!validateStep(currentStep)) return;
-
-      const message = document.querySelector('.form-message');
-      if (message) {
-        message.textContent = 'Your request has been submitted successfully. Please review your status in tracking.';
-        message.classList.add('show');
-      }
-    });
-
-    updateStepUI();
-  }
-
-  const statusFilter = document.querySelector('#statusFilter');
-  const documentFilter = document.querySelector('#documentFilter');
-  const requestRows = document.querySelectorAll('[data-status]');
-
-  function applyTableFilters() {
-    const selectedStatus = statusFilter ? statusFilter.value : 'all';
-    const selectedDocument = documentFilter ? documentFilter.value : 'all';
-
-    requestRows.forEach((row) => {
-      const rowStatus = row.dataset.status;
-      const rowDocument = row.dataset.document;
-      const matchesStatus = selectedStatus === 'all' || rowStatus === selectedStatus;
-      const matchesDocument = selectedDocument === 'all' || rowDocument === selectedDocument;
-      row.hidden = !(matchesStatus && matchesDocument);
-    });
-  }
-
-  if (statusFilter) statusFilter.addEventListener('change', applyTableFilters);
-  if (documentFilter) documentFilter.addEventListener('change', applyTableFilters);
-
-  const trackForm = document.querySelector('.track-form');
-  if (trackForm) {
-    trackForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const input = trackForm.querySelector('input');
-      const result = document.querySelector('.track-result');
-
-      if (!input || !result) return;
-
-      if (!input.value.trim()) {
-        input.focus();
-        input.reportValidity();
-        return;
-      }
-
-      result.classList.remove('hidden');
-      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  }
-
-  document.querySelectorAll('[data-confirm]').forEach((button) => {
-    button.addEventListener('click', (event) => {
-      const actionText = button.dataset.confirm || 'Are you sure you want to continue?';
-      const confirmAction = window.confirm(actionText);
-      if (!confirmAction) {
-        event.preventDefault();
-      }
-    });
-  });
-
-  const modal = document.querySelector('.modal');
-  const modalTrigger = document.querySelector('[data-open-modal]');
-  const closeModalButton = document.querySelector('[data-close-modal]');
-
-  if (modalTrigger && modal) {
-    modalTrigger.addEventListener('click', () => modal.classList.add('show'));
-  }
-
-  if (closeModalButton && modal) {
-    closeModalButton.addEventListener('click', () => modal.classList.remove('show'));
-  }
-
-  if (modal) {
-    modal.addEventListener('click', (event) => {
-      if (event.target === modal) {
-        modal.classList.remove('show');
-      }
-    });
-  }
-
-  document.querySelectorAll('form').forEach((form) => {
-    form.addEventListener('submit', (event) => {
-      const requiredFields = form.querySelectorAll('[required]');
-      for (const field of requiredFields) {
-        if (!field.value.trim()) {
-          event.preventDefault();
-          field.focus();
-          field.reportValidity();
-          break;
-        }
-      }
-    });
-  });
+  initNavigation(); initServices(); initRequest(); renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); initStaffRequest(); initProfile(); initAuth();
+  document.querySelectorAll('.toggle-password').forEach((button) => button.addEventListener('click', () => { const input = button.parentElement.querySelector('input'); const visible = input.type === 'password'; input.type = visible ? 'text' : 'password'; button.textContent = visible ? 'Hide' : 'Show'; button.setAttribute('aria-label', visible ? 'Hide password' : 'Show password'); }));
+  const modal = document.querySelector('.modal'); const trigger = document.querySelector('[data-open-modal]'); const close = document.querySelector('[data-close-modal]'); if (trigger && modal) trigger.addEventListener('click', () => modal.classList.add('show')); if (close && modal) close.addEventListener('click', () => modal.classList.remove('show')); if (modal) { modal.addEventListener('click', (event) => { if (event.target === modal) modal.classList.remove('show'); }); document.addEventListener('keydown', (event) => { if (event.key === 'Escape') modal.classList.remove('show'); }); }
+  window.addEventListener('barangaylink:data', () => { renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); });
 });
