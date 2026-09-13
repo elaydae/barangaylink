@@ -935,6 +935,28 @@ textarea {
   font-weight: 700;
 }
 
+.demo-account-panel {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+  background: #f9fbfa;
+}
+
+.demo-account-panel h2 {
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.demo-account-panel p {
+  margin-bottom: 0.75rem;
+  font-size: 0.88rem;
+}
+
+.demo-account-panel p:last-child {
+  margin-bottom: 0;
+}
+
 .page-shell {
   padding: 2rem 0 4rem;
 }

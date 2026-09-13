@@ -19,7 +19,11 @@ const serviceCatalog = [
   { name: 'General Certification Request', category: 'Resident Services', icon: '📁', description: 'Start a request for a resident certification not listed as a specific service.', requirements: ['Valid government ID', 'Complete resident information', 'Detailed purpose statement'], processing: '3 to 5 working days' }
 ];
 
-const STORAGE_KEYS = { requests: 'barangaylink.requests', profile: 'barangaylink.profile', sequence: 'barangaylink.sequence' };
+const STORAGE_KEYS = { requests: 'barangaylink.requests', profile: 'barangaylink.profile', sequence: 'barangaylink.sequence', auth: 'barangaylink.auth' };
+const DEMO_ACCOUNTS = [
+  { email: 'demo@bl.com', password: '123456', role: 'resident', name: 'Demo Resident' },
+  { email: 'staff@b.com', password: '123456', role: 'staff', name: 'Demo Staff/Admin' }
+];
 const STATUS_LABELS = { pending: 'Pending Review', review: 'Under Review', approved: 'Approved', rejected: 'Rejected', ready: 'Ready for Release', released: 'Released' };
 const STATUS_ORDER = ['pending', 'review', 'approved', 'ready', 'released'];
 const defaultProfile = { name: 'Juan Dela Cruz', address: '123 Rizal Street, Barangay San Isidro', contact: '0917-123-4567', email: 'juan.delacruz@email.com' };
@@ -41,6 +45,9 @@ function getRequests() { const requests = readStorage(STORAGE_KEYS.requests, [])
 function saveRequests(requests) { writeStorage(STORAGE_KEYS.requests, requests); window.dispatchEvent(new Event('barangaylink:data')); }
 function getProfile() { const profile = readStorage(STORAGE_KEYS.profile, {}); return { ...defaultProfile, ...(profile && typeof profile === 'object' && !Array.isArray(profile) ? profile : {}) }; }
 function saveProfile(profile) { writeStorage(STORAGE_KEYS.profile, profile); window.dispatchEvent(new Event('barangaylink:data')); }
+function getAuth() { const auth = readStorage(STORAGE_KEYS.auth, null); return auth && (auth.role === 'resident' || auth.role === 'staff') ? auth : null; }
+function setAuth(account) { writeStorage(STORAGE_KEYS.auth, { email: account.email, role: account.role, name: account.name }); }
+function clearAuth() { try { localStorage.removeItem(STORAGE_KEYS.auth); } catch (error) {} }
 function escapeHtml(value) { return String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character])); }
 function formatDate(value) { return value ? new Date(value).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : '-'; }
 function getService(name) { return serviceCatalog.find((service) => service.name === name); }
@@ -70,6 +77,28 @@ function initNavigation() {
   const activePage = currentPage === 'request.html' ? 'services.html' : currentPage;
   let assigned = false;
   sidebar.querySelectorAll('a[href]').forEach((link) => { const active = link.getAttribute('href') === activePage && !assigned; link.classList.toggle('active', active); if (active) { link.setAttribute('aria-current', 'page'); assigned = true; } else link.removeAttribute('aria-current'); });
+}
+
+function enforceAuthentication() {
+  const page = window.location.pathname.split('/').pop() || 'index.html';
+  const publicPages = ['index.html', 'login.html', 'register.html'];
+  const staffPages = ['staff-dashboard.html', 'staff-request.html'];
+  const protectedPage = !publicPages.includes(page);
+  const auth = getAuth();
+  if (protectedPage && !auth) { window.location.replace('login.html'); return false; }
+  if (staffPages.includes(page) && auth?.role !== 'staff') { window.location.replace(auth?.role === 'resident' ? 'dashboard.html' : 'login.html'); return false; }
+  if (auth?.role === 'staff' && ['dashboard.html', 'services.html', 'request.html', 'tracking.html', 'history.html', 'profile.html', 'barangay-info.html', 'concerns.html', 'emergency.html'].includes(page)) { window.location.replace('staff-dashboard.html'); return false; }
+  return true;
+}
+
+function initLogout() {
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('a');
+    if (!link || link.textContent.trim() !== 'Logout' || !link.closest('.nav-actions, .dashboard-sidebar-nav')) return;
+    event.preventDefault();
+    clearAuth();
+    window.location.href = 'login.html';
+  });
 }
 
 function initServices() {
@@ -146,10 +175,31 @@ function initStaffRequest() { const actions = document.querySelectorAll('[data-s
 
 function initProfile() { const form = document.querySelector('[data-profile-form]'); if (!form) return; const load = () => { const profile = getProfile(); Object.entries(profile).forEach(([key, value]) => { const input = form.elements[key]; if (input) input.value = value; const display = document.querySelector(`[data-profile-display="${key}"]`); if (display) display.textContent = value; }); document.querySelectorAll('[data-profile-name]').forEach((element) => element.textContent = profile.name); }; form.addEventListener('submit', (event) => { event.preventDefault(); const data = Object.fromEntries(new FormData(form)); let valid = true; Object.entries(data).forEach(([key, value]) => { const field = form.elements[key]; clearFieldError(field); if (!String(value).trim()) { setFieldError(field, 'This field is required.'); valid = false; } }); if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) { setFieldError(form.elements.email, 'Please enter a valid email address.'); valid = false; } if (!valid) return; saveProfile(data); load(); document.querySelector('.modal')?.classList.remove('show'); showToast('Profile updated.'); }); load(); }
 
-function initAuth() { document.querySelectorAll('.auth-form').forEach((form) => form.addEventListener('submit', (event) => { event.preventDefault(); let valid = true; form.querySelectorAll('[required]').forEach((field) => { clearFieldError(field); if (!field.value.trim()) { setFieldError(field, 'This field is required.'); valid = false; } }); const email = form.querySelector('input[type="email"]'); if (email && email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) { setFieldError(email, 'Please enter a valid email address.'); valid = false; } const password = form.querySelector('input[name="password"]'); const confirm = form.querySelector('input[name="confirmPassword"]'); if (confirm && password.value !== confirm.value) { setFieldError(confirm, 'Passwords do not match.'); valid = false; } if (valid) showToast(form.closest('.auth-card')?.querySelector('h1')?.textContent === 'Register' ? 'Account form completed for this prototype.' : 'Login form completed for this prototype.'); })); }
+function initAuth() {
+  document.querySelectorAll('.auth-form').forEach((form) => form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    let valid = true;
+    form.querySelectorAll('[required]').forEach((field) => { clearFieldError(field); if (!field.value.trim()) { setFieldError(field, 'This field is required.'); valid = false; } });
+    const email = form.querySelector('input[type="email"]');
+    if (email && email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) { setFieldError(email, 'Please enter a valid email address.'); valid = false; }
+    const password = form.querySelector('input[name="password"]');
+    const confirm = form.querySelector('input[name="confirmPassword"]');
+    if (confirm && password.value !== confirm.value) { setFieldError(confirm, 'Passwords do not match.'); valid = false; }
+    if (!valid) return;
+    if (form.querySelector('#login-email')) {
+      const account = DEMO_ACCOUNTS.find((item) => item.email === email.value.trim().toLowerCase() && item.password === password.value);
+      if (!account) { setFieldError(password, 'Incorrect demo email or password.'); showToast('Incorrect email or password.', 'error'); return; }
+      setAuth(account);
+      window.location.href = account.role === 'staff' ? 'staff-dashboard.html' : 'dashboard.html';
+      return;
+    }
+    showToast('Account form completed for this prototype.');
+  }));
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-  initNavigation(); initServices(); initRequest(); initAdditionalRequestForms(); renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); initStaffRequest(); initProfile(); initAuth();
+  if (!enforceAuthentication()) return;
+  initLogout(); initNavigation(); initServices(); initRequest(); initAdditionalRequestForms(); renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); initStaffRequest(); initProfile(); initAuth();
   document.querySelectorAll('.toggle-password').forEach((button) => button.addEventListener('click', () => { const input = button.parentElement.querySelector('input'); const visible = input.type === 'password'; input.type = visible ? 'text' : 'password'; button.textContent = visible ? 'Hide' : 'Show'; button.setAttribute('aria-label', visible ? 'Hide password' : 'Show password'); }));
   const modal = document.querySelector('.modal'); const trigger = document.querySelector('[data-open-modal]'); const close = document.querySelector('[data-close-modal]'); if (trigger && modal) trigger.addEventListener('click', () => modal.classList.add('show')); if (close && modal) close.addEventListener('click', () => modal.classList.remove('show')); if (modal) { modal.addEventListener('click', (event) => { if (event.target === modal) modal.classList.remove('show'); }); document.addEventListener('keydown', (event) => { if (event.key === 'Escape') modal.classList.remove('show'); }); }
   window.addEventListener('barangaylink:data', () => { renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); });
