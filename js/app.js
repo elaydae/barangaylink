@@ -22,7 +22,7 @@ const serviceCatalog = [
 const STORAGE_KEYS = { requests: 'barangaylink.requests', profile: 'barangaylink.profile', sequence: 'barangaylink.sequence', auth: 'barangaylink.auth' };
 const DEMO_ACCOUNTS = [
   { email: 'demo@bl.com', password: '123456', role: 'resident', name: 'Demo Resident' },
-  { email: 'staff@b.com', password: '123456', role: 'staff', name: 'Demo Staff/Admin' }
+  { email: 'staff@bl.com', password: '123456', role: 'staff', name: 'Demo Staff/Admin' }
 ];
 const STATUS_LABELS = { pending: 'Pending Review', review: 'Under Review', approved: 'Approved', rejected: 'Rejected', ready: 'Ready for Release', released: 'Released' };
 const STATUS_ORDER = ['pending', 'review', 'approved', 'ready', 'released'];
