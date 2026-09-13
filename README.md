@@ -1,454 +1,1181 @@
-# # 🏘️ BarangayLink
+# 🔐 Demo Accounts
 
-### A Digital Platform for Better Barangay Services and Community Engagement
+These accounts are provided specifically for the **classroom/project demonstration**.
 
-BarangayLink is a **browser-based community service platform** designed to make barangay services, announcements, requests, and community information more accessible to residents.
+## 🧑 Resident Demo
 
-The system aims to provide a centralized digital space where residents can conveniently access barangay services while helping barangay officials manage community concerns more efficiently.
+```text
+Email: demo@bl.com
+Password: 123456
+Role: Resident
+```
 
----
+After login, the resident demo account should be directed to:
 
-## 📌 Project Overview
-
-Many barangay processes still rely heavily on **face-to-face transactions, paper forms, manual record keeping, and physical announcements**.
-
-BarangayLink addresses these challenges by providing a centralized website where residents can:
-
-* View barangay announcements
-* Access available barangay services
-* Submit service requests
-* Report community concerns
-* View important barangay information
-* Find emergency contacts
-* Stay updated with community activities
-
-For barangay staff, the system can provide a more organized way to manage requests, announcements, and community information.
+```text
+dashboard.html
+```
 
 ---
 
-## 🎯 Project Objectives
+## 👨‍💼 Staff/Admin Demo
+
+```text
+Email: staff@b.com
+Password: 123456
+Role: Staff/Admin
+```
+
+After login, the staff demo account should be directed to:
+
+```text
+staff-dashboard.html
+```
+
+---
+
+# 🏘️ BarangayLink
+
+## Barangay Information & E-Services System
+
+> **Stronger Community. Easier Access.**
+
+BarangayLink is a browser-based Barangay Information & E-Services System designed to make common barangay services more accessible, convenient, and organized for residents and barangay staff.
+
+The system allows residents to view available barangay services, check requirements, submit document requests, monitor request status, and review their request history.
+
+Barangay staff and administrators can access a dedicated interface to review incoming requests, approve or reject submissions, provide rejection reasons, and update request statuses.
+
+---
+
+# 📌 Project Overview
+
+BarangayLink aims to provide a simple digital approach to common barangay document-request processes.
+
+Instead of requiring residents to immediately visit the barangay hall for every request, the system provides a browser-based interface where residents can:
+
+- View available services
+- Check document requirements
+- Submit document requests
+- Review information before submission
+- Receive a request reference number
+- Track request status
+- View request history
+- Manage their profile
+- Access barangay information
+- Submit concerns and feedback
+- View emergency information
+
+Barangay staff can use the system to:
+
+- View incoming requests
+- Review submitted information
+- Approve requests
+- Reject requests
+- Provide rejection reasons
+- Update request statuses
+- Manage the request-processing workflow
+
+The current version is a **functional frontend prototype** developed for academic purposes.
+
+---
+
+# 🎯 Project Objectives
 
 BarangayLink aims to:
 
-1. **Improve accessibility** to barangay services.
-2. **Reduce manual processes** for common barangay transactions.
-3. **Centralize community information** in one platform.
-4. **Improve communication** between residents and barangay officials.
-5. **Provide a convenient way** for residents to submit requests and concerns.
-6. **Promote transparency** through accessible announcements and updates.
-7. **Support digital transformation** of local community services.
+1. Provide residents with easier access to common barangay services.
+2. Reduce unnecessary visits and waiting time at the barangay hall.
+3. Allow residents to submit document requests through a browser-based interface.
+4. Provide clear requirements for each available document.
+5. Allow residents to monitor the progress of their requests.
+6. Provide barangay staff with an organized request-review workflow.
+7. Demonstrate practical browser-based application development.
+8. Establish a foundation that can later be connected to a backend and database.
 
 ---
 
-## ✨ Key Features
+# 👥 Target Users
 
-### 🏠 Resident Dashboard
+BarangayLink has two primary user roles:
 
-Provides residents with a quick overview of important barangay information.
-
-Features may include:
-
-* Recent announcements
-* Service shortcuts
-* Request status
-* Community updates
-* Emergency information
-
-### 📢 Announcements
-
-Residents can view important barangay announcements such as:
-
-* Community events
-* Barangay meetings
-* Public notices
-* Schedule changes
-* Local programs
-* Emergency announcements
-
-### 📄 Barangay Services
-
-Residents can browse available services and requirements.
-
-Examples include:
-
-* Barangay Clearance
-* Certificate of Residency
-* Certificate of Indigency
-* Business-related requests
-* Barangay ID
-* Community assistance
-* Other barangay documents
-
-### 📝 Service Requests
-
-Residents can submit requests digitally instead of immediately visiting the barangay hall.
-
-The system can display:
-
-* Request type
-* Request date
-* Request status
-* Processing information
-* Completion status
-
-### 🚨 Emergency Contacts
-
-Provides quick access to important emergency contacts.
-
-Examples:
-
-* Barangay officials
-* Barangay emergency response
-* Police
-* Fire department
-* Ambulance
-* Other local emergency services
-
-### 📍 Barangay Information
-
-Provides important information about the barangay, including:
-
-* Barangay profile
-* Officials
-* Office hours
-* Contact information
-* Location
-* Available services
-
-### 💬 Community Concerns
-
-Residents can report or submit concerns related to the community.
-
-Examples:
-
-* Road problems
-* Street lights
-* Garbage collection
-* Drainage issues
-* Noise complaints
-* Other community concerns
-
-### 👤 Resident Profile
-
-Residents can manage their basic account information and monitor their submitted requests.
-
----
-
-## 🛠️ Technologies
-
-The project is developed as a browser-based web application.
-
-Possible technologies used in the project include:
-
-* **HTML5** – Website structure
-* **CSS3** – Styling and responsive design
-* **JavaScript** – Website interactions and functionality
-* **Git** – Version control
-* **GitHub** – Source code management and collaboration
-
-> Technologies may be expanded as the project develops.
-
----
-
-## 🖥️ System Users
-
-### 👤 Residents
+## 🧑 Resident
 
 Residents can:
 
-* Register/login
-* View announcements
-* Browse services
-* Submit requests
-* Report concerns
-* Track request status
-* View barangay information
-* Access emergency contacts
-
-### 🏛️ Barangay Officials / Staff
-
-Officials or staff can potentially:
-
-* Manage announcements
-* Review resident requests
-* Update request status
-* Manage service information
-* Respond to community concerns
-* Manage community information
+- Register an account
+- Log in
+- View their dashboard
+- Manage their profile
+- View barangay services
+- Search and filter available services
+- View document requirements
+- Submit document requests
+- Review request information before submission
+- Confirm requests
+- Receive request reference numbers
+- Track request status
+- View request history
+- Receive system notifications
+- View barangay information
+- Submit concerns and feedback
+- View emergency information
+- Log out
 
 ---
 
-## 📂 Project Structure
+## 👨‍💼 Barangay Staff / Admin
+
+Staff/Admin users can:
+
+- Log in using staff credentials
+- Access the staff dashboard
+- View incoming requests
+- View request queues
+- Search and filter requests
+- Review resident request information
+- Approve requests
+- Reject requests
+- Provide rejection reasons
+- Update request statuses
+- Manage request processing
+- Log out
+
+---
+
+# 📄 Available Barangay Services
+
+The current system focuses on four common barangay document services.
+
+## 1. Barangay Clearance
+
+Allows residents to submit a request for a Barangay Clearance.
+
+## 2. Certificate of Residency
+
+Allows residents to request a certificate confirming their residency.
+
+## 3. Certificate of Indigency
+
+Allows residents to submit a request for a Certificate of Indigency.
+
+## 4. Business Permit
+
+Allows residents or applicants to submit a Business Permit request.
+
+Each service can display its corresponding requirements before the resident proceeds with the request.
+
+---
+
+# 🔄 System Workflow
+
+The main BarangayLink resident workflow follows this process:
+
+```text
+┌──────────────────────┐
+│     Landing Page     │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│   Login / Register   │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│  Resident Dashboard  │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│    View Services     │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│   Select Document    │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│  View Requirements   │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│   Complete Request   │
+│        Form          │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│  Validate Information│
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│   Preview / Confirm  │
+│       Request        │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│    Submit Request    │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│   Reference Number   │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│    Track Request     │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│     Staff Review     │
+└──────────┬───────────┘
+           │
+      ┌────┴─────┐
+      ▼          ▼
+┌──────────┐  ┌──────────┐
+│ APPROVED │  │ REJECTED │
+└────┬─────┘  └────┬─────┘
+     │             │
+     ▼             ▼
+┌────────────┐ ┌───────────────┐
+│ Ready for  │ │ Rejection     │
+│ Release    │ │ Reason        │
+└─────┬──────┘ └───────────────┘
+      │
+      ▼
+┌────────────┐
+│  RELEASED  │
+└────────────┘
+```
+
+---
+
+# 🔁 Request Status Workflow
+
+A document request follows a basic processing workflow:
+
+```text
+PENDING
+   │
+   ▼
+UNDER REVIEW
+   │
+   ├────────────────┐
+   │                │
+   ▼                ▼
+APPROVED         REJECTED
+   │                │
+   ▼                ▼
+READY FOR        REJECTION
+RELEASE           REASON
+   │
+   ▼
+RELEASED
+```
+
+This workflow provides residents with visibility into the progress of their requests.
+
+---
+
+# 🖥️ Application Pages
+
+## 🌐 Public Pages
+
+### `index.html`
+
+The main landing page of BarangayLink.
+
+Provides an introduction to the system and access to the main application.
+
+### `login.html`
+
+Provides the login interface for:
+
+- Residents
+- Staff/Admin
+
+The page also provides the classroom demo credentials.
+
+### `register.html`
+
+Allows new residents to register for an account.
+
+---
+
+# 🧑 Resident Pages
+
+### `dashboard.html`
+
+The resident dashboard provides an overview of:
+
+- Current requests
+- Request statistics
+- Recent requests
+- Quick access to services
+- Resident navigation
+
+### `services.html`
+
+Displays the available barangay services.
+
+Residents can browse and search/filter available services.
+
+### `request.html`
+
+Handles the document request process.
+
+The page supports:
+
+- Service selection
+- Requirements display
+- Request form
+- Input validation
+- Request preview
+- Confirmation
+- Submission
+- Reference number generation
+
+### `tracking.html`
+
+Allows residents to monitor their submitted requests.
+
+The interface provides a visual request-status timeline.
+
+### `history.html`
+
+Displays previous requests and their status.
+
+Residents can use the page to review their request history.
+
+### `profile.html`
+
+Allows residents to view and manage their profile information.
+
+### `barangay-info.html`
+
+Provides general barangay information for residents.
+
+### `concerns.html`
+
+Provides a section where residents can submit concerns and feedback.
+
+### `emergency.html`
+
+Provides emergency-related information and resources.
+
+---
+
+# 👨‍💼 Staff Pages
+
+### `staff-dashboard.html`
+
+Provides the staff/admin dashboard.
+
+Staff can view:
+
+- Request statistics
+- Incoming requests
+- Request queue
+- Request information
+- Filtering and search functions
+
+### `staff-request.html`
+
+Provides the staff-side request review workflow.
+
+Staff can:
+
+- Review resident requests
+- Review submitted information
+- Approve requests
+- Reject requests
+- Provide rejection reasons
+- Update request status
+
+---
+
+# 🧭 Navigation Structure
+
+## Resident Navigation
+
+```text
+☰ BarangayLink
+
+MENU
+├── Dashboard
+│
+SERVICES
+├── Services
+├── Tracking
+└── History
+│
+COMMUNITY
+├── Barangay Information
+├── Concerns & Feedback
+└── Emergency
+│
+ACCOUNT
+├── Profile
+└── Logout
+```
+
+---
+
+## Staff/Admin Navigation
+
+```text
+☰ BarangayLink
+
+STAFF
+├── Staff Dashboard
+├── Request Queue
+├── Residents / Registry
+├── Request Review
+└── Logout
+```
+
+---
+
+# 🎨 User Interface
+
+BarangayLink uses a civic-focused interface designed around:
+
+- Community
+- Accessibility
+- Trust
+- Simplicity
+- Public service
+
+The application includes:
+
+- Consistent sidebar navigation
+- Responsive layouts
+- Clear buttons and actions
+- Cards
+- Status indicators
+- Toast notifications
+- Confirmation dialogs
+- Empty states
+- Form validation
+- Visual request tracking
+- Accessibility-oriented interface elements
+
+---
+
+# ⚙️ Technical Implementation
+
+The current version is primarily a **frontend browser-based prototype**.
+
+## Technologies
+
+### Frontend
+
+- HTML5
+- CSS3
+- JavaScript
+
+### Browser Storage
+
+The current prototype uses:
+
+- `localStorage`
+- Client-side state handling
+- JavaScript-based data processing
+
+This allows the application to demonstrate its core workflows without requiring a backend server.
+
+---
+
+# 📁 Project Structure
 
 ```text
 barangaylink/
 │
 ├── index.html
-├── README.md
+├── login.html
+├── register.html
+├── dashboard.html
+├── services.html
+├── request.html
+├── tracking.html
+├── history.html
+├── profile.html
+├── barangay-info.html
+├── concerns.html
+├── emergency.html
+│
+├── staff-dashboard.html
+├── staff-request.html
 │
 ├── css/
 │   └── style.css
 │
 ├── js/
-│   └── script.js
+│   └── app.js
 │
-├── images/
-│   └── ...
+├── README.md
 │
-└── pages/
-    ├── services.html
-    ├── announcements.html
-    ├── requests.html
-    ├── emergency.html
-    └── profile.html
+└── BarangayLink-backup.html
 ```
-
-> The actual structure may change as development progresses.
 
 ---
 
-## 🚀 Getting Started
+# 🔐 Demo Authentication
 
-### 1. Clone the Repository
+The current prototype provides fixed demo accounts for classroom presentation.
 
-```bash
-git clone https://github.com/elaydae/barangaylink.git
-```
-
-### 2. Navigate to the Project
-
-```bash
-cd barangaylink
-```
-
-### 3. Open the Website
-
-If the project is a static website, you can open:
+## Resident
 
 ```text
-index.html
+Email: demo@bl.com
+Password: 123456
+Role: Resident
 ```
 
-directly in your browser.
+Successful login should redirect to:
 
-For development, it is recommended to use **Visual Studio Code** with a local development server such as Live Server.
-
----
-
-## 🌐 GitHub Pages
-
-BarangayLink can be deployed using **GitHub Pages** if the project is configured as a static website.
-
-After pushing the project to GitHub:
-
-1. Open the repository.
-2. Go to **Settings**.
-3. Select **Pages**.
-4. Under **Build and deployment**, select the appropriate branch.
-5. Save the settings.
-6. GitHub will generate a public website URL.
-
----
-
-## 🔄 Development Workflow
-
-To contribute changes:
-
-### Pull the latest version
-
-```bash
-git pull origin main
+```text
+dashboard.html
 ```
 
-### Create or modify your files
+## Staff/Admin
 
-Make your changes locally.
-
-### Check your changes
-
-Test the website in your browser before committing.
-
-### Add your changes
-
-```bash
-git add .
+```text
+Email: staff@b.com
+Password: 123456
+Role: Staff/Admin
 ```
 
-### Commit
+Successful login should redirect to:
 
-```bash
-git commit -m "Describe your changes"
+```text
+staff-dashboard.html
 ```
 
-### Push
+---
 
-```bash
-git push origin main
+# ⚠️ Demo Security Notice
+
+The demo credentials are intended **only for academic demonstration purposes**.
+
+The current frontend authentication is not production-grade authentication.
+
+Because the current prototype uses client-side JavaScript and browser storage, credentials and authentication logic should not be considered secure for a real government system.
+
+A production implementation should use:
+
+- Secure server-side authentication
+- Password hashing
+- Secure sessions or tokens
+- Server-side validation
+- Role-based authorization
+- Database-backed accounts
+- HTTPS
+- Security logging
+- Proper access control
+
+The demo credentials should **never be reused for real accounts**.
+
+---
+
+# 🧪 Application Features
+
+## Authentication
+
+- Resident registration
+- Resident login
+- Staff/Admin login
+- Demo accounts
+- Login validation
+- Logout
+- Session/state handling
+
+---
+
+## Service Discovery
+
+- Barangay service listing
+- Service search
+- Service filtering
+- Service requirements
+- Service selection
+
+---
+
+## Document Request
+
+- Service selection
+- Dynamic requirements
+- Request form
+- Form validation
+- Request preview
+- Request confirmation
+- Request submission
+- Reference number
+
+---
+
+## Request Tracking
+
+- Request lookup
+- Request status
+- Visual status timeline
+- Status updates
+
+---
+
+## Request History
+
+- Previous requests
+- Request information
+- Status history
+- Filtering
+
+---
+
+## Staff Request Management
+
+- Request queue
+- Request search
+- Request filtering
+- Request review
+- Approve request
+- Reject request
+- Rejection reason
+- Status updates
+
+---
+
+## Resident Account
+
+- Resident profile
+- Profile editing
+- Account information
+- Logout
+
+---
+
+## Community Features
+
+- Barangay information
+- Concerns and feedback
+- Emergency information
+
+---
+
+# ✨ User Experience Features
+
+BarangayLink includes several user experience improvements.
+
+## Form Validation
+
+The system validates important user inputs before allowing actions to proceed.
+
+Examples include:
+
+- Required fields
+- Empty fields
+- Invalid information
+- Incorrect login credentials
+
+---
+
+## Request Preview
+
+Residents can review the information they entered before submitting a request.
+
+This helps reduce incorrect submissions.
+
+---
+
+## Request Reference Number
+
+After a successful request submission, the system generates a request reference number.
+
+The reference number can be used during the request-tracking workflow.
+
+---
+
+## Notifications
+
+The application provides feedback for important actions through notifications/toasts.
+
+Examples include:
+
+- Login success
+- Request submission
+- Profile update
+- Status update
+- Validation errors
+
+---
+
+## Confirmation Dialogs
+
+Important actions may require confirmation before proceeding.
+
+This helps reduce accidental actions.
+
+---
+
+## Empty States
+
+When there is no information to display, the application provides appropriate empty-state messages instead of leaving sections blank.
+
+---
+
+## Responsive Design
+
+The interface is designed to work across different screen sizes, including:
+
+- Desktop
+- Laptop
+- Tablet
+- Mobile-sized screens
+
+---
+
+## Accessibility
+
+The application includes accessibility-oriented improvements such as:
+
+- Semantic HTML
+- Navigation landmarks
+- ARIA labels where appropriate
+- Keyboard-friendly interactions
+- Focus handling
+- Accessible buttons
+- Current-page navigation indicators
+
+---
+
+# 🧪 Testing
+
+Testing focuses on the major application workflows.
+
+## Authentication Testing
+
+- Resident login
+- Staff login
+- Invalid credentials
+- Empty login fields
+- Logout
+- Session behavior
+
+---
+
+## Resident Workflow Testing
+
+- Service selection
+- Requirements display
+- Request form
+- Form validation
+- Request preview
+- Request submission
+- Reference number
+- Request tracking
+- Request history
+
+---
+
+## Staff Workflow Testing
+
+- Staff dashboard
+- Request queue
+- Request review
+- Approve request
+- Reject request
+- Rejection reason
+- Status updates
+
+---
+
+## Interface Testing
+
+- Navigation
+- Sidebar
+- Responsive layout
+- Buttons
+- Forms
+- Notifications
+- Empty states
+- Accessibility
+- Keyboard interaction
+
+---
+
+# 🔄 Development Workflow
+
+BarangayLink follows a progressive browser-based application development workflow:
+
+```text
+Planning
+   │
+   ▼
+Requirements
+   │
+   ▼
+HTML Structure
+   │
+   ▼
+CSS / UI Design
+   │
+   ▼
+JavaScript Interactions
+   │
+   ▼
+Feature Development
+   │
+   ▼
+Integration
+   │
+   ▼
+Testing
+   │
+   ▼
+Refinement
+   │
+   ▼
+GitHub Repository
+   │
+   ▼
+GitHub Pages Demo
 ```
 
-For larger team projects, it is recommended to use **branches and pull requests** instead of directly pushing everything to `main`.
+This approach allows the team to establish the application's structure before implementing more complex interactions.
 
 ---
 
-## 👥 Team Collaboration
+# 📈 Development Progress
 
-BarangayLink is developed as a collaborative academic project.
-
-Team members may be assigned to different areas such as:
-
-* UI/UX Design
-* HTML Development
-* CSS Development
-* JavaScript Development
-* Content
-* Research
-* Testing / Quality Assurance
-* Documentation
-* Project Management
-
-Each member should:
-
-1. Work on their assigned task.
-2. Regularly update the team.
-3. Test their changes.
-4. Commit changes with clear messages.
-5. Avoid modifying another member's work without coordination.
-6. Pull the latest version before starting major changes.
-7. Document important changes.
-
----
-
-## 📋 Project Development Phases
-
-### Phase 1 — Planning
-
-* Identify the problem
-* Define target users
-* Identify system requirements
-* Plan website structure
-
-### Phase 2 — UI/UX Design
-
-* User flow
-* Wireframes
-* Page layouts
-* Design system
-* Prototype
-
-### Phase 3 — Development
-
-* HTML structure
-* CSS styling
-* JavaScript functionality
-* Responsive design
-
-### Phase 4 — Integration
-
-* Combine individual components
-* Connect navigation
-* Integrate pages
-* Resolve conflicts
-
-### Phase 5 — Testing
-
-Test the website for:
-
-* Broken links
-* Layout problems
-* Mobile responsiveness
-* Form functionality
-* Navigation
-* Browser compatibility
-* Usability
-
-### Phase 6 — Deployment
-
-* Finalize the website
-* Push the final version to GitHub
-* Deploy using GitHub Pages or another hosting platform
-* Perform final testing
+| Development Area | Status |
+|---|---|
+| Project Concept | ✅ Completed |
+| Project Scope | ✅ Completed |
+| HTML Structure | ✅ Completed |
+| CSS/UI Design | ✅ Completed |
+| Resident Interface | ✅ Implemented |
+| Staff Interface | ✅ Implemented |
+| Navigation | ✅ Implemented |
+| Resident Authentication | ✅ Prototype |
+| Staff Authentication | ✅ Prototype |
+| Demo Accounts | ✅ Implemented |
+| Service Listing | ✅ Implemented |
+| Service Search/Filter | ✅ Implemented |
+| Requirements Display | ✅ Implemented |
+| Document Request Workflow | ✅ Implemented |
+| Form Validation | ✅ Implemented |
+| Request Preview | ✅ Implemented |
+| Request Reference Number | ✅ Implemented |
+| Request Tracking | ✅ Implemented |
+| Request History | ✅ Implemented |
+| Profile Management | ✅ Implemented |
+| Staff Request Queue | ✅ Implemented |
+| Staff Request Review | ✅ Implemented |
+| Approve/Reject Workflow | ✅ Implemented |
+| Rejection Reason | ✅ Implemented |
+| Status Updates | ✅ Implemented |
+| Notifications | ✅ Implemented |
+| Confirmation Dialogs | ✅ Implemented |
+| Empty States | ✅ Implemented |
+| Responsive Design | ✅ Implemented |
+| Accessibility Improvements | ✅ Implemented |
+| Barangay Information | ✅ Implemented |
+| Concerns & Feedback | ✅ Implemented |
+| Emergency Information | ✅ Implemented |
+| Backend | 🚧 Future Development |
+| MySQL Database | 🚧 Future Development |
+| Production Authentication | 🚧 Future Development |
 
 ---
 
-## 🔐 Security Considerations
+# 🏗️ Future System Architecture
 
-Because BarangayLink may eventually handle resident information, security should be considered throughout development.
+The current project is structured as a frontend prototype that can later be connected to a backend and database.
 
-Future implementations should consider:
-
-* Secure authentication
-* Password protection
-* Input validation
-* Access control
-* Data privacy
-* Secure storage
-* Protection against common web vulnerabilities
-
-**No real sensitive resident information should be placed in this academic/demo repository.**
-
----
-
-## 🎓 Academic Project
-
-BarangayLink is developed as part of an academic project for **Website Technology**.
-
-The project demonstrates concepts related to:
-
-* Web development
-* UI/UX design
-* Responsive web design
-* JavaScript
-* Version control
-* Team collaboration
-* Web usability
-* Digital community services
-
----
-
-## 📌 Current Status
-
-**Status:** 🚧 In Development
-
-The project is currently under development. Features, layouts, technologies, and system functionality may change as the team progresses.
-
----
-
-## 🔮 Future Improvements
-
-Possible future features include:
-
-* Online appointment scheduling
-* Digital document requests
-* Request tracking
-* SMS/email notifications
-* Admin dashboard
-* Resident verification
-* Online payments
-* Community events calendar
-* Incident reporting
-* Real-time request updates
-* Mobile application
-* Database integration
-* Role-based access control
+```text
+                    ┌───────────────────┐
+                    │      RESIDENT     │
+                    └─────────┬─────────┘
+                              │
+                              ▼
+                    ┌───────────────────┐
+                    │   BarangayLink    │
+                    │   Web Interface   │
+                    │ HTML/CSS/JS       │
+                    └─────────┬─────────┘
+                              │
+                              ▼
+                    ┌───────────────────┐
+                    │    Java Backend   │
+                    │     REST/API      │
+                    └─────────┬─────────┘
+                              │
+              ┌───────────────┼───────────────┐
+              │               │               │
+              ▼               ▼               ▼
+       ┌────────────┐ ┌─────────────┐ ┌─────────────┐
+       │Authentication│ │Request      │ │User/Profile │
+       │& Authorization│ │Processing  │ │Management   │
+       └────────────┘ └─────────────┘ └─────────────┘
+                              │
+                              ▼
+                    ┌───────────────────┐
+                    │   MySQL Database  │
+                    └─────────┬─────────┘
+                              │
+                 ┌────────────┴────────────┐
+                 │                         │
+                 ▼                         ▼
+        ┌─────────────────┐       ┌─────────────────┐
+        │ Request Records │       │ Resident/Staff  │
+        │ & Status History│       │ Records         │
+        └─────────────────┘       └─────────────────┘
+```
 
 ---
 
-## 📄 License
+# 🗄️ Possible Future Database Structure
 
-This project was created for academic purposes.
+A future backend implementation could include the following database entities.
 
-Unless otherwise specified, the contents of this repository should not be redistributed or used as a production barangay service system without permission from the project team.
+## Residents
+
+```text
+resident_id
+name
+address
+contact_number
+email
+date_registered
+```
+
+## Staff
+
+```text
+staff_id
+name
+role
+contact_information
+```
+
+## Document Types
+
+```text
+document_type_id
+name
+description
+requirements
+```
+
+## Requests
+
+```text
+request_id
+resident_id
+document_type_id
+status
+date_requested
+date_updated
+handled_by
+```
+
+## Request History
+
+```text
+history_id
+request_id
+status
+timestamp
+updated_by
+```
+
+These are potential future database structures and are not currently implemented as a production database.
 
 ---
 
-## 👨‍💻 Repository
+# 🚧 Future Development
 
-**BarangayLink GitHub Repository**
+Possible future improvements include:
+
+## Backend Integration
+
+Connect the frontend to a Java backend to provide server-side processing and authentication.
+
+## MySQL Database
+
+Replace browser-only storage with persistent database storage.
+
+## Improved Authentication
+
+Implement secure server-side authentication and role-based authorization.
+
+## Additional Barangay Services
+
+Add more document types and barangay services as required.
+
+## Notification System
+
+Provide improved notifications for request status changes.
+
+## Staff Reporting
+
+Add reporting and analytics features for barangay staff.
+
+## Document Management
+
+Implement more advanced document processing and management.
+
+---
+
+# 🚫 Current Scope Exclusions
+
+The following features are outside the current project scope:
+
+- Online payment gateway
+- PhilSys integration
+- Multi-barangay management
+- Complex automated document generation
+- Digital signatures
+- AI chatbot
+- Full government API integration
+- Advanced identity verification
+- Enterprise cloud infrastructure
+- Full mobile application
+
+These features may be considered for future versions if the project requirements expand.
+
+---
+
+# 🌐 GitHub Repository
+
+BarangayLink source code is hosted on GitHub.
+
+**Repository:**
 
 https://github.com/elaydae/barangaylink
 
 ---
 
-### 💙 BarangayLink
+# 🌍 GitHub Pages
 
-**Connecting Residents. Simplifying Services. Strengthening Communities.**
+The project can be demonstrated through GitHub Pages.
+
+**Website:**
+
+https://elaydae.github.io/barangaylink/
+
+The project uses GitHub's free `github.io` address and does **not require a custom domain** for the academic demonstration.
+
+---
+
+# 📚 Academic Purpose
+
+BarangayLink was developed as an academic browser-based application project.
+
+The project demonstrates concepts including:
+
+- HTML5
+- CSS3
+- JavaScript
+- Responsive web design
+- User interface design
+- Form handling
+- Client-side validation
+- Browser storage
+- User workflows
+- Role-based interfaces
+- Request processing
+- Status tracking
+- User experience design
+- Git and GitHub
+- Application testing
+- Team collaboration
+- Project scope management
+
+---
+
+# 🤖 AI-Assisted Development
+
+AI tools, including GitHub Copilot and ChatGPT, were used as development assistance during the project.
+
+AI assistance was used for activities such as:
+
+- Code suggestions
+- Debugging
+- HTML/CSS/JavaScript improvements
+- Feature implementation guidance
+- UI/UX refinement
+- Documentation
+- Testing suggestions
+- Git/GitHub workflow guidance
+
+AI-generated suggestions were reviewed, evaluated, tested, modified, and incorporated by the development team where appropriate.
+
+The development team remains responsible for the final application, implementation decisions, testing, and project output.
+
+---
+
+# 👥 Project Team
+
+BarangayLink is developed as a group browser-based application project.
+
+### Team Members
+
+- **Ephraim Elayda**
+- **Charlene Mae Ignacio**
+- **Emilyn Maguad**
+- **Kurosh Avendaño**
+
+---
+
+# 📋 Project Scope Summary
+
+| Category | Current Status |
+|---|---|
+| Resident Interface | ✅ Implemented |
+| Staff/Admin Interface | ✅ Implemented |
+| Resident Login | ✅ Prototype |
+| Staff Login | ✅ Prototype |
+| Document Requests | ✅ Implemented |
+| Requirements | ✅ Implemented |
+| Request Tracking | ✅ Implemented |
+| Request History | ✅ Implemented |
+| Staff Review | ✅ Implemented |
+| Approval/Rejection | ✅ Implemented |
+| Profile Management | ✅ Implemented |
+| Community Pages | ✅ Implemented |
+| Responsive UI | ✅ Implemented |
+| Accessibility Improvements | ✅ Implemented |
+| Browser Storage | ✅ Implemented |
+| Backend | 🚧 Future |
+| MySQL Database | 🚧 Future |
+| Production Authentication | 🚧 Future |
+| Online Payment | ❌ Out of Scope |
+| PhilSys Integration | ❌ Out of Scope |
+| AI Chatbot | ❌ Out of Scope |
+| Multi-Barangay Management | ❌ Out of Scope |
+
+---
+
+# ⚠️ Disclaimer
+
+BarangayLink is an **academic browser-based prototype** developed for educational purposes.
+
+It is not an official government system and is not intended for production use without further development, security review, backend implementation, database integration, authentication hardening, privacy controls, and proper authorization mechanisms.
+
+The demo credentials included in this README are intentionally provided for classroom demonstration and should not be used for real accounts.
+
+---
+
+# 📜 License
+
+This project is an academic project developed for educational purposes.
