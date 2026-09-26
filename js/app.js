@@ -19,7 +19,7 @@ const serviceCatalog = [
   { name: 'General Certification Request', category: 'Resident Services', icon: '📁', description: 'Start a request for a resident certification not listed as a specific service.', requirements: ['Valid government ID', 'Complete resident information', 'Detailed purpose statement'], processing: '3 to 5 working days' }
 ];
 
-const STORAGE_KEYS = { requests: 'barangaylink.requests', profile: 'barangaylink.profile', sequence: 'barangaylink.sequence', auth: 'barangaylink.auth' };
+const STORAGE_KEYS = { requests: 'barangaylink.requests', profile: 'barangaylink.profile', sequence: 'barangaylink.sequence', auth: 'barangaylink.auth', concerns: 'barangaylink.concerns' };
 const DEMO_ACCOUNTS = [
   { email: 'demo@bl.com', password: '123456', role: 'resident', name: 'Demo Resident' },
   { email: 'staff@bl.com', password: '123456', role: 'staff', name: 'Demo Staff/Admin' }
@@ -27,6 +27,18 @@ const DEMO_ACCOUNTS = [
 const STATUS_LABELS = { pending: 'Pending Review', review: 'Under Review', approved: 'Approved', rejected: 'Rejected', ready: 'Ready for Release', released: 'Released' };
 const STATUS_ORDER = ['pending', 'review', 'approved', 'ready', 'released'];
 const defaultProfile = { name: 'Juan Dela Cruz', address: '123 Rizal Street, Barangay San Isidro', contact: '0917-123-4567', email: 'juan.delacruz@email.com' };
+
+const STAFF_NAV_HTML = '<a href="staff-dashboard.html">Staff Dashboard</a><a href="staff-dashboard.html">Request Queue</a><a href="staff-request.html">Request Review</a><a href="concerns.html">Reported Concerns</a><a href="barangay-info.html">Barangay Information</a><a href="emergency.html">Emergency</a><a href="login.html">Logout</a>';
+const CONCERN_STATUS = {
+  submitted: { label: 'Submitted', badge: 'status-pending' },
+  progress: { label: 'In Progress', badge: 'status-review' },
+  resolved: { label: 'Resolved', badge: 'status-approved' }
+};
+const SAMPLE_CONCERNS = [
+  { id: 'CNC-2026-0031', type: 'Garbage Collection', title: 'Garbage Collection Delay', location: 'Purok 3, near the basketball court', description: 'Garbage has not been collected for several days.', urgency: 'Medium', reporter: 'Juan Dela Cruz', anonymous: false, submittedBy: 'demo@bl.com', reportedAt: '2026-09-03T12:00:00', status: 'progress' },
+  { id: 'CNC-2026-0027', type: 'Street Light', title: 'Broken Street Light', location: 'Rizal Street corner', description: 'The street light on the corner is not working at night.', urgency: 'High', reporter: 'Juan Dela Cruz', anonymous: false, submittedBy: 'demo@bl.com', reportedAt: '2026-08-20T12:00:00', status: 'resolved' },
+  { id: 'CNC-2026-0019', type: 'Drainage Issue', title: 'Clogged Drainage', location: 'Purok 5 main road', description: 'Drainage is clogged and water pools on the road after rain.', urgency: 'Medium', reporter: 'Juan Dela Cruz', anonymous: false, submittedBy: 'demo@bl.com', reportedAt: '2026-08-30T12:00:00', status: 'submitted' }
+];
 
 function readStorage(key, fallback) {
   try {
@@ -48,6 +60,17 @@ function saveProfile(profile) { writeStorage(STORAGE_KEYS.profile, profile); win
 function getAuth() { const auth = readStorage(STORAGE_KEYS.auth, null); return auth && (auth.role === 'resident' || auth.role === 'staff') ? auth : null; }
 function setAuth(account) { writeStorage(STORAGE_KEYS.auth, { email: account.email, role: account.role, name: account.name }); }
 function clearAuth() { try { localStorage.removeItem(STORAGE_KEYS.auth); } catch (error) {} }
+function getConcerns() {
+  const stored = readStorage(STORAGE_KEYS.concerns, null);
+  if (Array.isArray(stored)) return stored;
+  writeStorage(STORAGE_KEYS.concerns, SAMPLE_CONCERNS);
+  return SAMPLE_CONCERNS.slice();
+}
+function saveConcerns(list) { writeStorage(STORAGE_KEYS.concerns, list); window.dispatchEvent(new Event('barangaylink:data')); }
+function nextConcernId(list) {
+  const highest = list.reduce((max, item) => Math.max(max, Number(String(item.id).split('-').pop()) || 0), 0);
+  return `CNC-${new Date().getFullYear()}-${String(highest + 1).padStart(4, '0')}`;
+}
 function escapeHtml(value) { return String(value ?? '').replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character])); }
 function formatDate(value) { return value ? new Date(value).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : '-'; }
 function getService(name) { return serviceCatalog.find((service) => service.name === name); }
@@ -87,7 +110,7 @@ function enforceAuthentication() {
   const auth = getAuth();
   if (protectedPage && !auth) { window.location.replace('login.html'); return false; }
   if (staffPages.includes(page) && auth?.role !== 'staff') { window.location.replace(auth?.role === 'resident' ? 'dashboard.html' : 'login.html'); return false; }
-  if (auth?.role === 'staff' && ['dashboard.html', 'services.html', 'request.html', 'tracking.html', 'history.html', 'profile.html', 'barangay-info.html', 'concerns.html', 'emergency.html'].includes(page)) { window.location.replace('staff-dashboard.html'); return false; }
+  if (auth?.role === 'staff' && ['dashboard.html', 'services.html', 'request.html', 'tracking.html', 'history.html', 'profile.html'].includes(page)) { window.location.replace('staff-dashboard.html'); return false; }
   return true;
 }
 
@@ -97,8 +120,29 @@ function initLogout() {
     if (!link || link.textContent.trim() !== 'Logout' || !link.closest('.nav-actions, .dashboard-sidebar-nav')) return;
     event.preventDefault();
     clearAuth();
-    window.location.href = 'login.html';
+    const page = window.location.pathname.split('/').pop() || 'index.html';
+    window.location.href = page === 'index.html' ? 'pages/login.html' : 'login.html';
   });
+}
+
+function initPublicNav() {
+  const page = window.location.pathname.split('/').pop() || 'index.html';
+  if (page !== 'index.html') return;
+  const auth = getAuth();
+  const navActions = document.querySelector('.nav-actions');
+  if (navActions) {
+    navActions.innerHTML = auth
+      ? '<a href="pages/profile.html" class="btn btn-ghost">Profile</a><a href="pages/login.html" class="btn btn-primary">Logout</a>'
+      : '<a href="pages/register.html" class="btn btn-ghost">Sign Up</a><a href="pages/login.html" class="btn btn-primary">Log In</a>';
+  }
+  const accountLabel = Array.from(document.querySelectorAll('.dashboard-sidebar-nav .nav-section')).find((el) => el.textContent.trim() === 'Account');
+  if (accountLabel) {
+    let sibling = accountLabel.nextElementSibling;
+    while (sibling && sibling.tagName === 'A') { const next = sibling.nextElementSibling; sibling.remove(); sibling = next; }
+    accountLabel.insertAdjacentHTML('afterend', auth
+      ? '<a href="pages/profile.html">Profile</a><a href="pages/login.html">Logout</a>'
+      : '<a href="pages/register.html">Sign Up</a><a href="pages/login.html">Log In</a>');
+  }
 }
 
 function initServices() {
@@ -157,7 +201,7 @@ function initAdditionalRequestForms() {
     const validate = () => { let valid = true; form.querySelectorAll('.step-panel.active [required]').forEach((field) => { clearFieldError(field); if (!field.value.trim()) { setFieldError(field, 'This field is required.'); if (valid) field.focus(); valid = false; } }); if (!valid) showToast('Please complete all required fields.', 'error'); return valid; };
     form.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => { if (!validate()) return; current = Math.min(current + 1, steps.length - 1); update(); }));
     form.querySelectorAll('[data-prev]').forEach((button) => button.addEventListener('click', () => { current = Math.max(current - 1, 0); update(); }));
-    form.addEventListener('submit', (event) => { event.preventDefault(); if (!validate()) return; const message = form.querySelector('.form-message'); if (message) { message.textContent = form.dataset.successMessage; message.classList.add('show'); } showToast('Concern submitted successfully.'); });
+    form.addEventListener('submit', (event) => { event.preventDefault(); if (!validate()) return; if (form.hasAttribute('data-concern-form')) saveNewConcern(form); const message = form.querySelector('.form-message'); if (message) { message.textContent = form.dataset.successMessage; message.classList.add('show'); } showToast('Concern submitted successfully.'); });
     update();
   });
 }
@@ -171,7 +215,198 @@ function renderTracking() { const form = document.querySelector('.track-form'); 
 
 function renderStaffDashboard() { const body = document.querySelector('[data-staff-rows]'); if (!body) return; const requests = getRequests(); const counts = { total: requests.length, pending: 0, review: 0, approved: 0, rejected: 0, ready: 0 }; requests.forEach((request) => { if (counts[request.status] !== undefined) counts[request.status] += 1; }); Object.keys(counts).forEach((key) => { const element = document.querySelector(`[data-staff-stat="${key}"]`); if (element) element.textContent = counts[key]; }); body.innerHTML = requests.map((request) => `<tr data-status="${escapeHtml(request.status)}" data-document="${escapeHtml(request.document)}"><td>${escapeHtml(request.reference)}</td><td>${escapeHtml(request.name)}</td><td>${escapeHtml(request.document)}</td><td>${escapeHtml(formatDate(request.submittedAt))}</td><td><span class="status-badge ${statusClass(request.status)}">${escapeHtml(STATUS_LABELS[request.status] || request.status)}</span></td><td><a href="staff-request.html?reference=${encodeURIComponent(request.reference)}" class="action-link">Review</a></td></tr>`).join(''); const empty = document.querySelector('[data-staff-empty]'); if (empty) empty.classList.toggle('hidden', requests.length > 0); const search = document.querySelector('#staff-search'); const status = document.querySelector('#staff-status-filter'); const documentFilter = document.querySelector('#staff-doc-filter'); const filter = () => body.querySelectorAll('tr').forEach((row) => { const query = search ? search.value.toLowerCase() : ''; row.hidden = !(`${row.textContent}`.toLowerCase().includes(query) && (!status || status.value === 'all' || row.dataset.status === status.value) && (!documentFilter || documentFilter.value === 'all' || row.dataset.document === documentFilter.value)); }); [search, status, documentFilter].filter(Boolean).forEach((field) => field.addEventListener('input', filter)); filter(); }
 
-function initStaffRequest() { const actions = document.querySelectorAll('[data-status-action]'); if (!actions.length) return; const reference = new URLSearchParams(window.location.search).get('reference') || getRequests()[0]?.reference; let request = getRequests().find((item) => item.reference === reference); const display = (key, value) => { const element = document.querySelector(`[data-staff-detail="${key}"]`); if (element) element.textContent = value || '-'; }; const load = () => { request = getRequests().find((item) => item.reference === reference); if (!request) return; Object.entries({ reference: request.reference, name: request.name, address: request.address, contact: request.contact, email: request.email, document: request.document, purpose: request.purpose, date: formatDate(request.submittedAt) }).forEach(([key, value]) => display(key, value)); const select = document.querySelector('#status-select'); if (select) select.value = request.status; }; actions.forEach((button) => button.addEventListener('click', () => { if (!request) { showToast('No request selected.', 'error'); return; } const status = button.dataset.statusAction; const rejectionField = document.querySelector('[data-rejection-field]'); if (status === 'rejected') { rejectionField.classList.remove('hidden'); const reason = document.querySelector('#rejection-reason').value.trim(); if (!reason) { document.querySelector('[data-rejection-error]').textContent = 'Please provide a reason for rejecting this request.'; document.querySelector('#rejection-reason').focus(); return; } } if (!window.confirm(`Update this request to ${STATUS_LABELS[status]}?`)) return; const requests = getRequests(); const target = requests.find((item) => item.reference === request.reference); target.status = status; target.updatedAt = new Date().toISOString(); target.rejectionReason = status === 'rejected' ? document.querySelector('#rejection-reason').value.trim() : ''; saveRequests(requests); load(); showToast(status === 'rejected' ? 'Request rejected.' : 'Request status updated.'); })); load(); }
+function initStaffRequest() {
+  const actions = document.querySelectorAll('[data-status-action]');
+  if (!actions.length) return;
+  const searchInput = document.querySelector('#review-search');
+  const listBody = document.querySelector('[data-review-rows]');
+  const listEmpty = document.querySelector('[data-review-empty]');
+  const rejectionField = document.querySelector('[data-rejection-field]');
+  const rejectionReason = document.querySelector('#rejection-reason');
+  const rejectionError = document.querySelector('[data-rejection-error]');
+  let reference = new URLSearchParams(window.location.search).get('reference') || getRequests()[0]?.reference;
+  let request = null;
+  const display = (key, value) => { const element = document.querySelector(`[data-staff-detail="${key}"]`); if (element) element.textContent = value || '-'; };
+
+  const renderList = () => {
+    if (!listBody) return;
+    const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    const matches = getRequests().filter((item) => !query || [item.reference, item.name, item.document, item.status, STATUS_LABELS[item.status], formatDate(item.submittedAt)].join(' ').toLowerCase().includes(query));
+    listBody.innerHTML = matches.map((item) => `<tr class="${item.reference === reference ? 'is-selected' : ''}"><td>${escapeHtml(item.reference)}</td><td>${escapeHtml(item.name)}</td><td>${escapeHtml(item.document)}</td><td>${escapeHtml(formatDate(item.submittedAt))}</td><td><span class="status-badge ${statusClass(item.status)}">${escapeHtml(STATUS_LABELS[item.status] || item.status)}</span></td><td><button type="button" class="action-link" data-review-select="${escapeHtml(item.reference)}">Review</button></td></tr>`).join('');
+    if (listEmpty) listEmpty.classList.toggle('hidden', matches.length > 0);
+  };
+
+  const load = () => {
+    request = getRequests().find((item) => item.reference === reference) || null;
+    if (!request) return;
+    Object.entries({ reference: request.reference, name: request.name, address: request.address, contact: request.contact, email: request.email, document: request.document, purpose: request.purpose, date: formatDate(request.submittedAt) }).forEach(([key, value]) => display(key, value));
+    const select = document.querySelector('#status-select');
+    if (select) select.value = request.status;
+    if (rejectionField) rejectionField.classList.toggle('hidden', request.status !== 'rejected');
+    if (rejectionReason) rejectionReason.value = request.status === 'rejected' ? (request.rejectionReason || '') : '';
+    if (rejectionError) rejectionError.textContent = '';
+  };
+
+  if (searchInput) searchInput.addEventListener('input', renderList);
+  if (listBody) listBody.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-review-select]');
+    if (!button) return;
+    reference = button.dataset.reviewSelect;
+    load();
+    renderList();
+    try { window.history.replaceState(null, '', `?reference=${encodeURIComponent(reference)}`); } catch (error) {}
+    document.querySelector('.request-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  actions.forEach((button) => button.addEventListener('click', () => {
+    if (!request) { showToast('No request selected.', 'error'); return; }
+    const status = button.dataset.statusAction;
+    if (status === 'rejected') {
+      rejectionField.classList.remove('hidden');
+      if (!rejectionReason.value.trim()) { rejectionError.textContent = 'Please provide a reason for rejecting this request.'; rejectionReason.focus(); return; }
+    }
+    if (!window.confirm(`Update this request to ${STATUS_LABELS[status]}?`)) return;
+    const requests = getRequests();
+    const target = requests.find((item) => item.reference === request.reference);
+    target.status = status;
+    target.updatedAt = new Date().toISOString();
+    target.rejectionReason = status === 'rejected' ? rejectionReason.value.trim() : '';
+    saveRequests(requests);
+    load();
+    showToast(status === 'rejected' ? 'Request rejected.' : 'Request status updated.');
+  }));
+
+  window.addEventListener('barangaylink:data', renderList);
+  load();
+  renderList();
+}
+
+function saveNewConcern(form) {
+  const data = Object.fromEntries(new FormData(form));
+  const auth = getAuth();
+  const list = getConcerns();
+  const concern = {
+    id: nextConcernId(list),
+    type: data.concernType,
+    title: data.concernType,
+    location: (data.location || '').trim(),
+    description: (data.description || '').trim(),
+    urgency: data.urgency,
+    reporter: (data.fullName || '').trim(),
+    contact: (data.contactNumber || '').trim(),
+    address: (data.address || '').trim(),
+    anonymous: form.querySelector('[name="anonymous"]')?.checked === true,
+    submittedBy: auth?.email || '',
+    reportedAt: new Date().toISOString(),
+    status: 'submitted'
+  };
+  saveConcerns([concern, ...list]);
+}
+
+function renderStaffDashboardConcerns() {
+  const body = document.querySelector('[data-dash-concern-rows]');
+  if (!body) return;
+  const concerns = getConcerns();
+  const counts = { total: concerns.length, submitted: 0, progress: 0, resolved: 0 };
+  concerns.forEach((item) => { if (counts[item.status] !== undefined) counts[item.status] += 1; });
+  Object.keys(counts).forEach((key) => {
+    const element = document.querySelector(`[data-concern-stat="${key}"]`);
+    if (element) element.textContent = counts[key];
+  });
+  const urgencyClass = { High: 'status-rejected', Medium: 'status-pending', Low: 'status-approved' };
+  body.innerHTML = concerns.map((item) => {
+    const status = CONCERN_STATUS[item.status] || CONCERN_STATUS.submitted;
+    return `<tr data-status="${escapeHtml(item.status)}"><td>${escapeHtml(item.id)}</td><td><strong>${escapeHtml(item.title || item.type)}</strong><br /><small>${escapeHtml(item.location)}</small></td><td>${item.anonymous ? 'Anonymous' : escapeHtml(item.reporter)}</td><td><span class="urgency-badge ${urgencyClass[item.urgency] || 'status-review'}">${escapeHtml(item.urgency || '-')}</span></td><td>${escapeHtml(formatDate(item.reportedAt))}</td><td><span class="status-badge ${status.badge}">${status.label}</span></td><td><a href="concerns.html" class="action-link">Review</a></td></tr>`;
+  }).join('');
+  const search = document.querySelector('#dash-concern-search');
+  const statusFilter = document.querySelector('#dash-concern-status');
+  const filter = () => {
+    const query = (search?.value || '').trim().toLowerCase();
+    const wanted = statusFilter?.value || 'all';
+    let visible = 0;
+    body.querySelectorAll('tr').forEach((row) => {
+      const show = row.textContent.toLowerCase().includes(query) && (wanted === 'all' || row.dataset.status === wanted);
+      row.hidden = !show;
+      if (show) visible += 1;
+    });
+    document.querySelector('[data-dash-concern-empty]')?.classList.toggle('hidden', visible > 0);
+  };
+  if (!body.dataset.bound) {
+    body.dataset.bound = 'true';
+    [search, statusFilter].filter(Boolean).forEach((field) => field.addEventListener('input', filter));
+  }
+  filter();
+}
+
+function renderResidentConcerns() {
+  const box = document.querySelector('[data-my-concerns]');
+  if (!box) return;
+  const auth = getAuth();
+  const mine = getConcerns().filter((item) => item.submittedBy === auth?.email);
+  box.innerHTML = mine.length ? mine.map((item) => {
+    const status = CONCERN_STATUS[item.status] || CONCERN_STATUS.submitted;
+    return `<article class="request-item"><div class="request-top"><div><h3>${escapeHtml(item.title || item.type)}</h3><p>Concern ID: ${escapeHtml(item.id)} &middot; ${escapeHtml(item.location)}</p></div><span class="status-badge ${status.badge}">${status.label}</span></div><div class="request-meta"><p>Date Reported: ${escapeHtml(formatDate(item.reportedAt))}</p><p>Status: ${status.label}</p></div></article>`;
+  }).join('') : '<p>You have not reported any concerns yet.</p>';
+}
+
+function applyConcernFilter() {
+  const body = document.querySelector('[data-staff-concern-rows]');
+  if (!body) return;
+  const query = (document.querySelector('#concern-search')?.value || '').trim().toLowerCase();
+  const status = document.querySelector('#concern-status-filter')?.value || 'all';
+  let visible = 0;
+  body.querySelectorAll('tr').forEach((row) => {
+    const show = row.textContent.toLowerCase().includes(query) && (status === 'all' || row.dataset.status === status);
+    row.hidden = !show;
+    if (show) visible += 1;
+  });
+  document.querySelector('[data-staff-concern-empty]')?.classList.toggle('hidden', visible > 0);
+}
+
+function renderStaffConcerns() {
+  const body = document.querySelector('[data-staff-concern-rows]');
+  if (!body) return;
+  const options = (current) => Object.entries(CONCERN_STATUS).map(([value, meta]) => `<option value="${value}" ${value === current ? 'selected' : ''}>${meta.label}</option>`).join('');
+  body.innerHTML = getConcerns().map((item) => `<tr data-status="${escapeHtml(item.status)}"><td>${escapeHtml(item.id)}</td><td><strong>${escapeHtml(item.title || item.type)}</strong><br /><small>${escapeHtml(item.description)}</small></td><td>${escapeHtml(item.location)}</td><td>${item.anonymous ? 'Anonymous' : escapeHtml(item.reporter)}</td><td>${escapeHtml(item.urgency)}</td><td>${escapeHtml(formatDate(item.reportedAt))}</td><td><select class="concern-status-select" data-concern-id="${escapeHtml(item.id)}" aria-label="Update status for ${escapeHtml(item.id)}">${options(item.status)}</select></td></tr>`).join('');
+  if (!body.dataset.bound) {
+    body.dataset.bound = 'true';
+    ['#concern-search', '#concern-status-filter'].forEach((selector) => document.querySelector(selector)?.addEventListener('input', applyConcernFilter));
+    body.addEventListener('change', (event) => {
+      const select = event.target.closest('[data-concern-id]');
+      if (!select) return;
+      const list = getConcerns();
+      const target = list.find((item) => item.id === select.dataset.concernId);
+      if (!target) return;
+      target.status = select.value;
+      target.updatedAt = new Date().toISOString();
+      saveConcerns(list);
+      showToast('Concern status updated.');
+    });
+  }
+  applyConcernFilter();
+}
+
+// Staff can open the shared community pages (concerns, barangay info, emergency).
+// Give them the staff sidebar and hide resident-only content instead of redirecting.
+function initStaffSharedPages() {
+  const auth = getAuth();
+  if (auth?.role !== 'staff') return;
+  document.querySelectorAll('[data-resident-only]').forEach((element) => element.classList.add('hidden'));
+  document.querySelectorAll('[data-staff-only]').forEach((element) => element.classList.remove('hidden'));
+  const sidebar = document.querySelector('#resident-sidebar');
+  if (!sidebar) return;
+  sidebar.id = 'staff-sidebar';
+  sidebar.classList.add('staff-sidebar');
+  sidebar.setAttribute('aria-label', 'Staff navigation');
+  const nav = sidebar.querySelector('.dashboard-sidebar-nav');
+  if (nav) { nav.setAttribute('aria-label', 'Staff navigation'); nav.innerHTML = STAFF_NAV_HTML; }
+  const title = sidebar.querySelector('.dashboard-sidebar-header h2');
+  if (title) title.textContent = 'BarangayLink';
+  document.querySelector('.dashboard-nav-toggle')?.setAttribute('aria-controls', 'staff-sidebar');
+  document.querySelector('.site-header')?.classList.add('staff-header');
+  const actions = document.querySelector('.nav-actions');
+  if (actions) actions.innerHTML = '<a href="login.html" class="btn btn-primary">Logout</a>';
+}
 
 function initProfile() { const form = document.querySelector('[data-profile-form]'); if (!form) return; const load = () => { const profile = getProfile(); Object.entries(profile).forEach(([key, value]) => { const input = form.elements[key]; if (input) input.value = value; const display = document.querySelector(`[data-profile-display="${key}"]`); if (display) display.textContent = value; }); document.querySelectorAll('[data-profile-name]').forEach((element) => element.textContent = profile.name); }; form.addEventListener('submit', (event) => { event.preventDefault(); const data = Object.fromEntries(new FormData(form)); let valid = true; Object.entries(data).forEach(([key, value]) => { const field = form.elements[key]; clearFieldError(field); if (!String(value).trim()) { setFieldError(field, 'This field is required.'); valid = false; } }); if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) { setFieldError(form.elements.email, 'Please enter a valid email address.'); valid = false; } if (!valid) return; saveProfile(data); load(); document.querySelector('.modal')?.classList.remove('show'); showToast('Profile updated.'); }); load(); }
 
@@ -199,8 +434,8 @@ function initAuth() {
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!enforceAuthentication()) return;
-  initLogout(); initNavigation(); initServices(); initRequest(); initAdditionalRequestForms(); renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); initStaffRequest(); initProfile(); initAuth();
+  initStaffSharedPages(); initLogout(); initPublicNav(); initNavigation(); initServices(); initRequest(); initAdditionalRequestForms(); renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); renderStaffDashboardConcerns(); renderResidentConcerns(); renderStaffConcerns(); initStaffRequest(); initProfile(); initAuth();
   document.querySelectorAll('.toggle-password').forEach((button) => button.addEventListener('click', () => { const input = button.parentElement.querySelector('input'); const visible = input.type === 'password'; input.type = visible ? 'text' : 'password'; button.textContent = visible ? 'Hide' : 'Show'; button.setAttribute('aria-label', visible ? 'Hide password' : 'Show password'); }));
   const modal = document.querySelector('.modal'); const trigger = document.querySelector('[data-open-modal]'); const close = document.querySelector('[data-close-modal]'); if (trigger && modal) trigger.addEventListener('click', () => modal.classList.add('show')); if (close && modal) close.addEventListener('click', () => modal.classList.remove('show')); if (modal) { modal.addEventListener('click', (event) => { if (event.target === modal) modal.classList.remove('show'); }); document.addEventListener('keydown', (event) => { if (event.key === 'Escape') modal.classList.remove('show'); }); }
-  window.addEventListener('barangaylink:data', () => { renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); });
+  window.addEventListener('barangaylink:data', () => { renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); renderStaffDashboardConcerns(); renderResidentConcerns(); renderStaffConcerns(); });
 });

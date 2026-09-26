@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="assets/images/barangaylink-favicon.png" />
+    <link rel="icon" type="image/png" href="../assets/images/barangaylink-favicon.png" />
     <title>Log In | BarangayLink</title>
     <meta name="description" content="Resident login for BarangayLink." />
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body class="auth-page">
     <header class="site-header auth-header">
       <div class="container nav-wrap">
-        <a href="index.html" class="brand" aria-label="BarangayLink home page">
+        <a href="../index.html" class="brand" aria-label="BarangayLink home page">
           <span class="brand-mark">BL</span>
           <span>BarangayLink</span>
         </a>
@@ -44,25 +44,25 @@
               <input type="checkbox" name="remember" />
               <span>Remember Me</span>
             </label>
-            <a href="index.html" class="text-link">Forgot Password</a>
+            <a href="forgot-password.html" class="text-link">Forgot Password</a>
           </div>
 
           <button type="submit" class="btn btn-primary block-btn">Log In</button>
         </form>
-
+          <p class="auth-switch">
+          Need an account?
+          <a href="register.html">Create an Account</a>
+        </p>
         <aside class="demo-account-panel" aria-label="Demo accounts">
           <h2>Demo Accounts</h2>
           <p><strong>Demo Resident</strong><br />Email: demo@bl.com<br />Password: 123456</p>
           <p><strong>Demo Staff/Admin</strong><br />Email: staff@bl.com<br />Password: 123456</p>
         </aside>
 
-        <p class="auth-switch">
-          Need an account?
-          <a href="register.html">Create an Account</a>
-        </p>
+        
       </section>
     </main>
 
-    <script src="js/app.js"></script>
+    <script src="../js/app.js"></script>
   </body>
 </html>

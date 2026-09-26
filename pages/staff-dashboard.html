@@ -3,23 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="assets/images/barangaylink-favicon.png" />
+    <link rel="icon" type="image/png" href="../assets/images/barangaylink-favicon.png" />
     <title>Staff Dashboard | BarangayLink</title>
     <meta name="description" content="Barangay staff dashboard for reviewing requests." />
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body>
     <div class="staff-layout">
       <header class="site-header staff-header">
         <div class="container nav-wrap">
           <button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="staff-sidebar" aria-label="Open navigation menu"><span aria-hidden="true">☰</span></button>
-          <a href="staff-dashboard.html" class="brand" aria-label="BarangayLink staff dashboard">BarangayLink</a>
+          <a href="../index.html" class="brand" aria-label="BarangayLink home page">BarangayLink</a>
         </div>
       </header>
       <button class="dashboard-menu-overlay" type="button" aria-label="Close navigation menu" hidden></button>
       <aside class="dashboard-sidebar staff-sidebar" id="staff-sidebar" aria-label="Staff navigation" aria-hidden="true">
         <div class="dashboard-sidebar-header"><h2>BarangayLink</h2><button class="dashboard-sidebar-close" type="button" aria-label="Close navigation menu">×</button></div>
-        <nav class="dashboard-sidebar-nav" aria-label="Staff navigation"><a href="staff-dashboard.html">Staff Dashboard</a><a href="staff-dashboard.html">Request Queue</a><a href="staff-dashboard.html">Residents / Registry</a><a href="staff-request.html">Request Review</a><a href="index.html">Logout</a></nav>
+        <nav class="dashboard-sidebar-nav" aria-label="Staff navigation"><a href="staff-dashboard.html">Staff Dashboard</a><a href="staff-dashboard.html">Request Queue</a><a href="staff-request.html">Request Review</a><a href="concerns.html">Reported Concerns</a><a href="barangay-info.html">Barangay Information</a><a href="emergency.html">Emergency</a><a href="../index.html">Logout</a></nav>
       </aside>
 
       <main class="staff-main">
@@ -140,9 +140,74 @@
             </div>
           </div>
         </section>
+
+        <div class="page-head concern-section-head">
+          <p class="eyebrow">Community</p>
+          <h2>Reported Concerns</h2>
+          <p>Concerns submitted by residents. New reports appear here as soon as they are filed.</p>
+        </div>
+
+        <section class="staff-summary staff-summary-concerns" aria-label="Reported concern summary cards">
+          <article class="summary-tile">
+            <div class="label">Total Concerns</div>
+            <div class="value" data-concern-stat="total">0</div>
+          </article>
+          <article class="summary-tile">
+            <div class="label">New (Submitted)</div>
+            <div class="value" data-concern-stat="submitted">0</div>
+          </article>
+          <article class="summary-tile">
+            <div class="label">In Progress</div>
+            <div class="value" data-concern-stat="progress">0</div>
+          </article>
+          <article class="summary-tile">
+            <div class="label">Resolved</div>
+            <div class="value" data-concern-stat="resolved">0</div>
+          </article>
+        </section>
+
+        <section class="table-card" aria-label="Reported concerns queue">
+          <div class="search-filter-row">
+            <div class="field">
+              <label for="dash-concern-search">Search Concerns</label>
+              <input id="dash-concern-search" type="search" placeholder="Search by concern ID, type, location, or resident" />
+            </div>
+
+            <div class="field">
+              <label for="dash-concern-status">Status</label>
+              <select id="dash-concern-status">
+                <option value="all">All Statuses</option>
+                <option value="submitted">Submitted</option>
+                <option value="progress">In Progress</option>
+                <option value="resolved">Resolved</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table" aria-label="Reported concerns table">
+              <thead>
+                <tr>
+                  <th>Concern ID</th>
+                  <th>Concern</th>
+                  <th>Reported By</th>
+                  <th>Urgency</th>
+                  <th>Date Reported</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody data-dash-concern-rows></tbody>
+            </table>
+            <div class="empty-state hidden" data-dash-concern-empty>
+              <h2>No concerns reported</h2>
+              <p>Resident-reported concerns will appear here for review.</p>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
 
-    <script src="js/app.js"></script>
+    <script src="../js/app.js"></script>
   </body>
 </html>
