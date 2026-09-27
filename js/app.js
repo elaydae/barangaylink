@@ -1,3 +1,8 @@
+/*
+ * Shared prototype catalog used by the landing page, service browser, and
+ * request form. Request records save the selected service name, so keep names
+ * stable or update the readers of stored requests when renaming a service.
+ */
 const serviceCatalog = [
   { name: 'Barangay Clearance', category: 'Certificates & Clearances', icon: '📄', description: 'Request a barangay clearance for applicable personal, employment, business, or other purposes.', requirements: ['Valid identification', 'Complete resident information', 'Purpose of request'], processing: '2 to 3 working days', core: true },
   { name: 'Certificate of Residency', category: 'Certificates & Clearances', icon: '🏠', description: 'Confirm your current address and residency status within the barangay.', requirements: ['Valid government ID', 'Current address details', 'Purpose of request'], processing: '2 to 3 working days', core: true },
@@ -19,6 +24,19 @@ const serviceCatalog = [
   { name: 'General Certification Request', category: 'Resident Services', icon: '📁', description: 'Start a request for a resident certification not listed as a specific service.', requirements: ['Valid government ID', 'Complete resident information', 'Detailed purpose statement'], processing: '3 to 5 working days' }
 ];
 
+/*
+ * Browser storage used by this prototype (JSON except the numeric sequence):
+ * barangaylink.requests stores submitted request records.
+ * barangaylink.profile stores resident contact/profile fields.
+ * barangaylink.sequence stores the next request reference suffix.
+ * barangaylink.auth stores the demo user's email, role, and name.
+ * barangaylink.concerns stores community concern records.
+ * barangaylink.barangayInfo stores editable barangay details.
+ *
+ * These values are browser-local and are not suitable for production. Replace
+ * this storage boundary with Java API calls and persistent MySQL data later;
+ * client-side role checks must never be treated as real access control.
+ */
 const STORAGE_KEYS = {
   requests: 'barangaylink.requests',
   profile: 'barangaylink.profile',
@@ -27,6 +45,7 @@ const STORAGE_KEYS = {
   concerns: 'barangaylink.concerns',
   barangayInfo: 'barangaylink.barangayInfo'
 };
+// Credentials are for the frontend demonstration only; production login belongs on the backend.
 const DEMO_ACCOUNTS = [
   { email: 'demo@bl.com', password: '123456', role: 'resident', name: 'Demo Resident' },
   { email: 'staff@bl.com', password: '123456', role: 'staff', name: 'Demo Staff/Admin' }
@@ -60,6 +79,7 @@ const SAMPLE_CONCERNS = [
   { id: 'CNC-2026-0019', type: 'Drainage Issue', title: 'Clogged Drainage', location: 'Purok 5 main road', description: 'Drainage is clogged and water pools on the road after rain.', urgency: 'Medium', reporter: 'Juan Dela Cruz', anonymous: false, submittedBy: 'demo@bl.com', reportedAt: '2026-08-30T12:00:00', status: 'submitted' }
 ];
 
+/** Safely reads prototype data, using a caller-provided default for missing or invalid JSON. */
 function readStorage(key, fallback) {
   try {
     const value = JSON.parse(localStorage.getItem(key));
@@ -69,10 +89,17 @@ function readStorage(key, fallback) {
   }
 }
 
+/** Shared persistence boundary so localStorage write failures are reported consistently. */
 function writeStorage(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch (error) { showToast('Your browser could not save this change.', 'error'); }
 }
 
+/*
+ * Stored request shape: reference, name, address, contact, email, document,
+ * purpose, submittedAt, updatedAt, status, and rejectionReason. Resident
+ * dashboard/history/tracking and staff review all read this same record.
+ * STATUS_LABELS and STATUS_ORDER describe the supported workflow values.
+ */
 function getRequests() { const requests = readStorage(STORAGE_KEYS.requests, []); return Array.isArray(requests) ? requests : []; }
 function saveRequests(requests) { writeStorage(STORAGE_KEYS.requests, requests); window.dispatchEvent(new Event('barangaylink:data')); }
 function getProfile() { const profile = readStorage(STORAGE_KEYS.profile, {}); return { ...defaultProfile, ...(profile && typeof profile === 'object' && !Array.isArray(profile) ? profile : {}) }; }
@@ -89,9 +116,13 @@ function saveBarangayInfo(info) {
   writeStorage(STORAGE_KEYS.barangayInfo, info);
   window.dispatchEvent(new Event('barangaylink:data'));
 }
+/* This frontend demo role controls page presentation/redirects; it does not secure data. */
 function getAuth() { const auth = readStorage(STORAGE_KEYS.auth, null); return auth && (auth.role === 'resident' || auth.role === 'staff') ? auth : null; }
 function setAuth(account) { writeStorage(STORAGE_KEYS.auth, { email: account.email, role: account.role, name: account.name }); }
 function clearAuth() { try { localStorage.removeItem(STORAGE_KEYS.auth); } catch (error) {} }
+/* Concern records contain id, type, title, location, description, urgency, reporter, anonymous,
+ * submittedBy, reportedAt, status, plus optional contact/address fields on resident submissions.
+ * Resident and staff views share these names, so update both renderers when changing the shape. */
 function getConcerns() {
   const stored = readStorage(STORAGE_KEYS.concerns, null);
   if (Array.isArray(stored)) return stored;
@@ -107,6 +138,7 @@ function escapeHtml(value) { return String(value ?? '').replace(/[&<>'"]/g, (cha
 function formatDate(value) { return value ? new Date(value).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : '-'; }
 function getService(name) { return serviceCatalog.find((service) => service.name === name); }
 
+/** Shared accessible notification used by validation, persistence, and status workflows. */
 function showToast(message, type = 'success') {
   let toast = document.querySelector('[data-toast]');
   if (!toast) { toast = document.createElement('div'); toast.dataset.toast = 'true'; toast.setAttribute('role', 'status'); toast.setAttribute('aria-live', 'polite'); document.body.appendChild(toast); }
@@ -116,6 +148,10 @@ function showToast(message, type = 'success') {
   showToast.timeout = window.setTimeout(() => toast.classList.remove('show'), 3600);
 }
 
+/**
+ * Initializes the sidebar shared by resident and staff pages. Keep its HTML IDs/classes
+ * and role-specific navigation setup in sync when changing either menu.
+ */
 function initNavigation() {
   const toggle = document.querySelector('.dashboard-nav-toggle, .dashboard-sidebar-reopen');
   const sidebar = document.querySelector('#resident-sidebar, #staff-sidebar');
@@ -258,6 +294,13 @@ function initNavigation() {
   }
 }
 
+/**
+ * Demo-only route guard based on the role saved in localStorage. Residents use
+ * dashboard/services/request/tracking/history/profile and community pages;
+ * staff use the staff dashboard/request review and shared concerns/info pages.
+ * Redirects improve navigation, but real authorization and record protection
+ * must be enforced by an API.
+ */
 function enforceAuthentication() {
   const page = window.location.pathname.split('/').pop() || 'index.html';
   const publicPages = ['index.html', 'login.html', 'register.html'];
@@ -270,6 +313,7 @@ function enforceAuthentication() {
   return true;
 }
 
+/** Removes the demo session and returns the user to the public landing page. */
 function initLogout() {
   document.addEventListener('click', (event) => {
     const link = event.target.closest('a');
@@ -300,6 +344,7 @@ function initPublicNav() {
   }
 }
 
+/** Renders catalog-backed service cards and binds the category/search controls. */
 function initServices() {
   const grid = document.querySelector('[data-service-grid]');
   if (!grid) return;
@@ -320,6 +365,7 @@ function initServices() {
 
 function setFieldError(field, message) { let error = field.parentElement.querySelector('.field-error'); if (!error) { error = document.createElement('p'); error.className = 'field-error'; field.parentElement.appendChild(error); } error.textContent = message; field.setAttribute('aria-invalid', 'true'); }
 function clearFieldError(field) { const error = field.parentElement.querySelector('.field-error'); if (error) error.textContent = ''; field.removeAttribute('aria-invalid'); }
+/** Validates the active request step and writes errors into the form's accessible field hooks. */
 function validateRequest(form, step) {
   const fields = step === 0 ? [form.querySelector('#document-type')] : step === 2 ? Array.from(form.querySelectorAll('.step-panel.active input[required]')) : [];
   let valid = true;
@@ -328,6 +374,10 @@ function validateRequest(form, step) {
   return valid;
 }
 
+/**
+ * Coordinates the multi-step document form. Submission currently saves locally;
+ * future backend integration should replace the storage write while retaining the request shape.
+ */
 function initRequest() {
   const form = document.querySelector('.request-form');
   if (!form) return;
@@ -357,6 +407,7 @@ function initRequest() {
   updateUI();
 }
 
+/** Adds step navigation and validation to shared concern forms; saveNewConcern handles persistence. */
 function initAdditionalRequestForms() {
   document.querySelectorAll('.request-form[data-success-message]').forEach((form) => {
     const steps = Array.from(form.querySelectorAll('.step-panel'));
@@ -386,6 +437,7 @@ function initAdditionalRequestForms() {
 }
 
 function statusClass(status) { return `status-${status === 'review' ? 'review' : status}`; }
+/** Builds resident dashboard counts and active-request links from the shared request store. */
 function renderDashboard() {
   const container = document.querySelector('[data-dashboard-requests]');
   if (!container) return;
@@ -402,12 +454,19 @@ function renderDashboard() {
   if (empty) empty.classList.toggle('hidden', activeRequests.length > 0);
 }
 
+/** Renders stored requests and applies the history page search and status/document filters. */
 function renderHistory() { const body = document.querySelector('[data-history-rows]'); if (!body) return; const requests = getRequests(); body.innerHTML = requests.map((request) => `<tr data-status="${escapeHtml(request.status)}" data-document="${escapeHtml(request.document)}"><td>${escapeHtml(request.reference)}</td><td>${escapeHtml(request.document)}</td><td>${escapeHtml(formatDate(request.submittedAt))}</td><td><span class="status-badge ${statusClass(request.status)}">${escapeHtml(STATUS_LABELS[request.status] || request.status)}</span></td><td>${escapeHtml(formatDate(request.updatedAt))}</td><td><a href="tracking.html?reference=${encodeURIComponent(request.reference)}" class="action-link">Track Request</a></td></tr>`).join(''); const empty = document.querySelector('[data-history-empty]'); if (empty) empty.classList.toggle('hidden', requests.length > 0); const search = document.querySelector('#request-search'); const status = document.querySelector('#statusFilter'); const documentFilter = document.querySelector('#documentFilter'); const filter = () => body.querySelectorAll('tr').forEach((row) => { const query = search ? search.value.toLowerCase() : ''; row.hidden = !(`${row.textContent}`.toLowerCase().includes(query) && (!status || status.value === 'all' || row.dataset.status === status.value) && (!documentFilter || documentFilter.value === 'all' || row.dataset.document === documentFilter.value)); }); [search, status, documentFilter].filter(Boolean).forEach((field) => field.addEventListener('input', filter)); filter(); }
 
+/** Resolves a request reference into its current status details and timeline. */
 function renderTracking() { const form = document.querySelector('.track-form'); if (!form) return; const input = form.querySelector('input'); const result = document.querySelector('[data-track-result]'); const empty = document.querySelector('[data-track-empty]'); const show = (reference) => { const request = getRequests().find((item) => item.reference.toLowerCase() === reference.trim().toLowerCase()); if (!request) { result.classList.add('hidden'); empty.classList.remove('hidden'); showToast('Request not found. Check your reference number.', 'error'); return; } empty.classList.add('hidden'); result.classList.remove('hidden'); document.querySelector('[data-track-reference]').textContent = request.reference; document.querySelector('[data-track-document]').textContent = request.document; document.querySelector('[data-track-applicant]').textContent = request.name; document.querySelector('[data-track-date]').textContent = formatDate(request.submittedAt); document.querySelector('[data-track-status]').textContent = STATUS_LABELS[request.status] || request.status; const timeline = document.querySelector('[data-track-timeline]'); const currentIndex = request.status === 'rejected' ? -1 : STATUS_ORDER.indexOf(request.status); timeline.innerHTML = ['Submitted', 'Received', 'Under Review', 'Approved', 'Ready for Release', 'Released'].map((label, index) => `<div class="timeline-item ${index <= currentIndex + 1 ? 'done' : ''} ${index === currentIndex + 1 ? 'active' : ''}"><span class="timeline-dot" aria-hidden="true"></span><div><strong>${label}</strong></div></div>`).join(''); result.scrollIntoView({ behavior: 'smooth', block: 'start' }); }; form.addEventListener('submit', (event) => { event.preventDefault(); if (!input.value.trim()) { input.setAttribute('aria-invalid', 'true'); showToast('Enter a request reference number.', 'error'); return; } show(input.value); }); const queryReference = new URLSearchParams(window.location.search).get('reference'); if (queryReference) { input.value = queryReference; show(queryReference); } }
 
+/** Populates the staff queue and filters from the same request records used by resident pages. */
 function renderStaffDashboard() { const body = document.querySelector('[data-staff-rows]'); if (!body) return; const requests = getRequests(); const counts = { total: requests.length, pending: 0, review: 0, approved: 0, rejected: 0, ready: 0 }; requests.forEach((request) => { if (counts[request.status] !== undefined) counts[request.status] += 1; }); Object.keys(counts).forEach((key) => { const element = document.querySelector(`[data-staff-stat="${key}"]`); if (element) element.textContent = counts[key]; }); body.innerHTML = requests.map((request) => `<tr data-status="${escapeHtml(request.status)}" data-document="${escapeHtml(request.document)}"><td>${escapeHtml(request.reference)}</td><td>${escapeHtml(request.name)}</td><td>${escapeHtml(request.document)}</td><td>${escapeHtml(formatDate(request.submittedAt))}</td><td><span class="status-badge ${statusClass(request.status)}">${escapeHtml(STATUS_LABELS[request.status] || request.status)}</span></td><td><a href="staff-request.html?reference=${encodeURIComponent(request.reference)}" class="action-link">Review</a></td></tr>`).join(''); const empty = document.querySelector('[data-staff-empty]'); if (empty) empty.classList.toggle('hidden', requests.length > 0); const search = document.querySelector('#staff-search'); const status = document.querySelector('#staff-status-filter'); const documentFilter = document.querySelector('#staff-doc-filter'); const filter = () => body.querySelectorAll('tr').forEach((row) => { const query = search ? search.value.toLowerCase() : ''; row.hidden = !(`${row.textContent}`.toLowerCase().includes(query) && (!status || status.value === 'all' || row.dataset.status === status.value) && (!documentFilter || documentFilter.value === 'all' || row.dataset.document === documentFilter.value)); }); [search, status, documentFilter].filter(Boolean).forEach((field) => field.addEventListener('input', filter)); filter(); }
 
+/**
+ * Loads one request for review and enforces the allowed next status action in the UI.
+ * Status changes and rejection reasons are saved to browser storage in this prototype.
+ */
 function initStaffRequest() {
   const actions = document.querySelectorAll('[data-status-action]');
   if (!actions.length) return;
@@ -489,6 +548,7 @@ function initStaffRequest() {
   renderList();
 }
 
+/** Converts the concern form fields into the shared concern record shape and saves locally. */
 function saveNewConcern(form) {
   const data = Object.fromEntries(new FormData(form));
   const auth = getAuth();
@@ -616,8 +676,10 @@ function initStaffSharedPages() {
   if (actions) actions.innerHTML = '<a href="login.html" class="btn btn-primary">Logout</a>';
 }
 
+/** Loads and validates the shared resident profile form; profile fields also prefill document requests. */
 function initProfile() { const form = document.querySelector('[data-profile-form]'); if (!form) return; const load = () => { const profile = getProfile(); Object.entries(profile).forEach(([key, value]) => { const input = form.elements[key]; if (input) input.value = value; const display = document.querySelector(`[data-profile-display="${key}"]`); if (display) display.textContent = value; }); document.querySelectorAll('[data-profile-name]').forEach((element) => element.textContent = profile.name); }; form.addEventListener('submit', (event) => { event.preventDefault(); const data = Object.fromEntries(new FormData(form)); let valid = true; Object.entries(data).forEach(([key, value]) => { const field = form.elements[key]; clearFieldError(field); if (!String(value).trim()) { setFieldError(field, 'This field is required.'); valid = false; } }); if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) { setFieldError(form.elements.email, 'Please enter a valid email address.'); valid = false; } if (!valid) return; saveProfile(data); load(); document.querySelector('.modal')?.classList.remove('show'); showToast('Profile updated.'); }); load(); }
 
+/** Handles demo registration/login forms; credentials and role assignment are frontend-only. */
 function initAuth() {
   document.querySelectorAll('.auth-form').forEach((form) => form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -639,6 +701,7 @@ function initAuth() {
     showToast('Account form completed for this prototype.');
   }));
 }
+/** Renders editable barangay details; staff changes persist locally and are visible in resident views. */
 function initBarangayInfo() {
   const form = document.querySelector('#barangay-edit-form');
   const modal = document.querySelector('#barangay-edit-modal');
@@ -714,6 +777,7 @@ function initBarangayInfo() {
 
   render();
 }
+/** Keeps phone inputs in the expected display format without changing their stored field names. */
 function initPhoneFormatting() {
   const trunkline = document.querySelector('#barangay-trunkline');
   const hotline = document.querySelector('#barangay-hotline');
@@ -746,6 +810,7 @@ function initPhoneFormatting() {
     });
   }
 }
+// Page bootstrap: run shared initializers once the page hooks are available; absent page sections safely no-op.
 document.addEventListener('DOMContentLoaded', () => {
   if (!enforceAuthentication()) return;
   initStaffSharedPages(); initLogout(); initPublicNav(); initNavigation(); initServices(); initRequest(); initAdditionalRequestForms(); renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); renderStaffDashboardConcerns(); renderResidentConcerns(); renderStaffConcerns(); initStaffRequest(); initProfile(); initBarangayInfo(); initPhoneFormatting(); initAuth();

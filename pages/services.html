@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body>
+    <!-- Resident service browser; service cards are generated from the shared catalog in js/app.js. -->
+    <!-- Shared header/navigation; links and responsive styles are maintained with css/style.css. -->
     <header class="site-header resident-header">
       <div class="container nav-wrap">
         <button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="resident-sidebar" aria-label="Open navigation menu"><span aria-hidden="true">☰</span></button>
@@ -17,11 +19,13 @@
       </div>
     </header>
     <button class="dashboard-menu-overlay" type="button" aria-label="Close navigation menu" hidden></button>
+    <!-- Shared sidebar; initNavigation in js/app.js depends on its IDs, classes, close button, and nav links. -->
     <aside class="dashboard-sidebar" id="resident-sidebar" aria-label="Resident navigation" aria-hidden="true">
       <div class="dashboard-sidebar-header"><h2>Menu</h2><button class="dashboard-sidebar-close" type="button" aria-label="Close navigation menu">×</button></div>
       <nav class="dashboard-sidebar-nav" aria-label="Resident navigation"><a href="dashboard.html">Dashboard</a><span class="nav-section">Services</span><a href="services.html">Services</a><a href="history.html">History</a><span class="nav-section">Community</span><a href="barangay-info.html">Barangay Information</a><a href="concerns.html">Concerns &amp; Feedback</a><a href="emergency.html">Emergency</a><span class="nav-section">Account</span><a href="profile.html">Profile</a><a href="../index.html">Logout</a></nav>
     </aside>
 
+    <!-- Page-specific content begins here. Keep data hooks used by js/app.js aligned with this markup. -->
     <main class="page-shell">
       <div class="container">
         <section class="page-head services-head">
@@ -33,6 +37,7 @@
           <div class="service-count" aria-live="polite"><strong data-service-count>18</strong><span>services available</span></div>
         </section>
 
+        <!-- Search and category controls feed the catalog renderer; retain their data attributes. -->
         <section class="service-browser" aria-label="Browse barangay services">
           <div class="service-tools">
             <div class="category-tabs" role="tablist" aria-label="Service categories">
@@ -47,6 +52,7 @@
           <p class="empty-state hidden" data-service-empty><strong>No services found</strong><br />Try another keyword or browse all services.</p>
         </section>
 
+        <!-- Selected service details and requirements are filled by the catalog renderer. -->
         <section class="service-detail hidden" id="service-detail" aria-live="polite">
           <div class="service-detail-main">
             <div class="service-detail-heading"><span class="service-icon" data-detail-icon aria-hidden="true"></span><div><p class="eyebrow" data-detail-category></p><h2 data-detail-name></h2></div></div>

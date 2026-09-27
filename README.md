@@ -33,7 +33,7 @@ Role:     Resident
 #### 👨‍💼 Staff / Admin
 
 ```text
-Email:    staff@b.com
+Email:    staff@bl.com
 Password: 123456
 Role:     Staff/Admin
 ```
@@ -553,6 +553,70 @@ BarangayLink is an **academic prototype developed for educational purposes**.
 It is not an official government system and is not intended for production use without further development, security review, backend implementation, database integration, authentication hardening, privacy controls, and proper authorization.
 
 Demo credentials are provided solely for classroom demonstration.
+
+---
+
+## Developer Maintenance Guide
+
+### Project Structure
+
+- `css/style.css` contains shared colors, layouts, navigation, forms, tables, status indicators, and responsive rules.
+- `js/app.js` contains shared page initializers, demo authentication, validation, rendering, and browser-storage logic.
+- `pages/` contains public authentication screens and resident/staff application pages.
+- `assets/` contains static imagery used by the landing page and interface.
+- `index.html` is the public landing page; `README.md` documents the project.
+
+### Where to Make Changes
+
+- Navigation: update the relevant page header/sidebar markup, shared styles in `css/style.css`, and `initNavigation()` / role-specific menu setup in `js/app.js`.
+- Resident services and requests: update `pages/services.html` or `pages/request.html` and the catalog/request handlers in `js/app.js`.
+- Staff request processing: update `pages/staff-dashboard.html` or `pages/staff-request.html` and `renderStaffDashboard()` / `initStaffRequest()` in `js/app.js`.
+- Visual styling: update shared rules in `css/style.css`; check resident and staff pages because many selectors are shared.
+- Demo authentication: update `DEMO_ACCOUNTS`, `initAuth()`, and `enforceAuthentication()` in `js/app.js`. This is only a frontend demonstration, not production authentication.
+
+### Important Browser Data
+
+`js/app.js` currently uses these actual localStorage keys:
+
+- `barangaylink.requests` -> request objects with `reference`, resident name/address/contact/email, `document`, `purpose`, `submittedAt`, `updatedAt`, `status`, and `rejectionReason`.
+- `barangaylink.profile` -> resident name, address, contact, and email used to prefill requests.
+- `barangaylink.sequence` -> numeric suffix used to generate request references.
+- `barangaylink.auth` -> demo identity (`email`, `role`, `name`) used for navigation and presentation.
+- `barangaylink.concerns` -> concern records with ID, type/title, location, description, urgency, reporter, anonymity, submitter, reported date, and status; resident entries can also have contact/address.
+- `barangaylink.barangayInfo` -> barangay profile, population, office/contact, and location fields.
+
+Storage is per browser and can be edited by its user. Do not store real credentials or sensitive production records here. Keep stored object shapes and status values aligned with every renderer that reads them.
+
+### Before Modifying Shared Code
+
+Review these workflows after a shared change:
+
+- Resident login and staff login
+- Navigation and logout
+- Request creation and validation
+- Request tracking and history
+- Staff request review, status updates, approval, and rejection reason
+- Concern submission and staff status update
+- Profile and barangay information editing
+
+### Current Limitations
+
+- BarangayLink is a frontend academic prototype.
+- Data is stored in browser localStorage, not a shared server or real database.
+- Demo authentication and role checks run in client-side JavaScript and are not secure.
+- No production backend, database, or server-side access control is implemented.
+
+### Future Architecture
+
+```text
+HTML + CSS + JavaScript
+          |
+      Java Backend/API
+          |
+      MySQL Database
+```
+
+Replace browser-storage operations and demo authentication with secure API and database operations as part of that future implementation. The current UI should remain usable while those data boundaries are migrated.
 
 ---
 

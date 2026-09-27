@@ -1,3 +1,7 @@
+/* ========================================
+   BRAND TOKENS
+   Shared colors, spacing, and container values. Changing these affects components across the site.
+   ======================================== */
 :root {
   --primary: #123b35;
   --primary-dark: #0d2d2a;
@@ -19,6 +23,10 @@
   --container: 1180px;
 }
 
+/* ========================================
+   GLOBAL BASE AND ACCESSIBILITY
+   Defaults used by every public, resident, and staff page.
+   ======================================== */
 * {
   box-sizing: border-box;
 }
@@ -114,6 +122,10 @@ p {
   color: var(--muted);
 }
 
+/* ========================================
+   HEADER AND SHARED NAVIGATION
+   Header and sidebar selectors are reused across several page templates. Keep HTML hooks in sync.
+   ======================================== */
 .site-header {
   position: sticky;
   top: 0;
@@ -232,6 +244,7 @@ p {
   outline-offset: 2px;
 }
 
+/* Sidebar open/close behavior is coordinated with initNavigation() and the shared sidebar IDs. */
 .dashboard-sidebar {
   position: fixed;
   inset: 0 auto 0 0;
@@ -372,6 +385,10 @@ body.menu-open {
   color: var(--primary);
 }
 
+/* ========================================
+   SHARED BUTTONS
+   Reusable action styles used by forms, cards, and navigation.
+   ======================================== */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -413,6 +430,10 @@ body.menu-open {
   width: 100%;
 }
 
+/* ========================================
+   PUBLIC LANDING PAGE
+   Hero, service overview, workflow, and requirements sections.
+   ======================================== */
 .hero {
   padding: 70px 0 60px;
   background: linear-gradient(180deg, rgba(222, 240, 235, 0.7), rgba(232, 246, 250, 0.4));
@@ -445,6 +466,7 @@ body.menu-open {
   to { transform: scale(1.045); }
 }
 
+/* Respect system motion preferences for decorative animation and transitions. */
 @media (prefers-reduced-motion: reduce) {
   .home-connectivity-banner img {
     animation: none;
@@ -582,6 +604,10 @@ body.menu-open {
   text-align: center;
 }
 
+/* ========================================
+   SERVICE CARDS AND SERVICE BROWSER
+   Catalog cards are rendered by js/app.js; preserve their responsive grid hooks.
+   ======================================== */
 .service-grid,
 .steps-grid,
 .summary-grid,
@@ -768,6 +794,7 @@ body.menu-open {
   text-align: center;
 }
 
+/* Form validation messages and submission notifications are populated by shared JavaScript helpers. */
 .field-error {
   min-height: 1.2em;
   margin: 0;
@@ -915,6 +942,7 @@ textarea[aria-invalid="true"] {
   font-weight: 800;
 }
 
+/* Shared footer layout for public-facing content. */
 .site-footer {
   background: var(--primary-dark);
   color: #dfe9e8;
@@ -940,6 +968,10 @@ textarea[aria-invalid="true"] {
   gap: 0.5rem;
 }
 
+/* ========================================
+   AUTHENTICATION AND FORM LAYOUTS
+   Shared form styles for login, registration, requests, and profile pages.
+   ======================================== */
 .auth-page {
   min-height: 100vh;
   display: flex;
@@ -1103,6 +1135,10 @@ textarea {
   margin-bottom: 0;
 }
 
+/* ========================================
+   DASHBOARD, CARDS, TABLES, AND STATUS UI
+   Shared page containers and data display components.
+   ======================================== */
 .page-shell {
   padding: 2rem 0 4rem;
 }
@@ -1156,6 +1192,7 @@ textarea {
   gap: 1.5rem;
 }
 
+/* Shared card surfaces for request details, panels, info blocks, and data tables. */
 .request-card,
 .panel-card,
 .info-card,
@@ -1278,6 +1315,7 @@ textarea {
   flex-wrap: wrap;
 }
 
+/* Status badges share the request and concern status values rendered by js/app.js. */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -1457,6 +1495,7 @@ textarea {
   overflow-x: auto;
 }
 
+/* Data table styling is shared by resident history and staff review queues. */
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -1637,6 +1676,7 @@ textarea {
   box-shadow: none;
 }
 
+/* Shared modal shell; open/close state is toggled by the page bootstrap handlers. */
 .modal {
   display: none;
   position: fixed;
@@ -1673,6 +1713,10 @@ textarea {
   display: none !important;
 }
 
+/* ========================================
+   RESPONSIVE BREAKPOINTS
+   Keep navigation, card grids, and tables usable on tablet and phone widths.
+   ======================================== */
 @media (max-width: 980px) {
   .service-grid,
   .service-detail,

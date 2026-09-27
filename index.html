@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body class="home-page">
+    <!-- Public landing page: anchors in the header navigate to the service, workflow, and requirements sections. -->
+    <!-- Shared header/navigation; links and responsive styles are maintained with css/style.css. -->
     <header class="site-header resident-header home-header">
       <div class="container nav-wrap">
         
@@ -24,15 +26,19 @@
       </div>
     </header>
     <button class="dashboard-menu-overlay" type="button" aria-label="Close navigation menu" hidden></button>
+    <!-- Shared sidebar; initNavigation in js/app.js depends on its IDs, classes, close button, and nav links. -->
     <aside class="dashboard-sidebar" id="resident-sidebar" aria-label="Resident navigation" aria-hidden="true">
       <div class="dashboard-sidebar-header"><h2>Menu</h2><button class="dashboard-sidebar-close" type="button" aria-label="Close navigation menu">×</button></div>
       <nav class="dashboard-sidebar-nav" aria-label="Resident navigation"><a href="pages/dashboard.html">Dashboard</a><span class="nav-section">Services</span><a href="pages/services.html">Services</a><a href="pages/history.html">History</a><span class="nav-section">Community</span><a href="pages/barangay-info.html">Barangay Information</a><a href="pages/concerns.html">Concerns &amp; Feedback</a><a href="pages/emergency.html">Emergency</a><span class="nav-section">Account</span><a href="pages/register.html">Sign Up</a><a href="pages/login.html">Log In</a></nav>
     </aside>
 
+    <!-- Page-specific content begins here. Keep data hooks used by js/app.js aligned with this markup. -->
     <main>
+      <!-- Brand banner shown directly below the public navigation. -->
       <section class="home-connectivity-banner" aria-label="Residents connected to barangay services">
         <img src="assets/images/barangay-connectivity-banner.png" alt="Residents and barangay staff connected through easier online document requests" />
       </section>
+      <!-- Landing page introduction and primary resident actions. -->
       <section class="hero">
         <div class="container hero-grid home-hero-grid">
           <div class="hero-copy">
@@ -135,6 +141,7 @@
       </section>
     </main>
 
+    <!-- Shared public footer with supporting links. -->
     <footer class="site-footer" id="contact">
       <div class="container footer-grid">
         <div>

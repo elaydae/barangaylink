@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body>
+    <!-- Barangay profile shown to residents and editable by staff using the same stored information. -->
+    <!-- Shared header/navigation; links and responsive styles are maintained with css/style.css. -->
     <header class="site-header resident-header">
       <div class="container nav-wrap">
         <button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="resident-sidebar" aria-label="Open navigation menu"><span aria-hidden="true">☰</span></button>
@@ -16,12 +18,14 @@
       </div>
     </header>
     <button class="dashboard-menu-overlay" type="button" aria-label="Close navigation menu" hidden></button>
+    <!-- Shared sidebar; initNavigation in js/app.js depends on its IDs, classes, close button, and nav links. -->
     <aside class="dashboard-sidebar" id="resident-sidebar" aria-label="Resident navigation" aria-hidden="true">
       <div class="dashboard-sidebar-header"><h2>Menu</h2><button class="dashboard-sidebar-close" type="button" aria-label="Close navigation menu">×</button></div>
       <nav class="dashboard-sidebar-nav" aria-label="Resident navigation"><a href="dashboard.html">Dashboard</a><span class="nav-section">Services</span><a href="services.html">Services</a><a href="history.html">History</a><span class="nav-section">Community</span><a href="barangay-info.html">Barangay Information</a><a href="concerns.html">Concerns &amp; Feedback</a><a href="emergency.html">Emergency</a><span class="nav-section">Account</span><a href="profile.html">Profile</a><a href="../index.html">Logout</a></nav>
     </aside>
 
     <div class="container">
+      <!-- Page-specific content begins here. Keep data hooks used by js/app.js aligned with this markup. -->
       <main class="page-shell">
       <section class="page-head">
   <p class="eyebrow">Barangay information</p>
@@ -43,6 +47,7 @@
   <p>Everything you need to know about your barangay &ndash; profile, officials, office hours, and how to reach us.</p>
 </section>
 
+        <!-- General barangay details are filled from defaults plus the locally saved profile. -->
         <section class="panel-card" aria-label="Barangay profile">
           <h2>Barangay Profile</h2>
 <p data-barangay-display="description">Barangay San Isidro is a residential and commercial community committed to responsive, transparent public service. The barangay serves its residents through streamlined online and over-the-counter transactions, regular community programs, and an active peace and order council.</p>
@@ -66,6 +71,7 @@
           </div>
         </section>
 
+        <!-- Officials are static page content; update this list when the displayed roster changes. -->
         <section class="panel-card" aria-label="Barangay officials">
           <h2>Barangay Officials</h2>
           <p>Term of office: 2023&ndash;2026</p>
@@ -219,6 +225,7 @@
       </button>
     </div>
 
+    <!-- Staff edit form uses initBarangayInfo and saves to the shared barangay information key. -->
     <form id="barangay-edit-form">
       <div class="field">
         <label for="barangay-name">Barangay Name</label>

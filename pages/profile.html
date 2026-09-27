@@ -17,6 +17,8 @@
   </head>
 
   <body>
+    <!-- Resident profile and account forms; profile data is shared with request prefill, while password UI is prototype-only. -->
+    <!-- Shared header/navigation; links and responsive styles are maintained with css/style.css. -->
     <header class="site-header resident-header">
       <div class="container nav-wrap">
         <button
@@ -51,6 +53,7 @@
       hidden
     ></button>
 
+    <!-- Shared sidebar; initNavigation in js/app.js depends on its IDs, classes, close button, and nav links. -->
     <aside
       class="dashboard-sidebar"
       id="resident-sidebar"
@@ -90,6 +93,7 @@
       </nav>
     </aside>
 
+    <!-- Page-specific content begins here. Keep data hooks used by js/app.js aligned with this markup. -->
     <main class="page-shell">
       <div class="container">
 
@@ -185,6 +189,7 @@
 
         <h2 id="modal-title">Edit Profile</h2>
 
+        <!-- This form updates the shared stored profile used to prefill document requests. -->
         <form data-profile-form>
 
           <div class="field">
@@ -268,6 +273,7 @@
           Enter your current password and create a new password.
         </p>
 
+        <!-- Prototype password form UI; it does not perform a backend password change. -->
         <form id="change-password-form">
 
           <div class="field">

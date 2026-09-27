@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body>
+    <!-- Shared resident/staff concern page. Role-specific panels are toggled by js/app.js based on demo auth state. -->
+    <!-- Shared header/navigation; links and responsive styles are maintained with css/style.css. -->
     <header class="site-header resident-header">
       <div class="container nav-wrap">
         <button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="resident-sidebar" aria-label="Open navigation menu"><span aria-hidden="true">☰</span></button>
@@ -16,11 +18,13 @@
       </div>
     </header>
     <button class="dashboard-menu-overlay" type="button" aria-label="Close navigation menu" hidden></button>
+    <!-- Shared sidebar; initNavigation in js/app.js depends on its IDs, classes, close button, and nav links. -->
     <aside class="dashboard-sidebar" id="resident-sidebar" aria-label="Resident navigation" aria-hidden="true">
       <div class="dashboard-sidebar-header"><h2>Menu</h2><button class="dashboard-sidebar-close" type="button" aria-label="Close navigation menu">×</button></div>
       <nav class="dashboard-sidebar-nav" aria-label="Resident navigation"><a href="dashboard.html">Dashboard</a><span class="nav-section">Services</span><a href="services.html">Services</a><a href="history.html">History</a><span class="nav-section">Community</span><a href="barangay-info.html">Barangay Information</a><a href="concerns.html">Concerns &amp; Feedback</a><a href="emergency.html">Emergency</a><span class="nav-section">Account</span><a href="profile.html">Profile</a><a href="../index.html">Logout</a></nav>
     </aside>
 
+      <!-- Page-specific content begins here. Keep data hooks used by js/app.js aligned with this markup. -->
       <main class="page-shell">
       <div class="container">
         <section class="page-head" data-resident-only>
@@ -35,6 +39,7 @@
           <p>Concerns submitted by residents. Update the status as the barangay works on each one.</p>
         </section>
 
+        <!-- Staff concern queue; status selectors are populated and saved by renderStaffConcerns. -->
         <section class="table-card hidden" data-staff-only aria-label="Reported concerns from residents">
           <div class="search-filter-row">
             <div class="field">
@@ -75,6 +80,7 @@
         </section>
 
         <section class="request-card" data-resident-only>
+          <!-- Resident concern form; step validation and local persistence are handled by initAdditionalRequestForms. -->
           <form class="request-form" data-concern-form data-success-message="Your concern has been reported successfully. The barangay will review it and update the status below." novalidate>
             <div class="step-indicator" aria-live="polite">
               <span class="step-label" data-step-label>Step 1 of 4</span>
@@ -195,6 +201,7 @@
           </form>
         </section>
 
+        <!-- Resident concern list reads the same records as the staff queue. -->
         <section class="request-card" aria-label="My reported concerns" data-resident-only>
           <div class="status-row">
             <h2>My Reported Concerns</h2>
