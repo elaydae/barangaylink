@@ -19,14 +19,7 @@ const serviceCatalog = [
   { name: 'General Certification Request', category: 'Resident Services', icon: '📁', description: 'Start a request for a resident certification not listed as a specific service.', requirements: ['Valid government ID', 'Complete resident information', 'Detailed purpose statement'], processing: '3 to 5 working days' }
 ];
 
-const STORAGE_KEYS = {
-  requests: 'barangaylink.requests',
-  profile: 'barangaylink.profile',
-  sequence: 'barangaylink.sequence',
-  auth: 'barangaylink.auth',
-  concerns: 'barangaylink.concerns',
-  barangayInfo: 'barangaylink.barangayInfo'
-};
+const STORAGE_KEYS = { requests: 'barangaylink.requests', profile: 'barangaylink.profile', sequence: 'barangaylink.sequence', auth: 'barangaylink.auth', concerns: 'barangaylink.concerns' };
 const DEMO_ACCOUNTS = [
   { email: 'demo@bl.com', password: '123456', role: 'resident', name: 'Demo Resident' },
   { email: 'staff@bl.com', password: '123456', role: 'staff', name: 'Demo Staff/Admin' }
@@ -34,21 +27,8 @@ const DEMO_ACCOUNTS = [
 const STATUS_LABELS = { pending: 'Pending Review', review: 'Under Review', approved: 'Approved', rejected: 'Rejected', ready: 'Ready for Release', released: 'Released' };
 const STATUS_ORDER = ['pending', 'review', 'approved', 'ready', 'released'];
 const defaultProfile = { name: 'Juan Dela Cruz', address: '123 Rizal Street, Barangay San Isidro', contact: '0917-123-4567', email: 'juan.delacruz@email.com' };
-const defaultBarangayInfo = {
-  name: 'Barangay San Isidro',
-  description: 'Barangay San Isidro is a residential and commercial community committed to responsive, transparent public service. The barangay serves its residents through streamlined online and over-the-counter transactions, regular community programs, and an active peace and order council.',
-  classification: 'Urban Barangay',
-  population: '8,450',
-  puroks: '7',
-  established: '1987',
-  trunkline: '(02) 555-0148',
-  hotline: '0917-000-1122',
-  email: 'barangaysanisidro@lgu.gov.ph',
-  facebook: 'facebook.com/BarangaySanIsidroOfficial',
-  address: '123 Rizal Street, Barangay San Isidro',
-  locationDescription: 'The barangay hall is located beside the covered court and public elementary school, a 5-minute walk from the main highway jeepney terminal.'
-};
-const STAFF_NAV_HTML = '<a href="staff-dashboard.html">Staff Dashboard</a><a href="staff-request.html">Request Review</a><a href="concerns.html">Reported Concerns</a><a href="barangay-info.html">Barangay Information</a><a href="emergency.html">Emergency</a>';
+
+const STAFF_NAV_HTML = '<a href="staff-dashboard.html">Staff Dashboard</a><a href="staff-dashboard.html">Request Queue</a><a href="staff-request.html">Request Review</a><a href="concerns.html">Reported Concerns</a><a href="barangay-info.html">Barangay Information</a><a href="emergency.html">Emergency</a><a href="login.html">Logout</a>';
 const CONCERN_STATUS = {
   submitted: { label: 'Submitted', badge: 'status-pending' },
   progress: { label: 'In Progress', badge: 'status-review' },
@@ -77,18 +57,6 @@ function getRequests() { const requests = readStorage(STORAGE_KEYS.requests, [])
 function saveRequests(requests) { writeStorage(STORAGE_KEYS.requests, requests); window.dispatchEvent(new Event('barangaylink:data')); }
 function getProfile() { const profile = readStorage(STORAGE_KEYS.profile, {}); return { ...defaultProfile, ...(profile && typeof profile === 'object' && !Array.isArray(profile) ? profile : {}) }; }
 function saveProfile(profile) { writeStorage(STORAGE_KEYS.profile, profile); window.dispatchEvent(new Event('barangaylink:data')); }
-function getBarangayInfo() {
-  const stored = readStorage(STORAGE_KEYS.barangayInfo, {});
-  return {
-    ...defaultBarangayInfo,
-    ...(stored && typeof stored === 'object' && !Array.isArray(stored) ? stored : {})
-  };
-}
-
-function saveBarangayInfo(info) {
-  writeStorage(STORAGE_KEYS.barangayInfo, info);
-  window.dispatchEvent(new Event('barangaylink:data'));
-}
 function getAuth() { const auth = readStorage(STORAGE_KEYS.auth, null); return auth && (auth.role === 'resident' || auth.role === 'staff') ? auth : null; }
 function setAuth(account) { writeStorage(STORAGE_KEYS.auth, { email: account.email, role: account.role, name: account.name }); }
 function clearAuth() { try { localStorage.removeItem(STORAGE_KEYS.auth); } catch (error) {} }
@@ -121,108 +89,17 @@ function initNavigation() {
   const sidebar = document.querySelector('#resident-sidebar, #staff-sidebar');
   const close = document.querySelector('.dashboard-sidebar-close');
   const overlay = document.querySelector('.dashboard-menu-overlay');
-
   if (!toggle || !sidebar || !close || !overlay) return;
-
-  const isStaff = getAuth()?.role === 'staff';
-
-  const closeMenu = (restoreFocus = true) => {
-    toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', 'Open navigation menu');
-
-    sidebar.setAttribute('aria-hidden', 'true');
-    sidebar.classList.remove('is-open');
-
-    overlay.classList.remove('is-open');
-    overlay.hidden = true;
-
-    document.body.classList.remove('menu-open');
-
-    if (isStaff) {
-      document.body.classList.add('staff-sidebar-collapsed');
-      toggle.hidden = false;
-    }
-
-    if (restoreFocus) toggle.focus();
-  };
-
-  const openMenu = () => {
-    toggle.setAttribute('aria-expanded', 'true');
-    toggle.setAttribute('aria-label', 'Close navigation menu');
-
-    sidebar.setAttribute('aria-hidden', 'false');
-    sidebar.classList.add('is-open');
-
-    if (isStaff) {
-      document.body.classList.remove('staff-sidebar-collapsed');
-
-      // Hide hamburger while staff sidebar is open
-      toggle.hidden = true;
-
-      // Staff sidebar behaves like a fixed pane,
-      // so don't darken the whole page.
-      overlay.hidden = true;
-      overlay.classList.remove('is-open');
-      document.body.classList.remove('menu-open');
-    } else {
-      overlay.hidden = false;
-      overlay.classList.add('is-open');
-      document.body.classList.add('menu-open');
-    }
-  };
-
-  toggle.addEventListener('click', () => {
-    if (toggle.getAttribute('aria-expanded') === 'true') {
-      closeMenu();
-    } else {
-      openMenu();
-    }
-  });
-
+  const closeMenu = (restoreFocus = true) => { toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-label', 'Open navigation menu'); sidebar.setAttribute('aria-hidden', 'true'); sidebar.classList.remove('is-open'); overlay.classList.remove('is-open'); overlay.hidden = true; document.body.classList.remove('menu-open'); if (restoreFocus) toggle.focus(); };
+  const openMenu = () => { toggle.setAttribute('aria-expanded', 'true'); toggle.setAttribute('aria-label', 'Close navigation menu'); sidebar.setAttribute('aria-hidden', 'false'); sidebar.classList.add('is-open'); overlay.hidden = false; overlay.classList.add('is-open'); document.body.classList.add('menu-open'); window.setTimeout(() => close.focus(), 50); };
+  toggle.addEventListener('click', () => toggle.getAttribute('aria-expanded') === 'true' ? closeMenu() : openMenu());
   close.addEventListener('click', () => closeMenu());
-
-  overlay.addEventListener('click', () => {
-    if (!isStaff) closeMenu();
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (
-      event.key === 'Escape' &&
-      toggle.getAttribute('aria-expanded') === 'true'
-    ) {
-      closeMenu();
-    }
-  });
-
-  const currentPage =
-    window.location.pathname.split('/').pop() || 'index.html';
-
-  const activePage =
-    currentPage === 'request.html'
-      ? 'services.html'
-      : currentPage;
-
+  overlay.addEventListener('click', () => closeMenu());
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') closeMenu(); });
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  const activePage = currentPage === 'request.html' ? 'services.html' : currentPage;
   let assigned = false;
-
-  sidebar.querySelectorAll('a[href]').forEach((link) => {
-    const active =
-      link.getAttribute('href') === activePage && !assigned;
-
-    link.classList.toggle('active', active);
-
-    if (active) {
-      link.setAttribute('aria-current', 'page');
-      assigned = true;
-    } else {
-      link.removeAttribute('aria-current');
-    }
-  });
-
-  // Staff sidebar starts OPEN automatically.
-  if (isStaff) {
-    document.body.classList.add('staff-mode');
-    openMenu();
-  }
+  sidebar.querySelectorAll('a[href]').forEach((link) => { const active = link.getAttribute('href') === activePage && !assigned; link.classList.toggle('active', active); if (active) { link.setAttribute('aria-current', 'page'); assigned = true; } else link.removeAttribute('aria-current'); });
 }
 
 function enforceAuthentication() {
@@ -554,116 +431,10 @@ function initAuth() {
     showToast('Account form completed for this prototype.');
   }));
 }
-function initBarangayInfo() {
-  const form = document.querySelector('#barangay-edit-form');
-  const modal = document.querySelector('#barangay-edit-modal');
-  const editButton = document.querySelector('[data-open-barangay-edit]');
 
-  if (!form || !modal) return;
-
-  const render = () => {
-    const info = getBarangayInfo();
-
-    document.querySelectorAll('[data-barangay-display]').forEach((element) => {
-      const key = element.dataset.barangayDisplay;
-
-      if (info[key] !== undefined) {
-        element.textContent = info[key];
-      }
-    });
-  };
-
-  const openModal = () => {
-    const auth = getAuth();
-
-    if (auth?.role !== 'staff') return;
-
-    const info = getBarangayInfo();
-
-    Object.entries(info).forEach(([key, value]) => {
-      const field = form.elements[key];
-
-      if (field) {
-        field.value = value;
-      }
-    });
-
-    modal.classList.add('show');
-    modal.setAttribute('aria-hidden', 'false');
-  };
-
-  const closeModal = () => {
-    modal.classList.remove('show');
-    modal.setAttribute('aria-hidden', 'true');
-  };
-
-  if (editButton) {
-    editButton.addEventListener('click', openModal);
-  }
-
-  document.querySelectorAll('[data-close-barangay-edit]').forEach((button) => {
-    button.addEventListener('click', closeModal);
-  });
-
-  modal.addEventListener('click', (event) => {
-    if (event.target === modal) {
-      closeModal();
-    }
-  });
-
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    const auth = getAuth();
-
-    if (auth?.role !== 'staff') return;
-
-    const data = Object.fromEntries(new FormData(form));
-
-    saveBarangayInfo(data);
-    render();
-    closeModal();
-
-    showToast('Barangay information updated.');
-  });
-
-  render();
-}
-function initPhoneFormatting() {
-  const trunkline = document.querySelector('#barangay-trunkline');
-  const hotline = document.querySelector('#barangay-hotline');
-
-  if (trunkline) {
-    trunkline.addEventListener('input', () => {
-      let digits = trunkline.value.replace(/\D/g, '').slice(0, 9);
-
-      if (digits.length <= 2) {
-        trunkline.value = digits ? `(${digits}` : '';
-      } else if (digits.length <= 5) {
-        trunkline.value = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-      } else {
-        trunkline.value = `(${digits.slice(0, 2)}) ${digits.slice(2, 5)}-${digits.slice(5)}`;
-      }
-    });
-  }
-
-  if (hotline) {
-    hotline.addEventListener('input', () => {
-      let digits = hotline.value.replace(/\D/g, '').slice(0, 11);
-
-      if (digits.length <= 4) {
-        hotline.value = digits;
-      } else if (digits.length <= 7) {
-        hotline.value = `${digits.slice(0, 4)}-${digits.slice(4)}`;
-      } else {
-        hotline.value = `${digits.slice(0, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
-      }
-    });
-  }
-}
 document.addEventListener('DOMContentLoaded', () => {
   if (!enforceAuthentication()) return;
-  initStaffSharedPages(); initLogout(); initPublicNav(); initNavigation(); initServices(); initRequest(); initAdditionalRequestForms(); renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); renderStaffDashboardConcerns(); renderResidentConcerns(); renderStaffConcerns(); initStaffRequest(); initProfile(); initBarangayInfo(); initPhoneFormatting(); initAuth();
+  initStaffSharedPages(); initLogout(); initPublicNav(); initNavigation(); initServices(); initRequest(); initAdditionalRequestForms(); renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); renderStaffDashboardConcerns(); renderResidentConcerns(); renderStaffConcerns(); initStaffRequest(); initProfile(); initAuth();
   document.querySelectorAll('.toggle-password').forEach((button) => button.addEventListener('click', () => { const input = button.parentElement.querySelector('input'); const visible = input.type === 'password'; input.type = visible ? 'text' : 'password'; button.textContent = visible ? 'Hide' : 'Show'; button.setAttribute('aria-label', visible ? 'Hide password' : 'Show password'); }));
   const modal = document.querySelector('.modal'); const trigger = document.querySelector('[data-open-modal]'); const close = document.querySelector('[data-close-modal]'); if (trigger && modal) trigger.addEventListener('click', () => modal.classList.add('show')); if (close && modal) close.addEventListener('click', () => modal.classList.remove('show')); if (modal) { modal.addEventListener('click', (event) => { if (event.target === modal) modal.classList.remove('show'); }); document.addEventListener('keydown', (event) => { if (event.key === 'Escape') modal.classList.remove('show'); }); }
   window.addEventListener('barangaylink:data', () => { renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); renderStaffDashboardConcerns(); renderResidentConcerns(); renderStaffConcerns(); });
