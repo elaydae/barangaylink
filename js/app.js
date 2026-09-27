@@ -386,7 +386,21 @@ function initAdditionalRequestForms() {
 }
 
 function statusClass(status) { return `status-${status === 'review' ? 'review' : status}`; }
-function renderDashboard() { const container = document.querySelector('[data-dashboard-requests]'); if (!container) return; const requests = getRequests(); const stats = { total: requests.length, pending: 0, review: 0, approved: 0, ready: 0, released: 0 }; requests.forEach((request) => { if (stats[request.status] !== undefined) stats[request.status] += 1; }); Object.keys(stats).forEach((key) => { const element = document.querySelector(`[data-stat="${key}"]`); if (element) element.textContent = stats[key]; }); container.innerHTML = requests.slice(0, 5).map((request) => `<article class="request-item"><div class="request-top"><div><h3>${escapeHtml(request.document)}</h3><p>${escapeHtml(request.reference)}</p></div><span class="status-badge ${statusClass(request.status)}">${escapeHtml(STATUS_LABELS[request.status] || request.status)}</span></div><div class="request-meta"><p>Date: ${escapeHtml(formatDate(request.submittedAt))}</p><p>Status: ${escapeHtml(STATUS_LABELS[request.status] || request.status)}</p></div><div class="table-actions"><a class="btn btn-ghost small" href="tracking.html?reference=${encodeURIComponent(request.reference)}">Track Request</a></div></article>`).join(''); const empty = document.querySelector('[data-dashboard-empty]'); if (empty) empty.classList.toggle('hidden', requests.length > 0); }
+function renderDashboard() {
+  const container = document.querySelector('[data-dashboard-requests]');
+  if (!container) return;
+  const requests = getRequests();
+  const stats = { total: requests.length, pending: 0, review: 0, approved: 0, ready: 0, released: 0 };
+  requests.forEach((request) => { if (stats[request.status] !== undefined) stats[request.status] += 1; });
+  Object.keys(stats).forEach((key) => {
+    const element = document.querySelector(`[data-stat="${key}"]`);
+    if (element) element.textContent = stats[key];
+  });
+  const activeRequests = requests.filter((request) => !['released', 'rejected'].includes(request.status));
+  container.innerHTML = activeRequests.slice(0, 5).map((request) => `<tr data-status="${escapeHtml(request.status)}"><td>${escapeHtml(request.reference)}</td><td>${escapeHtml(request.document)}</td><td>${escapeHtml(formatDate(request.submittedAt))}</td><td><span class="status-badge ${statusClass(request.status)}">${escapeHtml(STATUS_LABELS[request.status] || request.status)}</span></td><td><a class="action-link" href="tracking.html?reference=${encodeURIComponent(request.reference)}">Track Request</a></td></tr>`).join('');
+  const empty = document.querySelector('[data-dashboard-empty]');
+  if (empty) empty.classList.toggle('hidden', activeRequests.length > 0);
+}
 
 function renderHistory() { const body = document.querySelector('[data-history-rows]'); if (!body) return; const requests = getRequests(); body.innerHTML = requests.map((request) => `<tr data-status="${escapeHtml(request.status)}" data-document="${escapeHtml(request.document)}"><td>${escapeHtml(request.reference)}</td><td>${escapeHtml(request.document)}</td><td>${escapeHtml(formatDate(request.submittedAt))}</td><td><span class="status-badge ${statusClass(request.status)}">${escapeHtml(STATUS_LABELS[request.status] || request.status)}</span></td><td>${escapeHtml(formatDate(request.updatedAt))}</td><td><a href="tracking.html?reference=${encodeURIComponent(request.reference)}" class="action-link">Track Request</a></td></tr>`).join(''); const empty = document.querySelector('[data-history-empty]'); if (empty) empty.classList.toggle('hidden', requests.length > 0); const search = document.querySelector('#request-search'); const status = document.querySelector('#statusFilter'); const documentFilter = document.querySelector('#documentFilter'); const filter = () => body.querySelectorAll('tr').forEach((row) => { const query = search ? search.value.toLowerCase() : ''; row.hidden = !(`${row.textContent}`.toLowerCase().includes(query) && (!status || status.value === 'all' || row.dataset.status === status.value) && (!documentFilter || documentFilter.value === 'all' || row.dataset.document === documentFilter.value)); }); [search, status, documentFilter].filter(Boolean).forEach((field) => field.addEventListener('input', filter)); filter(); }
 

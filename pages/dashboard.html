@@ -53,7 +53,7 @@
     </aside>
 
     <main class="page-shell">
-      <div class="container">
+      <div class="container dashboard-content">
         <section class="page-head">
           <p class="eyebrow">Resident dashboard</p>
           <h1>Welcome, <span data-profile-name>Juan Dela Cruz</span></h1>
@@ -61,109 +61,67 @@
           <a href="request.html" class="btn btn-primary">+ Request a Document</a>
         </section>
 
-        <section class="summary-grid" aria-label="Request summary" data-dashboard-stats>
-          <article class="summary-card">
+        <section class="summary-grid dashboard-stat-grid" aria-label="Request summary" data-dashboard-stats>
+          <article class="summary-tile">
             <span class="label">Total Requests</span>
-            <strong data-stat="total">0</strong>
+            <div class="value" data-stat="total">0</div>
           </article>
-          <article class="summary-card">
+          <article class="summary-tile">
             <span class="label">Pending</span>
-            <strong data-stat="pending">0</strong>
+            <div class="value" data-stat="pending">0</div>
           </article>
-          <article class="summary-card">
+          <article class="summary-tile">
             <span class="label">Under Review</span>
-            <strong data-stat="review">0</strong>
+            <div class="value" data-stat="review">0</div>
           </article>
-          <article class="summary-card">
-            <span class="label">Ready for Release</span>
-            <strong data-stat="ready">0</strong>
-          </article>
-          <article class="summary-card">
+          <article class="summary-tile">
             <span class="label">Approved</span>
-            <strong data-stat="approved">0</strong>
+            <div class="value" data-stat="approved">0</div>
           </article>
-          <article class="summary-card">
+          <article class="summary-tile">
+            <span class="label">Ready for Release</span>
+            <div class="value" data-stat="ready">0</div>
+          </article>
+          <article class="summary-tile">
             <span class="label">Released</span>
-            <strong data-stat="released">0</strong>
+            <div class="value" data-stat="released">0</div>
           </article>
         </section>
 
-        <section class="content-grid">
-          <article class="request-card">
-            <div class="status-row">
-              <h2>Active Requests</h2>
-              <a href="history.html" class="text-link">View history</a>
-            </div>
-
-            <div class="request-list" data-dashboard-requests>
-              <article class="request-item dashboard-placeholder">
-                <div class="request-top">
-                  <div>
-                    <h3>Barangay Clearance</h3>
-                    <p>Request ID: REQ-2026-00124</p>
-                  </div>
-                  <span class="status-badge status-review">Under Review</span>
-                </div>
-
-                <div class="request-meta">
-                  <p>Date Requested: September 2, 2026</p>
-                  <p>Status: Under Review</p>
-                </div>
-
-                <div class="progress-steps" aria-label="Request timeline">
-                  <span class="done">Submitted</span>
-                  <span class="active">Under Review</span>
-                  <span>Approved</span>
-                  <span>Ready for Release</span>
-                </div>
-
-                <div class="table-actions">
-                  <button type="button" class="btn btn-ghost small">View Request</button>
-                </div>
-              </article>
-
-              <article class="request-item dashboard-placeholder">
-                <div class="request-top">
-                  <div>
-                    <h3>Certificate of Residency</h3>
-                    <p>Request ID: REQ-2026-00118</p>
-                  </div>
-                  <span class="status-badge status-ready">Ready for Release</span>
-                </div>
-
-                <div class="request-meta">
-                  <p>Date Requested: August 18, 2026</p>
-                  <p>Status: Ready for Release</p>
-                </div>
-
-                <div class="progress-steps" aria-label="Request timeline">
-                  <span class="done">Submitted</span>
-                  <span class="done">Under Review</span>
-                  <span class="done">Approved</span>
-                  <span class="active">Ready for Release</span>
-                </div>
-
-                <div class="table-actions">
-                  <button type="button" class="btn btn-ghost small">View Request</button>
-                </div>
-              </article>
-            </div>
+        <section class="table-card resident-active-requests" aria-label="Active requests">
+          <div class="status-row">
+            <h2>Active Requests</h2>
+            <a href="history.html" class="text-link">View history</a>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table" aria-label="Resident requests">
+              <thead>
+                <tr>
+                  <th>Request ID</th>
+                  <th>Document</th>
+                  <th>Date Requested</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody data-dashboard-requests></tbody>
+            </table>
             <div class="empty-state hidden" data-dashboard-empty>
               <h3>No requests yet.</h3>
               <p>Browse services to submit your first request.</p>
               <a class="btn btn-primary" href="services.html">Browse Services</a>
             </div>
-          </article>
+          </div>
+        </section>
 
-          <aside class="info-card">
-            <h3>Quick Links</h3>
-            <ul class="check-list">
-              <li><a href="request.html">Submit a request</a></li>
-              <li><a href="tracking.html">Track a request</a></li>
-              <li><a href="services.html">View services</a></li>
-              <li><a href="profile.html">Update profile</a></li>
-            </ul>
-          </aside>
+        <section class="info-card dashboard-quick-links">
+          <h3>Quick Links</h3>
+          <ul class="dashboard-quick-link-list">
+            <li><a href="request.html">Submit a request</a></li>
+            <li><a href="tracking.html">Track a request</a></li>
+            <li><a href="services.html">View services</a></li>
+            <li><a href="profile.html">Update profile</a></li>
+          </ul>
         </section>
       </div>
     </main>
