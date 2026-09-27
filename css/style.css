@@ -202,6 +202,36 @@ p {
   background: var(--soft-green);
 }
 
+.dashboard-sidebar-reopen {
+  display: none;
+  position: fixed;
+  z-index: 31;
+  top: 50%;
+  left: 0;
+  width: 42px;
+  height: 58px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0 12px 12px 0;
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(13, 45, 42, 0.2);
+  font-size: 1.7rem;
+  line-height: 1;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.dashboard-sidebar-reopen:hover {
+  background: var(--primary-dark, #164b42);
+}
+
+.dashboard-sidebar-reopen:focus-visible {
+  outline: 3px solid #d2a83e;
+  outline-offset: 2px;
+}
+
 .dashboard-sidebar {
   position: fixed;
   inset: 0 auto 0 0;
@@ -2108,11 +2138,7 @@ button.action-link {
 }
 
 /* Hamburger should only show after sidebar is closed */
-.staff-mode:not(.staff-sidebar-collapsed) .dashboard-nav-toggle {
-  display: none;
-}
-
-.staff-mode.staff-sidebar-collapsed .dashboard-nav-toggle {
+.staff-mode.staff-sidebar-collapsed .dashboard-sidebar-reopen {
   display: inline-flex;
 }
 /* Keep staff header controls aligned to the left */
@@ -2170,7 +2196,17 @@ button.action-link {
     margin-left: 0;
   }
 
-  .resident-menu-layout .dashboard-nav-toggle {
+  .resident-menu-layout.resident-sidebar-collapsed .dashboard-sidebar-reopen {
     display: inline-flex;
+  }
+}
+
+@media (max-width: 760px) {
+  .resident-dashboard .dashboard-sidebar-reopen {
+    display: inline-flex;
+  }
+
+  .resident-dashboard.menu-open .dashboard-sidebar-reopen {
+    display: none;
   }
 }

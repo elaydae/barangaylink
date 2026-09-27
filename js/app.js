@@ -117,7 +117,7 @@ function showToast(message, type = 'success') {
 }
 
 function initNavigation() {
-  const toggle = document.querySelector('.dashboard-nav-toggle');
+  const toggle = document.querySelector('.dashboard-nav-toggle, .dashboard-sidebar-reopen');
   const sidebar = document.querySelector('#resident-sidebar, #staff-sidebar');
   const close = document.querySelector('.dashboard-sidebar-close');
   const overlay = document.querySelector('.dashboard-menu-overlay');
@@ -176,7 +176,7 @@ function initNavigation() {
     if (isStaff) {
       document.body.classList.remove('staff-sidebar-collapsed');
 
-      // Hide hamburger while staff sidebar is open
+      // Keep the menu reopen control hidden while the staff sidebar is open.
       toggle.hidden = true;
 
       // Staff sidebar behaves like a fixed pane,
@@ -610,7 +610,7 @@ function initStaffSharedPages() {
   if (nav) { nav.setAttribute('aria-label', 'Staff navigation'); nav.innerHTML = STAFF_NAV_HTML; }
   const title = sidebar.querySelector('.dashboard-sidebar-header h2');
   if (title) title.textContent = 'BarangayLink';
-  document.querySelector('.dashboard-nav-toggle')?.setAttribute('aria-controls', 'staff-sidebar');
+  document.querySelector('.dashboard-nav-toggle, .dashboard-sidebar-reopen')?.setAttribute('aria-controls', 'staff-sidebar');
   document.querySelector('.site-header')?.classList.add('staff-header');
   const actions = document.querySelector('.nav-actions');
   if (actions) actions.innerHTML = '<a href="login.html" class="btn btn-primary">Logout</a>';
