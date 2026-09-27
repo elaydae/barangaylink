@@ -491,6 +491,9 @@ body.menu-open {
 }
 
 .service-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -518,9 +521,18 @@ body.menu-open {
 
 .search-field label {
   display: block;
-  margin-bottom: 0.45rem;
-  color: var(--primary);
-  font-weight: 700;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .search-field .btn {
@@ -727,7 +739,13 @@ textarea[aria-invalid="true"] {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
-  margin-top: 1rem;
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.card-actions .btn {
+  flex: 1 1 140px;
+  text-align: center;
 }
 
 .steps-grid {
@@ -1092,10 +1110,17 @@ textarea {
 
 .contact-card-actions {
   display: flex;
+  align-items: stretch;
   gap: 0.6rem;
   flex-wrap: wrap;
+  min-height: 2.75rem;
   margin-top: auto;
   padding-top: 0.9rem;
+}
+
+.contact-card-actions .btn {
+  flex: 1 1 120px;
+  text-align: center;
 }
 
 .emergency-hero {
@@ -1673,6 +1698,70 @@ textarea {
 
   .resident-header .dashboard-nav-toggle {
     display: inline-flex;
+  }
+}
+
+/* ------------------------------------------------------------
+   Resident navigation: permanent left sidebar
+   The resident navigation stays visible at all times. The
+   hamburger, close button, and overlay are not needed for the
+   resident layout. Staff navigation keeps its existing behavior.
+   ------------------------------------------------------------ */
+.resident-header:not(.staff-header) .dashboard-nav-toggle {
+  display: none !important;
+}
+
+.resident-header:not(.staff-header) ~ .dashboard-menu-overlay {
+  display: none !important;
+}
+
+.resident-header:not(.staff-header) ~ .dashboard-sidebar {
+  width: 250px;
+  transform: translateX(0);
+  visibility: visible;
+  transition: none;
+}
+
+.resident-header:not(.staff-header) ~ .dashboard-sidebar .dashboard-sidebar-close {
+  display: none;
+}
+
+.resident-header:not(.staff-header) ~ .dashboard-sidebar + .page-shell {
+  margin-left: 250px;
+}
+
+.resident-header:not(.staff-header) {
+  margin-left: 250px;
+}
+
+.resident-header:not(.staff-header) .nav-wrap {
+  max-width: none;
+  width: 100%;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (max-width: 760px) {
+  .resident-header:not(.staff-header) {
+    margin-left: 220px;
+  }
+
+  .resident-header:not(.staff-header) ~ .dashboard-sidebar {
+    width: 220px;
+  }
+
+  .resident-header:not(.staff-header) ~ .dashboard-sidebar + .page-shell {
+    margin-left: 220px;
+  }
+
+  .resident-header:not(.staff-header) .nav-wrap {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .resident-header:not(.staff-header) .nav-actions .btn {
+    padding: 0.55rem 0.65rem;
+    font-size: 0.78rem;
   }
 }
 
