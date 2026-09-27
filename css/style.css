@@ -410,44 +410,6 @@ body.menu-open {
   overflow: hidden;
 }
 
-.connectivity-lines {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
-.connectivity-line {
-  fill: none;
-  stroke: rgba(255, 218, 137, 0.96);
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-dasharray: 4 19;
-  filter: drop-shadow(0 0 5px rgba(255, 185, 65, 0.95));
-  animation: connectivity-line-flow 7s linear infinite;
-}
-
-.connectivity-line-reverse {
-  stroke: rgba(255, 239, 190, 0.9);
-  stroke-dasharray: 3 26;
-  animation-duration: 10s;
-  animation-direction: reverse;
-}
-
-.connectivity-node {
-  fill: #fff0bd;
-  filter: drop-shadow(0 0 7px #ffc34d);
-}
-
-.connectivity-node-alt {
-  fill: #ffd36e;
-}
-
-@keyframes connectivity-line-flow {
-  to { stroke-dashoffset: -92; }
-}
-
 @keyframes connectivity-banner-drift {
   from { transform: scale(1); }
   to { transform: scale(1.045); }
@@ -458,9 +420,6 @@ body.menu-open {
     animation: none;
   }
 
-  .connectivity-lines {
-    display: none;
-  }
 }
 
 .home-hero-grid {
