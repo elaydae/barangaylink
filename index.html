@@ -10,23 +10,41 @@
       content="BarangayLink helps residents request barangay documents online and track their status." />
     <link rel="stylesheet" href="css/style.css" />
   </head>
-  <body>
-    <header class="site-header resident-header">
+  <body class="home-page">
+    <header class="site-header resident-header home-header">
       <div class="container nav-wrap">
         
         <a href="index.html" class="brand" aria-label="BarangayLink home page">BarangayLink</a>
+        <nav class="top-nav" aria-label="Main navigation">
+          <a href="#services">Available services</a>
+          <a href="#how-it-works">How it works</a>
+          <a href="#requirements">Requirements</a>
+        </nav>
         <div class="nav-actions"><a href="pages/register.html" class="btn btn-ghost">Sign Up</a><a href="pages/login.html" class="btn btn-primary">Log In</a></div>
       </div>
     </header>
     <button class="dashboard-menu-overlay" type="button" aria-label="Close navigation menu" hidden></button>
     <aside class="dashboard-sidebar" id="resident-sidebar" aria-label="Resident navigation" aria-hidden="true">
       <div class="dashboard-sidebar-header"><h2>Menu</h2><button class="dashboard-sidebar-close" type="button" aria-label="Close navigation menu">×</button></div>
-      <nav class="dashboard-sidebar-nav" aria-label="Resident navigation"><a href="pages/dashboard.html">Dashboard</a><span class="nav-section">Services</span><a href="pages/services.html">Services</a><a href="pages/tracking.html">Tracking</a><a href="pages/history.html">History</a><span class="nav-section">Community</span><a href="pages/barangay-info.html">Barangay Information</a><a href="pages/concerns.html">Concerns &amp; Feedback</a><a href="pages/emergency.html">Emergency</a><span class="nav-section">Account</span><a href="pages/register.html">Sign Up</a><a href="pages/login.html">Log In</a></nav>
+      <nav class="dashboard-sidebar-nav" aria-label="Resident navigation"><a href="pages/dashboard.html">Dashboard</a><span class="nav-section">Services</span><a href="pages/services.html">Services</a><a href="pages/history.html">History</a><span class="nav-section">Community</span><a href="pages/barangay-info.html">Barangay Information</a><a href="pages/concerns.html">Concerns &amp; Feedback</a><a href="pages/emergency.html">Emergency</a><span class="nav-section">Account</span><a href="pages/register.html">Sign Up</a><a href="pages/login.html">Log In</a></nav>
     </aside>
 
     <main>
+      <section class="home-connectivity-banner" aria-label="Residents connected to barangay services">
+        <img src="assets/images/barangay-connectivity-banner.png" alt="Residents and barangay staff connected through easier online document requests" />
+        <svg class="connectivity-lines" viewBox="0 0 1000 330" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <path class="connectivity-line connectivity-line-forward" d="M 205 168 C 285 148, 385 151, 500 164" />
+          <path class="connectivity-line connectivity-line-reverse" d="M 302 88 C 370 94, 435 132, 500 164" />
+          <path class="connectivity-line connectivity-line-forward" d="M 500 164 C 575 128, 628 92, 692 88" />
+          <path class="connectivity-line connectivity-line-reverse" d="M 500 164 C 610 154, 710 151, 798 168" />
+          <circle class="connectivity-node" r="5"><animateMotion dur="4s" repeatCount="indefinite" path="M 205 168 C 285 148, 385 151, 500 164" /></circle>
+          <circle class="connectivity-node connectivity-node-alt" r="4"><animateMotion dur="4.5s" repeatCount="indefinite" path="M 302 88 C 370 94, 435 132, 500 164" /></circle>
+          <circle class="connectivity-node" r="5"><animateMotion dur="4.2s" repeatCount="indefinite" path="M 500 164 C 575 128, 628 92, 692 88" /></circle>
+          <circle class="connectivity-node connectivity-node-alt" r="4"><animateMotion dur="4.7s" repeatCount="indefinite" path="M 500 164 C 610 154, 710 151, 798 168" /></circle>
+        </svg>
+      </section>
       <section class="hero">
-        <div class="container hero-grid">
+        <div class="container hero-grid home-hero-grid">
           <div class="hero-copy">
             <p class="eyebrow">Trusted community service</p>
             <h1>Barangay Services, Made Easier.</h1>
@@ -47,88 +65,31 @@
             </ul>
           </div>
 
-          <div class="hero-visual" role="img" aria-label="Barangay service illustration">
-            <div class="visual-card card-one">
-              <span class="mini-label">Request</span>
-              <strong>Barangay Clearance</strong>
-              <small>Submitted today</small>
-            </div>
-            <div class="visual-card card-two">
-              <span class="mini-label">Status</span>
-              <strong>Under Review</strong>
-              <small>2 days in progress</small>
-            </div>
-            <div class="visual-badge">Ready soon</div>
-          </div>
         </div>
       </section>
 
       <section class="section" id="services">
         <div class="container">
-          <div class="section-header">
-            <p class="eyebrow">Available services</p>
-            <h2>Barangay documents residents commonly request</h2>
+          <div class="section-header services-head">
+            <div>
+              <p class="eyebrow">Available services</p>
+              <h2>All barangay services</h2>
+              <p>Browse the full list of documents and services available to residents.</p>
+            </div>
+            <div class="service-count" aria-live="polite"><strong data-service-count>18</strong><span>services available</span></div>
           </div>
-          <div class="service-grid">
-            <article class="service-card">
-              <div class="service-icon" aria-hidden="true">📄</div>
-              <h3>Barangay Clearance</h3>
-              <p>For employment, school, and local documentation needs.</p>
-              <ul>
-                <li>Valid ID</li>
-                <li>Proof of residency</li>
-                <li>Purpose of request</li>
-              </ul>
-              <div class="card-actions">
-                <a href="pages/services.html" class="btn btn-ghost small">View Requirements</a>
-                <a href="pages/request.html" class="btn btn-primary small">Request Now</a>
+          <div class="service-browser">
+            <div class="service-tools">
+              <div class="category-tabs" role="tablist" aria-label="Service categories">
+                <button class="category-tab active" type="button" role="tab" aria-selected="true" data-category="all">All Services</button>
+                <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Certificates &amp; Clearances">Certificates &amp; Clearances</button>
+                <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Business &amp; Permits">Business &amp; Permits</button>
+                <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Community Services">Community Services</button>
+                <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Resident Services">Resident Services</button>
               </div>
-            </article>
-
-            <article class="service-card">
-              <div class="service-icon" aria-hidden="true">🏠</div>
-              <h3>Certificate of Residency</h3>
-              <p>Proof that you are a resident of the barangay.</p>
-              <ul>
-                <li>Barangay ID</li>
-                <li>Address verification</li>
-                <li>Purpose of request</li>
-              </ul>
-              <div class="card-actions">
-                <a href="pages/services.html" class="btn btn-ghost small">View Requirements</a>
-                <a href="pages/request.html" class="btn btn-primary small">Request Now</a>
-              </div>
-            </article>
-
-            <article class="service-card">
-              <div class="service-icon" aria-hidden="true">🤝</div>
-              <h3>Certificate of Indigency</h3>
-              <p>For assistance, scholarship, and government support programs.</p>
-              <ul>
-                <li>Valid ID</li>
-                <li>Income proof</li>
-                <li>Barangay certification</li>
-              </ul>
-              <div class="card-actions">
-                <a href="pages/services.html" class="btn btn-ghost small">View Requirements</a>
-                <a href="pages/request.html" class="btn btn-primary small">Request Now</a>
-              </div>
-            </article>
-
-            <article class="service-card">
-              <div class="service-icon" aria-hidden="true">📦</div>
-              <h3>Business Permit</h3>
-              <p>Support for local business documentation and permit requirements.</p>
-              <ul>
-                <li>Business name</li>
-                <li>Proof of address</li>
-                <li>Owner identification</li>
-              </ul>
-              <div class="card-actions">
-                <a href="pages/services.html" class="btn btn-ghost small">View Requirements</a>
-                <a href="pages/request.html" class="btn btn-primary small">Request Now</a>
-              </div>
-            </article>
+            </div>
+            <div class="service-grid" data-service-grid aria-live="polite"></div>
+            <p class="empty-state hidden" data-service-empty><strong>No services found</strong><br />Try another keyword or browse all services.</p>
           </div>
         </div>
       </section>
