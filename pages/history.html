@@ -17,9 +17,9 @@
       </div>
     </header>
     <button class="dashboard-menu-overlay" type="button" aria-label="Close navigation menu" hidden></button>
-    <aside class="dashboard-sidebar" id="resident-sidebar" aria-label="Resident navigation" aria-hidden="true">
+    <aside class="dashboard-sidebar" id="resident-sidebar" aria-label="Resident navigation" aria-hidden="false">
       <div class="dashboard-sidebar-header"><h2>Menu</h2><button class="dashboard-sidebar-close" type="button" aria-label="Close navigation menu">×</button></div>
-      <nav class="dashboard-sidebar-nav" aria-label="Resident navigation"><a href="dashboard.html">Dashboard</a><span class="nav-section">Services</span><a href="services.html">Services</a><a href="tracking.html">Tracking</a><a href="history.html">History</a><span class="nav-section">Community</span><a href="barangay-info.html">Barangay Information</a><a href="concerns.html">Concerns &amp; Feedback</a><a href="emergency.html">Emergency</a><span class="nav-section">Account</span><a href="profile.html">Profile</a><a href="../index.html">Logout</a></nav>
+      <nav class="dashboard-sidebar-nav" aria-label="Resident navigation"><a href="dashboard.html">Dashboard</a><span class="nav-section">Services</span><a href="services.html">Services</a><a href="history.html">History</a><span class="nav-section">Community</span><a href="barangay-info.html">Barangay Information</a><a href="concerns.html">Concerns &amp; Feedback</a><a href="emergency.html">Emergency</a><span class="nav-section">Account</span><a href="profile.html">Profile</a><a href="../index.html">Logout</a></nav>
     </aside>
 
     <main class="page-shell">
@@ -28,6 +28,21 @@
           <p class="eyebrow">Request history</p>
           <h1>My Requests</h1>
           <p>Review all submitted barangay requests and their latest updates.</p>
+        </section>
+
+        <section class="panel-card hidden" data-history-detail aria-live="polite">
+          <div class="status-row">
+            <h2>Request Details</h2>
+            <a class="action-link" href="history.html">Close</a>
+          </div>
+          <div class="detail-grid">
+            <div class="detail-item"><span>Request ID</span><strong data-history-detail-reference>-</strong></div>
+            <div class="detail-item"><span>Document</span><strong data-history-detail-document>-</strong></div>
+            <div class="detail-item"><span>Date Requested</span><strong data-history-detail-date>-</strong></div>
+            <div class="detail-item"><span>Status</span><strong data-history-detail-status>-</strong></div>
+            <div class="detail-item"><span>Date Updated</span><strong data-history-detail-updated>-</strong></div>
+            <div class="detail-item"><span>Purpose</span><strong data-history-detail-purpose>-</strong></div>
+          </div>
         </section>
 
         <section class="table-card">
@@ -80,7 +95,7 @@
                   <td>September 2, 2026</td>
                   <td><span class="status-badge status-review">Under Review</span></td>
                   <td>September 3, 2026</td>
-                  <td><a href="tracking.html" class="action-link">View</a></td>
+                  <td><a href="history.html?reference=REQ-2026-00124" class="action-link">View</a></td>
                 </tr>
                 <tr data-status="ready" data-document="Certificate of Residency">
                   <td>REQ-2026-00118</td>
@@ -88,7 +103,7 @@
                   <td>August 18, 2026</td>
                   <td><span class="status-badge status-ready">Ready for Release</span></td>
                   <td>August 21, 2026</td>
-                  <td><a href="tracking.html" class="action-link">View</a></td>
+                  <td><a href="history.html?reference=REQ-2026-00118" class="action-link">View</a></td>
                 </tr>
                 <tr data-status="approved" data-document="Certificate of Indigency">
                   <td>REQ-2026-00092</td>
@@ -96,7 +111,7 @@
                   <td>June 24, 2026</td>
                   <td><span class="status-badge status-approved">Approved</span></td>
                   <td>June 26, 2026</td>
-                  <td><a href="tracking.html" class="action-link">View</a></td>
+                  <td><a href="history.html?reference=REQ-2026-00092" class="action-link">View</a></td>
                 </tr>
                 <tr data-status="rejected" data-document="Business Permit">
                   <td>REQ-2026-00041</td>
@@ -104,7 +119,7 @@
                   <td>May 12, 2026</td>
                   <td><span class="status-badge status-rejected">Rejected</span></td>
                   <td>May 13, 2026</td>
-                  <td><a href="tracking.html" class="action-link">View</a></td>
+                  <td><a href="history.html?reference=REQ-2026-00041" class="action-link">View</a></td>
                 </tr>
               </tbody>
             </table>
