@@ -21,33 +21,45 @@
       <nav class="dashboard-sidebar-nav" aria-label="Resident navigation"><a href="dashboard.html">Dashboard</a><span class="nav-section">Services</span><a href="services.html">Services</a><a href="tracking.html">Tracking</a><a href="history.html">History</a><span class="nav-section">Community</span><a href="barangay-info.html">Barangay Information</a><a href="concerns.html">Concerns &amp; Feedback</a><a href="emergency.html">Emergency</a><span class="nav-section">Account</span><a href="profile.html">Profile</a><a href="../index.html">Logout</a></nav>
     </aside>
 
-      <main class="page-shell">
-      <div class="container">
-        <section class="page-head">
-          <p class="eyebrow">Barangay information</p>
-          <h1>Barangay San Isidro</h1>
-          <p>Everything you need to know about your barangay &ndash; profile, officials, office hours, and how to reach us.</p>
-        </section>
+      <section class="page-head">
+  <p class="eyebrow">Barangay information</p>
+
+  <div class="status-row">
+    <h1 data-barangay-display="name">Barangay San Isidro</h1>
+
+    <button
+    type="button"
+    class="btn btn-primary hidden"
+    data-staff-only
+    data-open-barangay-edit
+    id="edit-barangay-info"
+>
+  Edit
+</button>
+  </div>
+
+  <p>Everything you need to know about your barangay &ndash; profile, officials, office hours, and how to reach us.</p>
+</section>
 
         <section class="panel-card" aria-label="Barangay profile">
           <h2>Barangay Profile</h2>
-          <p>Barangay San Isidro is a residential and commercial community committed to responsive, transparent public service. The barangay serves its residents through streamlined online and over-the-counter transactions, regular community programs, and an active peace and order council.</p>
+<p data-barangay-display="description">Barangay San Isidro is a residential and commercial community committed to responsive, transparent public service. The barangay serves its residents through streamlined online and over-the-counter transactions, regular community programs, and an active peace and order council.</p>
           <div class="detail-grid">
             <div class="detail-item">
               <span>Classification</span>
-              <strong>Urban Barangay</strong>
+              <strong data-barangay-display="classification">Urban Barangay</strong>
             </div>
             <div class="detail-item">
               <span>Estimated Population</span>
-              <strong>8,450 residents</strong>
+              <strong data-barangay-display="population">8,450 residents</strong>
             </div>
             <div class="detail-item">
               <span>Number of Puroks</span>
-              <strong>7 Puroks</strong>
+              <strong data-barangay-display="puroks">7 Puroks</strong>
             </div>
             <div class="detail-item">
               <span>Established</span>
-              <strong>1987</strong>
+              <strong data-barangay-display="established">1987</strong>
             </div>
           </div>
         </section>
@@ -131,10 +143,10 @@
             <div>
               <h2>Contact Information</h2>
               <ul class="check-list">
-                <li>Trunkline: (02) 555-0148</li>
-                <li>Emergency hotline: 0917-000-1122</li>
-                <li>Email: barangaysanisidro@lgu.gov.ph</li>
-                <li>Facebook: facebook.com/BarangaySanIsidroOfficial</li>
+                <li>Trunkline: <span data-barangay-display="trunkline">(02) 555-0148</span></li>
+                <li>Emergency hotline: <span data-barangay-display="hotline">0917-000-1122</span></li>
+                <li>Email: <span data-barangay-display="email">barangaysanisidro@lgu.gov.ph</span></li>
+                <li>Facebook: <span data-barangay-display="facebook">facebook.com/BarangaySanIsidroOfficial</span></li>
               </ul>
             </div>
           </div>
@@ -144,8 +156,8 @@
           <div class="info-columns">
             <div>
               <h2>Location</h2>
-              <p>123 Rizal Street, Barangay San Isidro</p>
-              <p>The barangay hall is located beside the covered court and public elementary school, a 5-minute walk from the main highway jeepney terminal.</p>
+              <p data-barangay-display="address">123 Rizal Street, Barangay San Isidro</p>
+              <p data-barangay-display="locationDescription">The barangay hall is located beside the covered court and public elementary school, a 5-minute walk from the main highway jeepney terminal.</p>
               <a href="https://www.google.com/maps/search/?api=1&query=Barangay+San+Isidro" class="text-link">Open in Google Maps</a>
             </div>
             
@@ -191,7 +203,134 @@
       </div>
     </main>
     </div>
+<div class="modal" id="barangay-edit-modal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="status-row">
+      <h2>Edit Barangay Information</h2>
+      <button
+        type="button"
+        class="dashboard-sidebar-close"
+        data-close-barangay-edit
+        aria-label="Close edit form"
+      >
+        ×
+      </button>
+    </div>
 
+    <form id="barangay-edit-form">
+      <div class="field">
+        <label for="barangay-name">Barangay Name</label>
+        <input id="barangay-name" name="name" type="text" required />
+      </div>
+
+      <div class="field">
+        <label for="barangay-description">Profile Description</label>
+        <textarea id="barangay-description" name="description" rows="4" required></textarea>
+      </div>
+
+      <div class="field">
+        <label for="barangay-classification">Classification</label>
+        <input id="barangay-classification" name="classification" type="text" required />
+      </div>
+
+      <div class="field">
+        <label for="barangay-population">Estimated Population</label>
+        <input
+          id="barangay-population"
+          name="population"
+          type="number"
+          min="1"
+          step="1"
+          placeholder="Enter estimated population"
+          required
+        />
+        <small class="field-hint">Enter whole numbers only.</small>
+</div>
+
+      <div class="field">
+        <label for="barangay-puroks">Number of Puroks</label>
+        <input
+          id="barangay-puroks"
+          name="puroks"
+          type="number"
+          min="1"
+          step="1"
+          placeholder="Enter number of puroks"
+          required
+        />
+        <small class="field-hint">Enter whole numbers only.</small>
+</div>
+
+      <div class="field">
+        <label for="barangay-established">Established</label>
+        <input id="barangay-established" name="established" type="text" required />
+      </div>
+
+      <div class="field">
+        <label for="barangay-trunkline">Trunkline</label>
+        <input
+          id="barangay-trunkline"
+          name="trunkline"
+          type="tel"
+          inputmode="numeric"
+          maxlength="13"
+          placeholder="e.g. (02) 555-0148"
+          required
+        />
+        <small class="field-hint">Example: (02) 555-0148</small>
+      </div>
+
+      <div class="field">
+        <label for="barangay-hotline">Emergency Hotline</label>
+        <input
+          id="barangay-hotline"
+          name="hotline"
+          type="tel"
+          inputmode="numeric"
+          maxlength="13"
+          placeholder="e.g. 0917-000-1122"
+          required
+        />
+        <small class="field-hint">Example: 0917-000-1122</small>
+      </div>
+
+      <div class="field">
+        <label for="barangay-email">Email</label>
+        <input id="barangay-email" name="email" type="email" required />
+      </div>
+
+      <div class="field">
+        <label for="barangay-facebook">Facebook</label>
+        <input id="barangay-facebook" name="facebook" type="text" required />
+      </div>
+
+      <div class="field">
+        <label for="barangay-address">Address</label>
+        <input id="barangay-address" name="address" type="text" required />
+      </div>
+
+      <div class="field">
+        <label for="barangay-location-description">Location Description</label>
+        <textarea
+          id="barangay-location-description"
+          name="locationDescription"
+          rows="3"
+          required
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" data-close-barangay-edit>
+          Cancel
+        </button>
+
+        <button type="submit" class="btn btn-primary">
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
     <script src="../js/app.js"></script>
   </body>
 </html>

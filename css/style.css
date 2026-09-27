@@ -1056,6 +1056,10 @@ textarea {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
+.contact-card {
+  display: flex;
+  flex-direction: column;
+}
 
 .official-avatar,
 .contact-icon {
@@ -1090,7 +1094,8 @@ textarea {
   display: flex;
   gap: 0.6rem;
   flex-wrap: wrap;
-  margin-top: 0.9rem;
+  margin-top: auto;
+  padding-top: 0.9rem;
 }
 
 .emergency-hero {
@@ -1505,7 +1510,9 @@ textarea {
 }
 
 .modal-card {
-  width: min(100%, 420px);
+  width: min(92vw, 700px);
+  max-height: 90vh;
+  overflow-y: auto;
   background: white;
   border-radius: 18px;
   padding: 1.5rem;
@@ -1728,4 +1735,66 @@ button.action-link {
   .staff-summary.staff-summary-concerns {
     grid-template-columns: 1fr;
   }
+}
+
+/* ========================================
+   STAFF SIDEBAR - OPEN BY DEFAULT
+   ======================================== */
+
+.staff-mode .staff-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  transform: translateX(0);
+  transition: transform 0.25s ease;
+  z-index: 1000;
+}
+
+/* Staff page content sits beside the sidebar */
+.staff-mode .staff-main,
+.staff-mode .page-shell,
+.staff-mode .staff-header {
+  margin-left: 280px;
+  transition: margin-left 0.25s ease;
+}
+
+/* When staff clicks X */
+.staff-mode.staff-sidebar-collapsed .staff-sidebar {
+  transform: translateX(-100%);
+}
+
+/* Expand page again when sidebar is hidden */
+.staff-mode.staff-sidebar-collapsed .staff-main,
+.staff-mode.staff-sidebar-collapsed .page-shell,
+.staff-mode.staff-sidebar-collapsed .staff-header {
+  margin-left: 0;
+}
+
+/* Hamburger should only show after sidebar is closed */
+.staff-mode:not(.staff-sidebar-collapsed) .dashboard-nav-toggle {
+  display: none;
+}
+
+.staff-mode.staff-sidebar-collapsed .dashboard-nav-toggle {
+  display: inline-flex;
+}
+/* Keep staff header controls aligned to the left */
+.staff-mode .staff-header .nav-wrap {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  justify-content: flex-start;
+  gap: 0.75rem;
+}
+
+.staff-mode .staff-header .brand {
+  margin-left: 0;
+}
+
+.staff-header .nav-actions {
+  margin-left: auto;
 }
