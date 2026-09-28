@@ -4,7 +4,7 @@
 
 > **Stronger Community. Easier Access.**
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20BarangayLink-2ea44f?style=for-the-badge)](https://elaydae.github.io/barangaylink/pages/login.html)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20BarangayLink-2ea44f?style=for-the-badge)](https://elaydae.github.io/barangaylink/index.html)
 
 BarangayLink is a **browser-based Barangay Information & E-Services System** designed to make common barangay services more accessible, organized, and convenient for residents and barangay staff.
 
@@ -16,7 +16,7 @@ Residents can explore services, review requirements, submit document requests, r
 
 ## 🌐 Live Demo
 
-**[Open BarangayLink Demo](https://elaydae.github.io/barangaylink/pages/login.html)**
+**[Open BarangayLink Demo](https://elaydae.github.io/barangaylink/index.html)**
 
 ### Demo Accounts
 
