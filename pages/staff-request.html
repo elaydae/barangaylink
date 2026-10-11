@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body>
-    <!-- Staff request review page; initStaffRequest loads a selected reference and saves permitted status changes. -->
+    <!-- Staff request review page; initStaffRequest reads and updates backend requests. -->
     <!-- Shared header/navigation; links and responsive styles are maintained with css/style.css. -->
     <header class="site-header staff-header">
       <div class="container nav-wrap">
@@ -39,7 +39,7 @@
           <p>Review requirements, resident information, and decide on the final status.</p>
         </div>
 
-        <!-- Reviewable requests are generated from local records; row selection updates the detail panel. -->
+        <!-- Reviewable requests come from the backend; row selection updates the detail panel. -->
         <section class="table-card review-search" aria-label="Search requests">
           <div class="search-filter-row">
             <div class="field">
@@ -108,13 +108,8 @@
             </div>
 
             <div class="requirements-box requirements-box--compact">
-              <h3>Requirements Checklist</h3>
-              <ul class="check-list">
-                <li>Valid government-issued ID submitted</li>
-                <li>Proof of residence uploaded</li>
-                <li>Purpose reviewed and valid</li>
-                <li>Supporting document attached</li>
-              </ul>
+              <h3>Staff Review Reminder</h3>
+              <p>This prototype does not collect supporting files. Confirm service-specific requirements through the existing in-person process.</p>
             </div>
 
             <div class="field">
@@ -147,6 +142,7 @@
       </main>
     </div>
 
+    <script src="../js/api.js"></script>
     <script src="../js/app.js"></script>
   </body>
 </html>
