@@ -4,7 +4,7 @@
 
 > **Stronger Community. Easier Access.**
 
-[![Local Live Demo](https://img.shields.io/badge/Local%20Live%20Demo-http%3A%2F%2Flocalhost%3A3000-2ea44f?style=for-the-badge)]((http://localhost:3000/index.html))
+[![Local Live Demo](https://img.shields.io/badge/Local%20Live%20Demo-http%3A%2F%2Flocalhost%3A3000-2ea44f?style=for-the-badge)](http://localhost:3000/index.html)
 
 > **Run locally:** use `npm install` and `npm start`, then open **[http://localhost:3000](http://localhost:3000)**. This local demo requires the Express server to be running; do not open the HTML files directly.
 
