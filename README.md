@@ -4,19 +4,121 @@
 
 > **Stronger Community. Easier Access.**
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20BarangayLink-2ea44f?style=for-the-badge)](https://elaydae.github.io/barangaylink/index.html)
+[![Local Live Demo](https://img.shields.io/badge/Local%20Live%20Demo-http%3A%2F%2Flocalhost%3A3000-2ea44f?style=for-the-badge)](http://localhost:3000)
+
+> **Run locally:** use `npm install` and `npm start`, then open **[http://localhost:3000](http://localhost:3000)**. This local demo requires the Express server to be running; do not open the HTML files directly.
 
 BarangayLink is a **browser-based Barangay Information & E-Services System** designed to make common barangay services more accessible, organized, and convenient for residents and barangay staff.
 
 Residents can explore services, review requirements, submit document requests, receive reference numbers, and track request progress through a single web interface. Barangay staff can review, approve, reject, and update resident requests.
 
-> **Project Status:** Functional frontend prototype for academic purposes.
+> **Project Status:** Academic prototype with an Express-backed document request workflow. It is not production-ready.
+
+## MMDC Milestone 2: Backend-Supported Request Workflow
+
+### Implemented
+
+- The resident request form sends submissions to the Express API using `fetch()`.
+- The server validates required resident fields, email/contact format, available service names, purpose values, and input lengths.
+- The server creates unique `BL-YYYY-<UUID>` references and stores request records in `data/requests.json`.
+- Resident dashboard, history, and tracking pages and the staff queue/review page read the same backend records.
+- Staff status updates and rejection reasons are validated and persisted by the API. The server enforces the existing workflow: pending → review → approved → ready → released; review may instead be rejected.
+- Request forms and API-backed views show loading, empty, success, not-found, and network/server error feedback. Submit buttons lock while a submission is in progress.
+- Request data is not stored in `localStorage`. Browser storage remains for prototype-only profile prefills, demo role state, concerns, and barangay display preferences.
+
+### Local installation and startup
+
+Requires Node.js 18 or later and npm. If Node.js/npm are not installed, install the current Node.js LTS release from [nodejs.org](https://nodejs.org/), then open a new VS Code terminal. In VS Code, change to the project folder containing `package.json` (the inner `barangaylink-main` directory) and run:
+
+```sh
+npm install
+npm start
+```
+
+Open **http://localhost:3000**. Do not open `index.html` or `pages/request.html` from File Explorer: `file://` pages cannot call this API. The frontend explicitly detects that case and directs you to the local HTTP address.
+
+The server uses port 3000 by default. If it is already occupied, stop the other process or choose an available port, for example `$env:PORT=3001; npm start` in PowerShell, then open `http://localhost:3001`. The server reports invalid port values and port-in-use errors.
+
+GitHub Pages cannot run this Express backend: a live `GET /api/requests` probe returned HTML 404, and `POST /api/requests` returned a non-JSON HTTP 405 from its edge server. Those requests never reach Express or its storage. Public online submissions require separately deploying the backend and pointing the frontend at it; this repository does not configure such a deployment. The demo login is client-side only.
+
+### API
+
+All successful responses use `{ "data": ... }`. Errors use `{ "error": { "code": "...", "message": "...", "fields": {} } }` where field details apply.
+
+| Method | Endpoint | Result |
+| --- | --- | --- |
+| `GET` | `/api/health` | Server connection status |
+| `GET` | `/api/requests` | Request collection, newest first |
+| `GET` | `/api/requests/:reference` | One request; `404` if unknown |
+| `POST` | `/api/requests` | Create a validated request; returns `201`, or `200` when replaying the same `Idempotency-Key` |
+| `PATCH` | `/api/requests/:reference/status` | Update an allowed status; returns `409` for an invalid transition |
+
+Example submission:
+
+```json
+{
+  "name": "Resident Name",
+  "address": "12 Sample Street",
+  "contact": "0917-123-4567",
+  "email": "resident@example.com",
+  "document": "Barangay Clearance",
+  "purpose": "Employment"
+}
+```
+
+Example status update:
+
+```json
+{
+  "status": "rejected",
+  "rejectionReason": "Please provide proof of residence."
+}
+```
+
+`POST` returns `400` with field errors for missing or invalid values. Rejection requires a reason. The API also returns structured `404` errors for unknown references.
+
+The frontend sends an `Idempotency-Key` for each request attempt and reuses it for retries, so a response interrupted after persistence does not create another record. The key is stored with the server record and excluded from API responses.
+
+### Persistence and limitations
+
+Requests are stored in a JSON array at `data/requests.json`; the server creates the file on first use and serializes writes within the running process. The file is ignored by Git. The frontend blocks a second in-flight form submission and reuses a stable idempotency key after an ambiguous response. This is a lightweight single-instance academic storage method, not a database, multi-process locking solution, backup strategy, or production data store. Existing browser-only demo request rows were removed rather than imported as false records. Supporting-document upload is not implemented; the optional file input is not sent to the server.
+
+There is no server-side login, authentication, authorization, or resident ownership filtering. In this prototype, resident history lists all stored requests and request reads/status updates are available to anyone who can reach the API; client-side role checks are only for demonstration navigation. Do not enter real resident or confidential information or deploy this API publicly.
+
+### Tests and verification
+
+Run the automated API and application-serving tests and syntax checks with:
+
+```sh
+npm test
+npm run check
+```
+
+The test suite covers health/connectivity, valid and concurrent submissions, duplicate retry idempotency, field and malformed-body validation, unknown references/routes, status transition validation and resident/staff read consistency, persistence after recreating the server, frontend network/unexpected-response handling, and serving existing application pages.
+
+**Verified for the previous API response fix:** live-host probes confirmed the static GitHub Pages API path returns non-JSON 404/405 responses; the automated suite checks the response handling and idempotent retry behavior. Re-run the commands above after changes. No production backend is deployed at the GitHub Pages origin.
+
+### Troubleshooting
+
+- **DevTools shows `file:///api/requests` or a file-origin 403:** the page was opened as a local file. Run `npm start` from the folder containing `package.json` and open `http://localhost:3000`.
+- **“Port 3000 is already in use”:** close the process using that port or run with another available `PORT`.
+- **An API error or a page instead of JSON:** confirm the page and API share the same `http://localhost:<port>` origin and that `GET /api/health` returns `{"data":{"status":"ok"}}`.
+- **GitHub Pages submission does not work:** GitHub Pages only serves static assets; deploy an API separately before enabling public submissions.
+
+### Planned next steps
+
+- Add authenticated server-side staff access and resident-owned request filtering.
+- Consider a database only when the course/project requires multiple users or concurrent server processes.
+- Decide whether to implement real supporting-document upload and secure storage.
+- Add browser-level responsive and form-flow automation if the project adopts a browser test runner.
 
 ---
 
-## 🌐 Live Demo
+## 🌐 Local Live Demo
 
-**[Open BarangayLink Demo](https://elaydae.github.io/barangaylink/index.html)**
+**[Open BarangayLink at http://localhost:3000](http://localhost:3000)** after starting the server with `npm start`.
+
+The [GitHub Pages demo](https://elaydae.github.io/barangaylink/index.html) is a static frontend preview only. It does not run Express and cannot submit backend requests.
 
 ### Demo Accounts
 
@@ -57,7 +159,7 @@ BarangayLink aims to provide a simple digital interface for common barangay serv
 * Allow residents to track request status
 * Organize staff request processing
 * Demonstrate responsive web application development
-* Provide a foundation for future backend and database integration
+* Provide a foundation for future authentication and database integration
 
 ---
 
@@ -99,7 +201,7 @@ Staff can:
 
 # 📄 Available Services
 
-The current prototype includes four document services:
+The frontend catalog currently lists 18 services. Four core examples are:
 
 | Service                      | Purpose                            |
 | ---------------------------- | ---------------------------------- |
@@ -281,13 +383,7 @@ The interface uses consistent navigation, cards, status indicators, responsive l
 
 ### Current Data Handling
 
-The prototype currently uses:
-
-* `localStorage`
-* Client-side state management
-* JavaScript-based data processing
-
-This allows the core workflows to be demonstrated without a backend server.
+Document requests use the Express API and persist to `data/requests.json`. Browser `localStorage` remains for non-authoritative prototype data such as demo session state, profile-prefill values, concerns, and barangay display settings.
 
 ---
 
@@ -329,43 +425,9 @@ barangaylink/
 
 ---
 
-# 🧪 Testing
+# 🧪 Testing and Milestone 2 Verification
 
-The application is tested around its major user workflows.
-
-### Resident
-
-* Login and registration
-* Service selection
-* Requirements display
-* Request submission
-* Form validation
-* Request preview
-* Reference number generation
-* Request tracking
-* Request history
-
-### Staff
-
-* Staff login
-* Request queue
-* Request search/filter
-* Request review
-* Approval
-* Rejection
-* Rejection reason
-* Status updates
-
-### Interface
-
-* Navigation
-* Responsive layouts
-* Forms
-* Buttons
-* Notifications
-* Empty states
-* Keyboard interaction
-* Accessibility
+Run `npm test` for backend integration and static-page serving checks. Run `npm run check` for JavaScript syntax checks. Current verification: **16 tests passed, 0 failed**, and syntax checks passed. `npm install` completed successfully; `npm audit --omit=dev --audit-level=high` reported zero vulnerabilities. Coverage includes API health, valid and duplicate submissions, field validation, unknown IDs, status transitions and consistency, restart persistence, file-origin/network/unexpected-response handling, static page serving, and blocking access to the JSON data file. Local server checks confirmed the homepage and assets load at `http://localhost:3000`, a browser request is sent to `http://localhost:3000/api/requests`, invalid input returns JSON `400 VALIDATION_ERROR`, and both the browser request and API test request remained retrievable after restarting the server. Resident history and staff queue both displayed the browser-submitted record. These are manual and automated checks; no automated browser test suite is configured.
 
 ---
 
@@ -388,10 +450,11 @@ The application is tested around its major user workflows.
 | Profile Management         | ✅ Implemented         |
 | Responsive Design          | ✅ Implemented         |
 | Accessibility Improvements | ✅ Implemented         |
-| Browser Storage            | ✅ Implemented         |
-| Backend                    | 🚧 Future Development |
-| MySQL Database             | 🚧 Future Development |
-| Production Authentication  | 🚧 Future Development |
+| Browser Storage            | ✅ Prototype-only data |
+| Express Request API        | ✅ Implemented         |
+| JSON Request Persistence   | ✅ Implemented         |
+| Production Authentication  | 🚧 Planned             |
+| Database / Multi-instance  | 🚧 Planned if required |
 
 ---
 
@@ -399,11 +462,10 @@ The application is tested around its major user workflows.
 
 The prototype can later be extended with:
 
-* Java backend integration
-* MySQL database
 * Secure server-side authentication
-* Role-based authorization
-* Persistent cloud storage
+* Server-side role-based authorization
+* Database-backed multi-user persistence, if required
+* Secure supporting-document storage
 * Additional barangay services
 * Staff reports and analytics
 * Advanced document management
@@ -424,37 +486,15 @@ The current project does not include:
 
 ---
 
-# 🏗️ Future Architecture
+# 🏗️ Current and Future Architecture
 
 ```text
-┌─────────────────────┐
-│      RESIDENT       │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│    BarangayLink     │
-│    Web Interface    │
-│     HTML/CSS/JS     │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│    Java Backend     │
-│       REST API      │
-└──────────┬──────────┘
-           │
-     ┌─────┼─────┐
-     ▼     ▼     ▼
- Auth   Requests  Users
-           │
-           ▼
-┌─────────────────────┐
-│    MySQL Database   │
-└─────────────────────┘
+HTML/CSS/JS pages --fetch()--> Express JSON API --atomic JSON-file writes--> data/requests.json
+                                      |
+                                      +--> request list/detail/status update
 ```
 
-The backend and database architecture represent **future development** and are not currently part of the production implementation.
+Authentication, role authorization, resident-level data access, and any production database remain future work.
 
 ---
 
@@ -511,9 +551,11 @@ The development team remains responsible for the final implementation, testing, 
 
 # 🔗 Project Links
 
-### 🚀 Live Demo
+### 🚀 Local Live Demo
 
-[Open BarangayLink](https://elaydae.github.io/barangaylink/pages/login.html)
+Start the local server with `npm start`, then open **[http://localhost:3000](http://localhost:3000)**.
+
+Static preview: [GitHub Pages](https://elaydae.github.io/barangaylink/pages/login.html) (backend API unavailable).
 
 ### 💻 GitHub Repository
 
@@ -562,6 +604,9 @@ Demo credentials are provided solely for classroom demonstration.
 
 - `css/style.css` contains shared colors, layouts, navigation, forms, tables, status indicators, and responsive rules.
 - `js/app.js` contains shared page initializers, demo authentication, validation, rendering, and browser-storage logic.
+- `js/api.js` centralizes browser requests to the Express JSON API.
+- `server.js` serves the application and validates/persists request records in the JSON repository.
+- `test/requests.test.js` exercises the request API, persistence, error cases, and static pages.
 - `pages/` contains public authentication screens and resident/staff application pages.
 - `assets/` contains static imagery used by the landing page and interface.
 - `index.html` is the public landing page; `README.md` documents the project.
@@ -569,23 +614,22 @@ Demo credentials are provided solely for classroom demonstration.
 ### Where to Make Changes
 
 - Navigation: update the relevant page header/sidebar markup, shared styles in `css/style.css`, and `initNavigation()` / role-specific menu setup in `js/app.js`.
-- Resident services and requests: update `pages/services.html` or `pages/request.html` and the catalog/request handlers in `js/app.js`.
+- Resident services and requests: update `pages/services.html` or `pages/request.html`, the catalog/request handlers in `js/app.js`, and API calls in `js/api.js`.
+- Backend requests: update route validation and JSON-file persistence in `server.js`, plus `test/requests.test.js`.
 - Staff request processing: update `pages/staff-dashboard.html` or `pages/staff-request.html` and `renderStaffDashboard()` / `initStaffRequest()` in `js/app.js`.
 - Visual styling: update shared rules in `css/style.css`; check resident and staff pages because many selectors are shared.
 - Demo authentication: update `DEMO_ACCOUNTS`, `initAuth()`, and `enforceAuthentication()` in `js/app.js`. This is only a frontend demonstration, not production authentication.
 
 ### Important Browser Data
 
-`js/app.js` currently uses these actual localStorage keys:
+`js/app.js` currently uses these browser-local keys for non-request prototype data:
 
-- `barangaylink.requests` -> request objects with `reference`, resident name/address/contact/email, `document`, `purpose`, `submittedAt`, `updatedAt`, `status`, and `rejectionReason`.
 - `barangaylink.profile` -> resident name, address, contact, and email used to prefill requests.
-- `barangaylink.sequence` -> numeric suffix used to generate request references.
 - `barangaylink.auth` -> demo identity (`email`, `role`, `name`) used for navigation and presentation.
 - `barangaylink.concerns` -> concern records with ID, type/title, location, description, urgency, reporter, anonymity, submitter, reported date, and status; resident entries can also have contact/address.
 - `barangaylink.barangayInfo` -> barangay profile, population, office/contact, and location fields.
 
-Storage is per browser and can be edited by its user. Do not store real credentials or sensitive production records here. Keep stored object shapes and status values aligned with every renderer that reads them.
+Requests are stored by the server in `data/requests.json`, not duplicated in browser storage. Browser-local values can be edited by their user and are not suitable for real credentials or sensitive production records.
 
 ### Before Modifying Shared Code
 
@@ -601,22 +645,22 @@ Review these workflows after a shared change:
 
 ### Current Limitations
 
-- BarangayLink is a frontend academic prototype.
-- Data is stored in browser localStorage, not a shared server or real database.
+- The request backend is an academic single-instance Express/JSON-file implementation, not a production service or database.
 - Demo authentication and role checks run in client-side JavaScript and are not secure.
-- No production backend, database, or server-side access control is implemented.
+- Request API endpoints do not authenticate callers or enforce resident ownership; resident history currently lists all stored requests. Do not expose this demo publicly or enter real resident data.
+- Supporting documents are not uploaded or persisted.
 
 ### Future Architecture
 
 ```text
 HTML + CSS + JavaScript
           |
-      Java Backend/API
+Authenticated Express API
           |
-      MySQL Database
+Database and secure document storage (only if required)
 ```
 
-Replace browser-storage operations and demo authentication with secure API and database operations as part of that future implementation. The current UI should remain usable while those data boundaries are migrated.
+Implement authentication, authorization, resident-scoped reads, and stronger persistence before using the system with real residents or deploying it publicly.
 
 ---
 

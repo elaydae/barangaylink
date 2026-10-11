@@ -1,0 +1,15 @@
+{
+  "name": "barangaylink",
+  "version": "2.0.0",
+  "private": true,
+  "description": "BarangayLink milestone 2 Express API and static application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test",
+    "check": "node --check server.js && node --check js/api.js && node --check js/app.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

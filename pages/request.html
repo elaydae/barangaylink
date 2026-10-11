@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body>
-    <!-- Multi-step resident request flow; initRequest binds the form selectors and persists confirmed requests locally. -->
+    <!-- Multi-step resident request flow; confirmed requests are created through the Express API. -->
     <!-- Shared header/navigation; links and responsive styles are maintained with css/style.css. -->
     <header class="site-header resident-header">
       <div class="container nav-wrap">
@@ -163,6 +163,7 @@
       </div>
     </main>
 
+    <script src="../js/api.js"></script>
     <script src="../js/app.js"></script>
   </body>
 </html>

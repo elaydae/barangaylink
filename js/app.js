@@ -25,22 +25,17 @@ const serviceCatalog = [
 ];
 
 /*
- * Browser storage used by this prototype (JSON except the numeric sequence):
- * barangaylink.requests stores submitted request records.
+ * Browser storage used by this prototype:
  * barangaylink.profile stores resident contact/profile fields.
- * barangaylink.sequence stores the next request reference suffix.
  * barangaylink.auth stores the demo user's email, role, and name.
  * barangaylink.concerns stores community concern records.
  * barangaylink.barangayInfo stores editable barangay details.
  *
- * These values are browser-local and are not suitable for production. Replace
- * this storage boundary with Java API calls and persistent MySQL data later;
- * client-side role checks must never be treated as real access control.
+ * Request records are owned by the Express API and are never cached in localStorage.
+ * Other prototype data remains browser-local; client-side roles are not access control.
  */
 const STORAGE_KEYS = {
-  requests: 'barangaylink.requests',
   profile: 'barangaylink.profile',
-  sequence: 'barangaylink.sequence',
   auth: 'barangaylink.auth',
   concerns: 'barangaylink.concerns',
   barangayInfo: 'barangaylink.barangayInfo'
@@ -94,14 +89,6 @@ function writeStorage(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch (error) { showToast('Your browser could not save this change.', 'error'); }
 }
 
-/*
- * Stored request shape: reference, name, address, contact, email, document,
- * purpose, submittedAt, updatedAt, status, and rejectionReason. Resident
- * dashboard/history/tracking and staff review all read this same record.
- * STATUS_LABELS and STATUS_ORDER describe the supported workflow values.
- */
-function getRequests() { const requests = readStorage(STORAGE_KEYS.requests, []); return Array.isArray(requests) ? requests : []; }
-function saveRequests(requests) { writeStorage(STORAGE_KEYS.requests, requests); window.dispatchEvent(new Event('barangaylink:data')); }
 function getProfile() { const profile = readStorage(STORAGE_KEYS.profile, {}); return { ...defaultProfile, ...(profile && typeof profile === 'object' && !Array.isArray(profile) ? profile : {}) }; }
 function saveProfile(profile) { writeStorage(STORAGE_KEYS.profile, profile); window.dispatchEvent(new Event('barangaylink:data')); }
 function getBarangayInfo() {
@@ -374,10 +361,7 @@ function validateRequest(form, step) {
   return valid;
 }
 
-/**
- * Coordinates the multi-step document form. Submission currently saves locally;
- * future backend integration should replace the storage write while retaining the request shape.
- */
+/** Coordinates the multi-step document form and submits confirmed requests to Express. */
 function initRequest() {
   const form = document.querySelector('.request-form');
   if (!form) return;
@@ -402,7 +386,54 @@ function initRequest() {
   const updatePurposeOther = () => { const isOther = purpose.value === 'Other'; purposeOtherField.classList.toggle('hidden', !isOther); purposeOther.required = isOther; if (!isOther) { purposeOther.value = ''; clearFieldError(purposeOther); } };
   purpose.addEventListener('change', updatePurposeOther);
   purposeOther.addEventListener('input', () => { if (current === steps.length - 1) updateReview(); });
-  form.addEventListener('submit', (event) => { event.preventDefault(); if (!validateRequest(form, 2)) { current = 2; updateUI(); return; } const profileData = { name: form.querySelector('#req-full-name').value.trim(), address: form.querySelector('#req-address').value.trim(), contact: form.querySelector('#req-contact-number').value.trim(), email: form.querySelector('#req-email').value.trim() }; const sequence = Number(localStorage.getItem(STORAGE_KEYS.sequence) || 124) + 1; localStorage.setItem(STORAGE_KEYS.sequence, String(sequence)); const reference = `BL-${new Date().getFullYear()}-${String(sequence).padStart(5, '0')}`; const request = { reference, ...profileData, document: select.value, purpose: getPurposeValue(), submittedAt: new Date().toISOString(), updatedAt: new Date().toISOString(), status: 'pending', rejectionReason: '' }; saveRequests([request, ...getRequests()]); saveProfile(profileData); form.querySelector('[data-submission-reference]').textContent = reference; form.querySelector('[data-submission-track]').href = `tracking.html?reference=${encodeURIComponent(reference)}`; form.querySelector('[data-submission-success]').classList.remove('hidden'); form.querySelectorAll('.step-actions, .step-panel').forEach((element) => element.classList.add('hidden')); showToast('Request submitted successfully'); });
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (form.dataset.submitting === 'true') return;
+    if (!validateRequest(form, 2)) { current = 2; updateUI(); return; }
+    const submit = form.querySelector('[data-submit]');
+    const message = form.querySelector('.form-message');
+    const profileData = {
+      name: form.querySelector('#req-full-name').value.trim(),
+      address: form.querySelector('#req-address').value.trim(),
+      contact: form.querySelector('#req-contact-number').value.trim(),
+      email: form.querySelector('#req-email').value.trim()
+    };
+    const purposeValue = getPurposeValue();
+    const data = {
+      ...profileData,
+      document: select.value,
+      purpose: purpose.value === 'Other' ? `Other: ${purposeValue}` : purposeValue
+    };
+    if (!form.dataset.submissionKey) form.dataset.submissionKey = window.crypto.randomUUID();
+    form.dataset.submitting = 'true';
+    submit.disabled = true;
+    submit.textContent = 'Submitting…';
+    message.textContent = 'Submitting your request…';
+    message.classList.add('show');
+    try {
+      const request = await window.BarangayApi.createRequest(data, form.dataset.submissionKey);
+      delete form.dataset.submissionKey;
+      saveProfile(profileData);
+      form.querySelector('[data-submission-reference]').textContent = request.reference;
+      form.querySelector('[data-submission-track]').href = `tracking.html?reference=${encodeURIComponent(request.reference)}`;
+      form.querySelector('[data-submission-success]').classList.remove('hidden');
+      form.querySelectorAll('.step-actions, .step-panel').forEach((element) => element.classList.add('hidden'));
+      message.textContent = '';
+      showToast('Request submitted successfully.');
+    } catch (error) {
+      Object.entries(error.fields || {}).forEach(([field, text]) => {
+        const input = form.elements[field === 'name' ? 'fullName' : field === 'address' ? 'address' : field === 'contact' ? 'contactNumber' : field === 'email' ? 'email' : field === 'document' ? 'documentType' : field];
+        if (input) setFieldError(input, text);
+      });
+      message.textContent = error.message;
+      message.classList.add('show');
+      showToast(error.message, 'error');
+    } finally {
+      form.dataset.submitting = 'false';
+      submit.disabled = false;
+      submit.textContent = 'Submit Request';
+    }
+  });
   updatePurposeOther();
   updateUI();
 }
@@ -437,11 +468,41 @@ function initAdditionalRequestForms() {
 }
 
 function statusClass(status) { return `status-${status === 'review' ? 'review' : status}`; }
-/** Builds resident dashboard counts and active-request links from the shared request store. */
-function renderDashboard() {
+function setRequestPageState(target, message, kind = 'loading') {
+  const container = target.closest('.table-wrapper') || target.parentElement;
+  let state = container.querySelector('[data-api-status]');
+  if (!state) {
+    state = document.createElement('p');
+    state.dataset.apiStatus = '';
+    state.className = 'request-api-state';
+    state.setAttribute('aria-live', 'polite');
+    container.prepend(state);
+  }
+  state.textContent = message || '';
+  state.dataset.state = kind;
+  state.hidden = !message;
+}
+
+function bindRequestFilters(body, search, status, documentFilter) {
+  const filter = () => body.querySelectorAll('tr').forEach((row) => {
+    const query = search ? search.value.trim().toLowerCase() : '';
+    row.hidden = !row.textContent.toLowerCase().includes(query)
+      || Boolean(status && status.value !== 'all' && row.dataset.status !== status.value)
+      || Boolean(documentFilter && documentFilter.value !== 'all' && row.dataset.document !== documentFilter.value);
+  });
+  if (body.dataset.filtersBound) return;
+  body.dataset.filtersBound = 'true';
+  [search, status, documentFilter].filter(Boolean).forEach((field) => field.addEventListener('input', filter));
+  filter();
+}
+
+/** Builds resident dashboard counts and active-request links from the API. */
+async function renderDashboard() {
   const container = document.querySelector('[data-dashboard-requests]');
   if (!container) return;
-  const requests = getRequests();
+  setRequestPageState(container, 'Loading requests…');
+  try {
+  const requests = await window.BarangayApi.getRequests();
   const stats = { total: requests.length, pending: 0, review: 0, approved: 0, ready: 0, released: 0 };
   requests.forEach((request) => { if (stats[request.status] !== undefined) stats[request.status] += 1; });
   Object.keys(stats).forEach((key) => {
@@ -450,23 +511,135 @@ function renderDashboard() {
   });
   const activeRequests = requests.filter((request) => !['released', 'rejected'].includes(request.status));
   container.innerHTML = activeRequests.slice(0, 5).map((request) => `<tr data-status="${escapeHtml(request.status)}"><td>${escapeHtml(request.reference)}</td><td>${escapeHtml(request.document)}</td><td>${escapeHtml(formatDate(request.submittedAt))}</td><td><span class="status-badge ${statusClass(request.status)}">${escapeHtml(STATUS_LABELS[request.status] || request.status)}</span></td><td><a class="action-link" href="tracking.html?reference=${encodeURIComponent(request.reference)}">Track Request</a></td></tr>`).join('');
+  setRequestPageState(container, '', 'empty');
   const empty = document.querySelector('[data-dashboard-empty]');
   if (empty) empty.classList.toggle('hidden', activeRequests.length > 0);
+  } catch (error) {
+    container.replaceChildren();
+    setRequestPageState(container, error.message, 'error');
+  }
 }
 
-/** Renders stored requests and applies the history page search and status/document filters. */
-function renderHistory() { const body = document.querySelector('[data-history-rows]'); if (!body) return; const requests = getRequests(); body.innerHTML = requests.map((request) => `<tr data-status="${escapeHtml(request.status)}" data-document="${escapeHtml(request.document)}"><td>${escapeHtml(request.reference)}</td><td>${escapeHtml(request.document)}</td><td>${escapeHtml(formatDate(request.submittedAt))}</td><td><span class="status-badge ${statusClass(request.status)}">${escapeHtml(STATUS_LABELS[request.status] || request.status)}</span></td><td>${escapeHtml(formatDate(request.updatedAt))}</td><td><a href="tracking.html?reference=${encodeURIComponent(request.reference)}" class="action-link">Track Request</a></td></tr>`).join(''); const empty = document.querySelector('[data-history-empty]'); if (empty) empty.classList.toggle('hidden', requests.length > 0); const search = document.querySelector('#request-search'); const status = document.querySelector('#statusFilter'); const documentFilter = document.querySelector('#documentFilter'); const filter = () => body.querySelectorAll('tr').forEach((row) => { const query = search ? search.value.toLowerCase() : ''; row.hidden = !(`${row.textContent}`.toLowerCase().includes(query) && (!status || status.value === 'all' || row.dataset.status === status.value) && (!documentFilter || documentFilter.value === 'all' || row.dataset.document === documentFilter.value)); }); [search, status, documentFilter].filter(Boolean).forEach((field) => field.addEventListener('input', filter)); filter(); }
+/** Renders API-backed requests and applies history search and filters. */
+async function renderHistory() {
+  const body = document.querySelector('[data-history-rows]');
+  if (!body) return;
+  const empty = document.querySelector('[data-history-empty]');
+  setRequestPageState(body, 'Loading request history…');
+  try {
+    const requests = await window.BarangayApi.getRequests();
+    body.innerHTML = requests.map((request) => `<tr data-status="${escapeHtml(request.status)}" data-document="${escapeHtml(request.document)}"><td>${escapeHtml(request.reference)}</td><td>${escapeHtml(request.document)}</td><td>${escapeHtml(formatDate(request.submittedAt))}</td><td><span class="status-badge ${statusClass(request.status)}">${escapeHtml(STATUS_LABELS[request.status] || request.status)}</span></td><td>${escapeHtml(formatDate(request.updatedAt))}</td><td><a href="tracking.html?reference=${encodeURIComponent(request.reference)}" class="action-link">Track Request</a></td></tr>`).join('');
+    setRequestPageState(body, '', 'empty');
+    if (empty) empty.classList.toggle('hidden', requests.length > 0);
+    bindRequestFilters(body, document.querySelector('#request-search'), document.querySelector('#statusFilter'), document.querySelector('#documentFilter'));
+  } catch (error) {
+    body.replaceChildren();
+    if (empty) empty.classList.add('hidden');
+    setRequestPageState(body, error.message, 'error');
+  }
+}
 
 /** Resolves a request reference into its current status details and timeline. */
-function renderTracking() { const form = document.querySelector('.track-form'); if (!form) return; const input = form.querySelector('input'); const result = document.querySelector('[data-track-result]'); const empty = document.querySelector('[data-track-empty]'); const show = (reference) => { const request = getRequests().find((item) => item.reference.toLowerCase() === reference.trim().toLowerCase()); if (!request) { result.classList.add('hidden'); empty.classList.remove('hidden'); showToast('Request not found. Check your reference number.', 'error'); return; } empty.classList.add('hidden'); result.classList.remove('hidden'); document.querySelector('[data-track-reference]').textContent = request.reference; document.querySelector('[data-track-document]').textContent = request.document; document.querySelector('[data-track-applicant]').textContent = request.name; document.querySelector('[data-track-date]').textContent = formatDate(request.submittedAt); document.querySelector('[data-track-status]').textContent = STATUS_LABELS[request.status] || request.status; const timeline = document.querySelector('[data-track-timeline]'); const currentIndex = request.status === 'rejected' ? -1 : STATUS_ORDER.indexOf(request.status); timeline.innerHTML = ['Submitted', 'Received', 'Under Review', 'Approved', 'Ready for Release', 'Released'].map((label, index) => `<div class="timeline-item ${index <= currentIndex + 1 ? 'done' : ''} ${index === currentIndex + 1 ? 'active' : ''}"><span class="timeline-dot" aria-hidden="true"></span><div><strong>${label}</strong></div></div>`).join(''); result.scrollIntoView({ behavior: 'smooth', block: 'start' }); }; form.addEventListener('submit', (event) => { event.preventDefault(); if (!input.value.trim()) { input.setAttribute('aria-invalid', 'true'); showToast('Enter a request reference number.', 'error'); return; } show(input.value); }); const queryReference = new URLSearchParams(window.location.search).get('reference'); if (queryReference) { input.value = queryReference; show(queryReference); } }
+function renderTracking() {
+  const form = document.querySelector('.track-form');
+  if (!form) return;
+  const input = form.querySelector('input');
+  const result = document.querySelector('[data-track-result]');
+  const empty = document.querySelector('[data-track-empty]');
+  let message = form.querySelector('[data-api-status]');
+  if (!message) {
+    message = document.createElement('p');
+    message.dataset.apiStatus = '';
+    message.className = 'request-api-state';
+    message.hidden = true;
+    message.setAttribute('aria-live', 'polite');
+    form.after(message);
+  }
+  const show = async (reference) => {
+    result.classList.add('hidden');
+    empty.classList.add('hidden');
+    message.textContent = 'Looking up request…';
+    message.dataset.state = 'loading';
+    message.hidden = false;
+    try {
+      const request = await window.BarangayApi.getRequest(reference.trim());
+      message.textContent = '';
+      message.hidden = true;
+      result.classList.remove('hidden');
+      document.querySelector('[data-track-reference]').textContent = request.reference;
+      document.querySelector('[data-track-document]').textContent = request.document;
+      document.querySelector('[data-track-applicant]').textContent = request.name;
+      document.querySelector('[data-track-date]').textContent = formatDate(request.submittedAt);
+      document.querySelector('[data-track-status]').textContent = STATUS_LABELS[request.status] || request.status;
+      if (request.rejectionReason) {
+        let reason = result.querySelector('[data-track-rejection]');
+        if (!reason) {
+          reason = document.createElement('p');
+          reason.dataset.trackRejection = '';
+          result.insertBefore(reason, result.querySelector('[data-track-timeline]'));
+        }
+        reason.textContent = `Rejection reason: ${request.rejectionReason}`;
+      } else {
+        result.querySelector('[data-track-rejection]')?.remove();
+      }
+      const timeline = document.querySelector('[data-track-timeline]');
+      const currentIndex = request.status === 'rejected' ? -1 : STATUS_ORDER.indexOf(request.status);
+      timeline.innerHTML = ['Submitted', 'Received', 'Under Review', 'Approved', 'Ready for Release', 'Released'].map((label, index) => `<div class="timeline-item ${index <= currentIndex + 1 ? 'done' : ''} ${index === currentIndex + 1 ? 'active' : ''}"><span class="timeline-dot" aria-hidden="true"></span><div><strong>${label}</strong></div></div>`).join('');
+    } catch (error) {
+      if (error.status === 404) {
+        empty.classList.remove('hidden');
+        message.textContent = '';
+        message.hidden = true;
+      } else {
+        message.textContent = error.message;
+        message.dataset.state = 'error';
+        message.hidden = false;
+      }
+    }
+  };
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (!input.value.trim()) {
+      input.setAttribute('aria-invalid', 'true');
+      showToast('Enter a request reference number.', 'error');
+      return;
+    }
+    input.removeAttribute('aria-invalid');
+    show(input.value);
+  });
+  const queryReference = new URLSearchParams(window.location.search).get('reference');
+  if (queryReference) {
+    input.value = queryReference;
+    show(queryReference);
+  }
+}
 
-/** Populates the staff queue and filters from the same request records used by resident pages. */
-function renderStaffDashboard() { const body = document.querySelector('[data-staff-rows]'); if (!body) return; const requests = getRequests(); const counts = { total: requests.length, pending: 0, review: 0, approved: 0, rejected: 0, ready: 0 }; requests.forEach((request) => { if (counts[request.status] !== undefined) counts[request.status] += 1; }); Object.keys(counts).forEach((key) => { const element = document.querySelector(`[data-staff-stat="${key}"]`); if (element) element.textContent = counts[key]; }); body.innerHTML = requests.map((request) => `<tr data-status="${escapeHtml(request.status)}" data-document="${escapeHtml(request.document)}"><td>${escapeHtml(request.reference)}</td><td>${escapeHtml(request.name)}</td><td>${escapeHtml(request.document)}</td><td>${escapeHtml(formatDate(request.submittedAt))}</td><td><span class="status-badge ${statusClass(request.status)}">${escapeHtml(STATUS_LABELS[request.status] || request.status)}</span></td><td><a href="staff-request.html?reference=${encodeURIComponent(request.reference)}" class="action-link">Review</a></td></tr>`).join(''); const empty = document.querySelector('[data-staff-empty]'); if (empty) empty.classList.toggle('hidden', requests.length > 0); const search = document.querySelector('#staff-search'); const status = document.querySelector('#staff-status-filter'); const documentFilter = document.querySelector('#staff-doc-filter'); const filter = () => body.querySelectorAll('tr').forEach((row) => { const query = search ? search.value.toLowerCase() : ''; row.hidden = !(`${row.textContent}`.toLowerCase().includes(query) && (!status || status.value === 'all' || row.dataset.status === status.value) && (!documentFilter || documentFilter.value === 'all' || row.dataset.document === documentFilter.value)); }); [search, status, documentFilter].filter(Boolean).forEach((field) => field.addEventListener('input', filter)); filter(); }
+/** Populates staff summary and queue from the same API records residents see. */
+async function renderStaffDashboard() {
+  const body = document.querySelector('[data-staff-rows]');
+  if (!body) return;
+  const empty = document.querySelector('[data-staff-empty]');
+  setRequestPageState(body, 'Loading request queue…');
+  try {
+    const requests = await window.BarangayApi.getRequests();
+    const counts = { total: requests.length, pending: 0, review: 0, approved: 0, rejected: 0, ready: 0 };
+    requests.forEach((request) => { if (counts[request.status] !== undefined) counts[request.status] += 1; });
+    Object.keys(counts).forEach((key) => {
+      const element = document.querySelector(`[data-staff-stat="${key}"]`);
+      if (element) element.textContent = counts[key];
+    });
+    body.innerHTML = requests.map((request) => `<tr data-status="${escapeHtml(request.status)}" data-document="${escapeHtml(request.document)}"><td>${escapeHtml(request.reference)}</td><td>${escapeHtml(request.name)}</td><td>${escapeHtml(request.document)}</td><td>${escapeHtml(formatDate(request.submittedAt))}</td><td><span class="status-badge ${statusClass(request.status)}">${escapeHtml(STATUS_LABELS[request.status] || request.status)}</span></td><td><a href="staff-request.html?reference=${encodeURIComponent(request.reference)}" class="action-link">Review</a></td></tr>`).join('');
+    setRequestPageState(body, '', 'empty');
+    if (empty) empty.classList.toggle('hidden', requests.length > 0);
+    bindRequestFilters(body, document.querySelector('#staff-search'), document.querySelector('#staff-status-filter'), document.querySelector('#staff-doc-filter'));
+  } catch (error) {
+    body.replaceChildren();
+    if (empty) empty.classList.add('hidden');
+    setRequestPageState(body, error.message, 'error');
+  }
+}
 
-/**
- * Loads one request for review and enforces the allowed next status action in the UI.
- * Status changes and rejection reasons are saved to browser storage in this prototype.
- */
+/** Loads requests for staff review and sends status changes to the backend. */
 function initStaffRequest() {
   const actions = document.querySelectorAll('[data-status-action]');
   if (!actions.length) return;
@@ -476,21 +649,70 @@ function initStaffRequest() {
   const rejectionField = document.querySelector('[data-rejection-field]');
   const rejectionReason = document.querySelector('#rejection-reason');
   const rejectionError = document.querySelector('[data-rejection-error]');
-  let reference = new URLSearchParams(window.location.search).get('reference') || getRequests()[0]?.reference;
+  let reference = new URLSearchParams(window.location.search).get('reference');
   let request = null;
+  let requests = [];
+  let saving = false;
   const display = (key, value) => { const element = document.querySelector(`[data-staff-detail="${key}"]`); if (element) element.textContent = value || '-'; };
+  let apiStatus = document.querySelector('[data-staff-api-status]');
+  if (!apiStatus) {
+    apiStatus = document.createElement('p');
+    apiStatus.dataset.staffApiStatus = '';
+    apiStatus.className = 'request-api-state';
+    apiStatus.hidden = true;
+    apiStatus.setAttribute('aria-live', 'polite');
+    document.querySelector('.request-card').prepend(apiStatus);
+  }
 
   const renderList = () => {
     if (!listBody) return;
     const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
-    const matches = getRequests().filter((item) => !query || [item.reference, item.name, item.document, item.status, STATUS_LABELS[item.status], formatDate(item.submittedAt)].join(' ').toLowerCase().includes(query));
+    const matches = requests.filter((item) => !query || [item.reference, item.name, item.document, item.status, STATUS_LABELS[item.status], formatDate(item.submittedAt)].join(' ').toLowerCase().includes(query));
     listBody.innerHTML = matches.map((item) => `<tr class="${item.reference === reference ? 'is-selected' : ''}"><td>${escapeHtml(item.reference)}</td><td>${escapeHtml(item.name)}</td><td>${escapeHtml(item.document)}</td><td>${escapeHtml(formatDate(item.submittedAt))}</td><td><span class="status-badge ${statusClass(item.status)}">${escapeHtml(STATUS_LABELS[item.status] || item.status)}</span></td><td><button type="button" class="action-link" data-review-select="${escapeHtml(item.reference)}">Review</button></td></tr>`).join('');
     if (listEmpty) listEmpty.classList.toggle('hidden', matches.length > 0);
   };
 
-  const load = () => {
-    request = getRequests().find((item) => item.reference === reference) || null;
-    if (!request) return;
+  const loadList = async () => {
+    apiStatus.textContent = 'Loading review queue…';
+    apiStatus.dataset.state = 'loading';
+    apiStatus.hidden = false;
+    try {
+      requests = await window.BarangayApi.getRequests();
+      apiStatus.textContent = '';
+      apiStatus.hidden = true;
+      if (!reference && requests[0]) reference = requests[0].reference;
+      renderList();
+      if (reference) await load();
+      else clearDetails();
+    } catch (error) {
+      requests = [];
+      listBody.replaceChildren();
+      listEmpty.classList.add('hidden');
+      apiStatus.textContent = error.message;
+      apiStatus.dataset.state = 'error';
+      apiStatus.hidden = false;
+      clearDetails();
+    }
+  };
+
+  const clearDetails = () => {
+    request = null;
+    ['reference', 'name', 'address', 'contact', 'email', 'document', 'purpose', 'date'].forEach((key) => display(key, key === 'reference' ? 'No request selected' : '-'));
+    actions.forEach((button) => { button.disabled = true; button.setAttribute('aria-disabled', 'true'); });
+  };
+
+  const load = async () => {
+    if (!reference) { clearDetails(); return; }
+    try {
+      request = await window.BarangayApi.getRequest(reference);
+    } catch (error) {
+      request = null;
+      clearDetails();
+      apiStatus.textContent = error.status === 404 ? 'No request matches the selected reference.' : error.message;
+      apiStatus.dataset.state = 'error';
+      apiStatus.hidden = false;
+      return;
+    }
     Object.entries({ reference: request.reference, name: request.name, address: request.address, contact: request.contact, email: request.email, document: request.document, purpose: request.purpose, date: formatDate(request.submittedAt) }).forEach(([key, value]) => display(key, value));
     const select = document.querySelector('#status-select');
     if (select) select.value = request.status;
@@ -517,13 +739,14 @@ function initStaffRequest() {
     const button = event.target.closest('[data-review-select]');
     if (!button) return;
     reference = button.dataset.reviewSelect;
-    load();
     renderList();
+    load();
     try { window.history.replaceState(null, '', `?reference=${encodeURIComponent(reference)}`); } catch (error) {}
     document.querySelector('.request-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
-  actions.forEach((button) => button.addEventListener('click', () => {
+  actions.forEach((button) => button.addEventListener('click', async () => {
+    if (saving) return;
     if (!request) { showToast('No request selected.', 'error'); return; }
     const status = button.dataset.statusAction;
     if (status === 'rejected') {
@@ -533,19 +756,35 @@ function initStaffRequest() {
     if (status === 'rejected') {
       if (!window.confirm('Are you sure you want to reject this request?')) return;
     } else if (!window.confirm(`Update this request to ${STATUS_LABELS[status]}?`)) return;
-    const requests = getRequests();
-    const target = requests.find((item) => item.reference === request.reference);
-    target.status = status;
-    target.updatedAt = new Date().toISOString();
-    target.rejectionReason = status === 'rejected' ? rejectionReason.value.trim() : '';
-    saveRequests(requests);
-    load();
-    showToast(status === 'rejected' ? 'Request rejected.' : 'Request status updated.');
+    saving = true;
+    actions.forEach((action) => { action.disabled = true; });
+    apiStatus.textContent = 'Saving status…';
+    apiStatus.dataset.state = 'loading';
+    apiStatus.hidden = false;
+    try {
+      await window.BarangayApi.updateStatus(request.reference, {
+        status,
+        rejectionReason: status === 'rejected' ? rejectionReason.value.trim() : ''
+      });
+      requests = await window.BarangayApi.getRequests();
+      apiStatus.textContent = '';
+      apiStatus.hidden = true;
+      await load();
+      renderList();
+      showToast(status === 'rejected' ? 'Request rejected.' : 'Request status updated.');
+    } catch (error) {
+      apiStatus.textContent = error.message;
+      apiStatus.dataset.state = 'error';
+      apiStatus.hidden = false;
+      showToast(error.message, 'error');
+      await load();
+    } finally {
+      saving = false;
+    }
   }));
 
-  window.addEventListener('barangaylink:data', renderList);
-  load();
-  renderList();
+  if (searchInput) searchInput.addEventListener('input', renderList);
+  loadList();
 }
 
 /** Converts the concern form fields into the shared concern record shape and saves locally. */
@@ -816,5 +1055,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initStaffSharedPages(); initLogout(); initPublicNav(); initNavigation(); initServices(); initRequest(); initAdditionalRequestForms(); renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); renderStaffDashboardConcerns(); renderResidentConcerns(); renderStaffConcerns(); initStaffRequest(); initProfile(); initBarangayInfo(); initPhoneFormatting(); initAuth();
   document.querySelectorAll('.toggle-password').forEach((button) => button.addEventListener('click', () => { const input = button.parentElement.querySelector('input'); const visible = input.type === 'password'; input.type = visible ? 'text' : 'password'; button.textContent = visible ? 'Hide' : 'Show'; button.setAttribute('aria-label', visible ? 'Hide password' : 'Show password'); }));
   const modal = document.querySelector('.modal'); const trigger = document.querySelector('[data-open-modal]'); const close = document.querySelector('[data-close-modal]'); if (trigger && modal) trigger.addEventListener('click', () => modal.classList.add('show')); if (close && modal) close.addEventListener('click', () => modal.classList.remove('show')); if (modal) { modal.addEventListener('click', (event) => { if (event.target === modal) modal.classList.remove('show'); }); document.addEventListener('keydown', (event) => { if (event.key === 'Escape') modal.classList.remove('show'); }); }
-  window.addEventListener('barangaylink:data', () => { renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); renderStaffDashboardConcerns(); renderResidentConcerns(); renderStaffConcerns(); });
+  window.addEventListener('barangaylink:data', () => { renderStaffDashboardConcerns(); renderResidentConcerns(); renderStaffConcerns(); });
 });

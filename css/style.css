@@ -794,6 +794,18 @@ body.menu-open {
   text-align: center;
 }
 
+.request-api-state {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  color: var(--muted);
+  border-radius: 10px;
+}
+
+.request-api-state[data-state="error"] {
+  color: var(--danger);
+  background: rgba(190, 50, 50, 0.08);
+}
+
 /* Form validation messages and submission notifications are populated by shared JavaScript helpers. */
 .field-error {
   min-height: 1.2em;
@@ -1988,6 +2000,19 @@ textarea {
   .home-page .service-grid,
   .home-page .steps-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 400px) {
+  .resident-header .nav-wrap {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .resident-header .nav-actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-left: 0;
   }
 }
 
