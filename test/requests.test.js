@@ -268,6 +268,19 @@ test('static application pages remain served and use the backend client on reque
   assert.doesNotMatch(history, /REQ-2026-00124/);
 });
 
+test('the browser entry point and feature modules are served for modular page initialization', async () => {
+  const { baseUrl } = await startServer();
+  const entryResponse = await fetch(`${baseUrl}/js/app.js`);
+  assert.equal(entryResponse.status, 200);
+  assert.match(await entryResponse.text(), /import\('\.\/modules\/app\.mjs'\)/);
+
+  for (const module of ['app', 'data', 'navigation', 'resident', 'staff', 'community', 'account']) {
+    const response = await fetch(`${baseUrl}/js/modules/${module}.mjs`);
+    assert.equal(response.status, 200, `${module}.mjs should be served`);
+    assert.match(response.headers.get('content-type'), /javascript/);
+  }
+});
+
 test('JSON persistence files are not exposed by static file serving', async () => {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'barangaylink-static-'));
   const dataFile = path.join(directory, 'data', 'requests.json');

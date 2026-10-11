@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "node --test",
-    "check": "node --check server.js && node --check js/api.js && node --check js/app.js"
+    "check": "node --check server.js && node --check js/api.js && node --check js/app.js && node --check js/modules/data.mjs && node --check js/modules/navigation.mjs && node --check js/modules/resident.mjs && node --check js/modules/staff.mjs && node --check js/modules/community.mjs && node --check js/modules/account.mjs && node --check js/modules/app.mjs"
   },
   "dependencies": {
     "express": "^5.1.0"

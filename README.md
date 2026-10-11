@@ -94,7 +94,9 @@ npm test
 npm run check
 ```
 
-The test suite covers health/connectivity, valid and concurrent submissions, duplicate retry idempotency, field and malformed-body validation, unknown references/routes, status transition validation and resident/staff read consistency, persistence after recreating the server, frontend network/unexpected-response handling, and serving existing application pages.
+The test suite covers health/connectivity, valid and concurrent submissions, duplicate retry idempotency, field and malformed-body validation, unknown references/routes, status transition validation and resident/staff read consistency, persistence after recreating the server, frontend network/unexpected-response handling, serving existing application pages, and serving the browser module entry point and feature modules. `npm run check` also syntax-checks each browser module.
+
+**Verified for the JavaScript modularization:** `npm run check` passed; `npm test` passed all 17 tests. Browser smoke checks loaded the landing page, resident login/request/dashboard, staff dashboard/review, and concerns page without page errors. No request was submitted during these browser checks.
 
 **Verified for the previous API response fix:** live-host probes confirmed the static GitHub Pages API path returns non-JSON 404/405 responses; the automated suite checks the response handling and idempotent retry behavior. Re-run the commands above after changes. No production backend is deployed at the GitHub Pages origin.
 
@@ -603,7 +605,13 @@ Demo credentials are provided solely for classroom demonstration.
 ### Project Structure
 
 - `css/style.css` contains shared colors, layouts, navigation, forms, tables, status indicators, and responsive rules.
-- `js/app.js` contains shared page initializers, demo authentication, validation, rendering, and browser-storage logic.
+- `js/app.js` is the compatibility entry point; it dynamically loads the browser ES-module bootstrap in `js/modules/app.mjs`.
+- `js/modules/data.mjs` owns the shared service catalog, browser-local prototype storage, and small shared display utilities.
+- `js/modules/navigation.mjs` handles the shared sidebar, logout, demo role redirects, and public navigation.
+- `js/modules/resident.mjs` handles resident service browsing, request submission, dashboard, tracking, and history.
+- `js/modules/staff.mjs` handles the staff request queue, review details, and request-status updates.
+- `js/modules/community.mjs` handles resident/staff community concerns and staff-only shared-page behavior.
+- `js/modules/account.mjs` handles demo login/registration, profile editing, barangay details, and phone formatting.
 - `js/api.js` centralizes browser requests to the Express JSON API.
 - `server.js` serves the application and validates/persists request records in the JSON repository.
 - `test/requests.test.js` exercises the request API, persistence, error cases, and static pages.
@@ -611,18 +619,20 @@ Demo credentials are provided solely for classroom demonstration.
 - `assets/` contains static imagery used by the landing page and interface.
 - `index.html` is the public landing page; `README.md` documents the project.
 
+All feature modules use explicit ES-module imports and exports. HTML pages keep their existing `js/app.js` script reference, so no page-specific script tag migration is required. The entry module waits for DOM readiness, then calls the shared initializers; page-specific initializers safely return when their DOM hooks are absent. API-backed pages still load `js/api.js` before the app entry, and request operations continue to use the existing same-origin Express API and JSON-file persistence.
+
 ### Where to Make Changes
 
-- Navigation: update the relevant page header/sidebar markup, shared styles in `css/style.css`, and `initNavigation()` / role-specific menu setup in `js/app.js`.
-- Resident services and requests: update `pages/services.html` or `pages/request.html`, the catalog/request handlers in `js/app.js`, and API calls in `js/api.js`.
+- Navigation: update the relevant page header/sidebar markup, shared styles in `css/style.css`, and `js/modules/navigation.mjs`.
+- Resident services and requests: update `pages/services.html` or `pages/request.html`, the catalog/request handlers in `js/modules/resident.mjs`, and API calls in `js/api.js`.
 - Backend requests: update route validation and JSON-file persistence in `server.js`, plus `test/requests.test.js`.
-- Staff request processing: update `pages/staff-dashboard.html` or `pages/staff-request.html` and `renderStaffDashboard()` / `initStaffRequest()` in `js/app.js`.
+- Staff request processing: update `pages/staff-dashboard.html` or `pages/staff-request.html` and `js/modules/staff.mjs`.
 - Visual styling: update shared rules in `css/style.css`; check resident and staff pages because many selectors are shared.
-- Demo authentication: update `DEMO_ACCOUNTS`, `initAuth()`, and `enforceAuthentication()` in `js/app.js`. This is only a frontend demonstration, not production authentication.
+- Demo authentication: update `DEMO_ACCOUNTS` and `initAuth()` in `js/modules/data.mjs` and `js/modules/account.mjs`, plus `enforceAuthentication()` in `js/modules/navigation.mjs`. This is only a frontend demonstration, not production authentication.
 
 ### Important Browser Data
 
-`js/app.js` currently uses these browser-local keys for non-request prototype data:
+`js/modules/data.mjs` uses these browser-local keys for non-request prototype data:
 
 - `barangaylink.profile` -> resident name, address, contact, and email used to prefill requests.
 - `barangaylink.auth` -> demo identity (`email`, `role`, `name`) used for navigation and presentation.
