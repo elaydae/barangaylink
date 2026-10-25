@@ -6,6 +6,19 @@
     <title>Report a Concern | BarangayLink</title>
     <meta name="description" content="Report community concerns such as road problems, street lights, garbage collection, drainage, and noise complaints." />
     <link rel="stylesheet" href="../css/style.css" />
+      <script>
+      /* Early login gate: redirect before the page paints so protected pages never flash. */
+      (function () {
+        try {
+          var raw = localStorage.getItem('barangaylink.auth');
+          var auth = raw ? JSON.parse(raw) : null;
+          if (!auth || (auth.role !== 'resident' && auth.role !== 'staff')) {
+            var page = location.pathname.split('/').pop();
+            location.replace('login.html?next=' + encodeURIComponent(page + location.search));
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <!-- Shared resident/staff concern page. Role-specific panels are toggled by js/app.js based on demo auth state. -->
@@ -173,19 +186,23 @@
                 <div class="detail-grid">
                   <div class="detail-item">
                     <span>Concern Type</span>
-                    <strong>Garbage Collection</strong>
+                    <strong data-review-type>-</strong>
                   </div>
                   <div class="detail-item">
                     <span>Location</span>
-                    <strong>Purok 3, near the basketball court</strong>
+                    <strong data-review-location>-</strong>
                   </div>
                   <div class="detail-item">
                     <span>Urgency</span>
-                    <strong>Medium</strong>
+                    <strong data-review-urgency>-</strong>
+                  </div>
+                  <div class="detail-item full-width">
+                    <span>Description</span>
+                    <strong data-review-description>-</strong>
                   </div>
                   <div class="detail-item">
                     <span>Reported By</span>
-                    <strong>Juan Dela Cruz</strong>
+                    <strong data-review-reporter>-</strong>
                   </div>
                 </div>
               </fieldset>

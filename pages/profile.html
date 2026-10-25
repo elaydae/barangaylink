@@ -14,6 +14,19 @@
       content="Resident profile page for BarangayLink."
     />
     <link rel="stylesheet" href="../css/style.css" />
+      <script>
+      /* Early login gate: redirect before the page paints so protected pages never flash. */
+      (function () {
+        try {
+          var raw = localStorage.getItem('barangaylink.auth');
+          var auth = raw ? JSON.parse(raw) : null;
+          if (!auth || (auth.role !== 'resident' && auth.role !== 'staff')) {
+            var page = location.pathname.split('/').pop();
+            location.replace('login.html?next=' + encodeURIComponent(page + location.search));
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
 
   <body>
@@ -136,7 +149,7 @@
               <div class="detail-item">
                 <span>Email</span>
                 <strong data-profile-display="email">
-                  juan.delacruz@email.com
+                  juan.delacruz@gmail.com
                 </strong>
               </div>
 
@@ -231,7 +244,7 @@
               id="profile-email"
               name="email"
               type="email"
-              value="juan.delacruz@email.com"
+              value="juan.delacruz@gmail.com"
               required
             />
           </div>

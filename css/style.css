@@ -2279,3 +2279,18 @@ button.action-link {
     display: none;
   }
 }
+
+/* Login-required notice shown when a protected page redirects to login. */
+.auth-notice {
+  margin: 0.75rem 0 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: var(--soft-green);
+  color: var(--primary);
+  font-size: 0.92rem;
+}
+
+/* Sign-up email: user types the name, @gmail.com is shown as a fixed suffix. */
+.email-suffix-wrap { display: flex; align-items: stretch; }
+.email-suffix-wrap input { flex: 1; min-width: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.email-suffix { display: flex; align-items: center; padding: 0 0.9rem; border: 1px solid var(--border, #cfd8d3); border-left: 0; border-radius: 0 12px 12px 0; background: var(--soft-green); color: var(--primary); font-weight: 600; white-space: nowrap; }

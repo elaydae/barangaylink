@@ -38,16 +38,18 @@ const STORAGE_KEYS = {
   profile: 'barangaylink.profile',
   auth: 'barangaylink.auth',
   concerns: 'barangaylink.concerns',
-  barangayInfo: 'barangaylink.barangayInfo'
+  barangayInfo: 'barangaylink.barangayInfo',
+  accounts: 'barangaylink.accounts'
 };
+const MIN_PASSWORD_LENGTH = 6;
 // Credentials are for the frontend demonstration only; production login belongs on the backend.
 const DEMO_ACCOUNTS = [
-  { email: 'demo@bl.com', password: '123456', role: 'resident', name: 'Demo Resident' },
-  { email: 'staff@bl.com', password: '123456', role: 'staff', name: 'Demo Staff/Admin' }
+  { email: 'juan.delacruz@gmail.com', password: '123456', role: 'resident', name: 'Demo Resident' },
+  { email: 'barangay.staff@gmail.com', password: '123456', role: 'staff', name: 'Demo Staff/Admin' }
 ];
 const STATUS_LABELS = { pending: 'Pending Review', review: 'Under Review', approved: 'Approved', rejected: 'Rejected', ready: 'Ready for Release', released: 'Released' };
 const STATUS_ORDER = ['pending', 'review', 'approved', 'ready', 'released'];
-const defaultProfile = { name: 'Juan Dela Cruz', address: '123 Rizal Street, Barangay San Isidro', contact: '0917-123-4567', email: 'juan.delacruz@email.com' };
+const defaultProfile = { name: 'Juan Dela Cruz', address: '123 Rizal Street, Barangay San Isidro', contact: '0917-123-4567', email: 'juan.delacruz@gmail.com' };
 const defaultBarangayInfo = {
   name: 'Barangay San Isidro',
   description: 'Barangay San Isidro is a residential and commercial community committed to responsive, transparent public service. The barangay serves its residents through streamlined online and over-the-counter transactions, regular community programs, and an active peace and order council.',
@@ -69,9 +71,9 @@ const CONCERN_STATUS = {
   resolved: { label: 'Resolved', badge: 'status-approved' }
 };
 const SAMPLE_CONCERNS = [
-  { id: 'CNC-2026-0031', type: 'Garbage Collection', title: 'Garbage Collection Delay', location: 'Purok 3, near the basketball court', description: 'Garbage has not been collected for several days.', urgency: 'Medium', reporter: 'Juan Dela Cruz', anonymous: false, submittedBy: 'demo@bl.com', reportedAt: '2026-09-03T12:00:00', status: 'progress' },
-  { id: 'CNC-2026-0027', type: 'Street Light', title: 'Broken Street Light', location: 'Rizal Street corner', description: 'The street light on the corner is not working at night.', urgency: 'High', reporter: 'Juan Dela Cruz', anonymous: false, submittedBy: 'demo@bl.com', reportedAt: '2026-08-20T12:00:00', status: 'resolved' },
-  { id: 'CNC-2026-0019', type: 'Drainage Issue', title: 'Clogged Drainage', location: 'Purok 5 main road', description: 'Drainage is clogged and water pools on the road after rain.', urgency: 'Medium', reporter: 'Juan Dela Cruz', anonymous: false, submittedBy: 'demo@bl.com', reportedAt: '2026-08-30T12:00:00', status: 'submitted' }
+  { id: 'CNC-2026-0031', type: 'Garbage Collection', title: 'Garbage Collection Delay', location: 'Purok 3, near the basketball court', description: 'Garbage has not been collected for several days.', urgency: 'Medium', reporter: 'Juan Dela Cruz', anonymous: false, submittedBy: 'juan.delacruz@gmail.com', reportedAt: '2026-09-03T12:00:00', status: 'progress' },
+  { id: 'CNC-2026-0027', type: 'Street Light', title: 'Broken Street Light', location: 'Rizal Street corner', description: 'The street light on the corner is not working at night.', urgency: 'High', reporter: 'Juan Dela Cruz', anonymous: false, submittedBy: 'juan.delacruz@gmail.com', reportedAt: '2026-08-20T12:00:00', status: 'resolved' },
+  { id: 'CNC-2026-0019', type: 'Drainage Issue', title: 'Clogged Drainage', location: 'Purok 5 main road', description: 'Drainage is clogged and water pools on the road after rain.', urgency: 'Medium', reporter: 'Juan Dela Cruz', anonymous: false, submittedBy: 'juan.delacruz@gmail.com', reportedAt: '2026-08-30T12:00:00', status: 'submitted' }
 ];
 
 /** Safely reads prototype data, using a caller-provided default for missing or invalid JSON. */
@@ -90,7 +92,18 @@ function writeStorage(key, value) {
 }
 
 function getProfile() { const profile = readStorage(STORAGE_KEYS.profile, {}); return { ...defaultProfile, ...(profile && typeof profile === 'object' && !Array.isArray(profile) ? profile : {}) }; }
-function saveProfile(profile) { writeStorage(STORAGE_KEYS.profile, profile); window.dispatchEvent(new Event('barangaylink:data')); }
+function saveProfile(profile) {
+  writeStorage(STORAGE_KEYS.profile, profile);
+  // Keep a registered account's own profile in sync so it returns on next login.
+  const authEmail = readStorage(STORAGE_KEYS.auth, null)?.email;
+  const accounts = readStorage(STORAGE_KEYS.accounts, []);
+  if (authEmail && Array.isArray(accounts) && accounts.some((item) => item.email === authEmail)) {
+    writeStorage(STORAGE_KEYS.accounts, accounts.map((item) => item.email === authEmail ? { ...item, profile } : item));
+  }
+  window.dispatchEvent(new Event('barangaylink:data'));
+}
+/** Shows the signed-in resident's name wherever a page marks it with data-profile-name (e.g. the dashboard greeting). */
+function initProfileName() { const name = getProfile().name; document.querySelectorAll('[data-profile-name]').forEach((element) => { element.textContent = name; }); }
 function getBarangayInfo() {
   const stored = readStorage(STORAGE_KEYS.barangayInfo, {});
   return {
@@ -104,6 +117,8 @@ function saveBarangayInfo(info) {
   window.dispatchEvent(new Event('barangaylink:data'));
 }
 /* This frontend demo role controls page presentation/redirects; it does not secure data. */
+function getRegisteredAccounts() { const list = readStorage(STORAGE_KEYS.accounts, []); return Array.isArray(list) ? list : []; }
+function saveRegisteredAccount(account) { writeStorage(STORAGE_KEYS.accounts, [...getRegisteredAccounts(), account]); }
 function getAuth() { const auth = readStorage(STORAGE_KEYS.auth, null); return auth && (auth.role === 'resident' || auth.role === 'staff') ? auth : null; }
 function setAuth(account) { writeStorage(STORAGE_KEYS.auth, { email: account.email, role: account.role, name: account.name }); }
 function clearAuth() { try { localStorage.removeItem(STORAGE_KEYS.auth); } catch (error) {} }
@@ -294,7 +309,7 @@ function enforceAuthentication() {
   const staffPages = ['staff-dashboard.html', 'staff-request.html'];
   const protectedPage = !publicPages.includes(page);
   const auth = getAuth();
-  if (protectedPage && !auth) { window.location.replace('login.html'); return false; }
+  if (protectedPage && !auth) { window.location.replace(`login.html?next=${encodeURIComponent(page + window.location.search)}`); return false; }
   if (staffPages.includes(page) && auth?.role !== 'staff') { window.location.replace(auth?.role === 'resident' ? 'dashboard.html' : 'login.html'); return false; }
   if (auth?.role === 'staff' && ['dashboard.html', 'services.html', 'request.html', 'tracking.html', 'history.html', 'profile.html'].includes(page)) { window.location.replace('staff-dashboard.html'); return false; }
   return true;
@@ -341,8 +356,32 @@ function initServices() {
   const detail = document.querySelector('#service-detail');
   const pagePrefix = /\/pages\//i.test(window.location.pathname) ? '' : 'pages/';
   let category = 'all';
+  // Public pages have no detail panel, so requirements open in a modal that needs no login.
+  const openServiceModal = (service) => {
+    if (!service) return;
+    let modal = document.querySelector('#service-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'service-modal';
+      modal.className = 'modal';
+      modal.setAttribute('role', 'dialog');
+      modal.setAttribute('aria-modal', 'true');
+      modal.innerHTML = '<div class="modal-card"><p class="eyebrow" data-m-category></p><h2 data-m-name></h2><p data-m-description></p><h3>Requirements</h3><ul data-m-requirements></ul><p><strong>Estimated processing:</strong> <span data-m-processing></span></p><div class="modal-actions"><button type="button" class="btn btn-ghost" data-m-close>Close</button><a class="btn btn-primary" data-m-request href="#">Request Service</a></div></div>';
+      document.body.appendChild(modal);
+      const close = () => modal.classList.remove('show');
+      modal.addEventListener('click', (event) => { if (event.target === modal || event.target.closest('[data-m-close]')) close(); });
+      document.addEventListener('keydown', (event) => { if (event.key === 'Escape') close(); });
+    }
+    modal.querySelector('[data-m-category]').textContent = service.category;
+    modal.querySelector('[data-m-name]').textContent = service.name;
+    modal.querySelector('[data-m-description]').textContent = service.description;
+    modal.querySelector('[data-m-processing]').textContent = service.processing;
+    modal.querySelector('[data-m-requirements]').innerHTML = service.requirements.map((item) => `<li>${escapeHtml(item)}</li>`).join('');
+    modal.querySelector('[data-m-request]').href = `${pagePrefix}request.html?service=${encodeURIComponent(service.name)}`;
+    modal.classList.add('show');
+  };
   const renderDetail = (service) => { if (!detail || !service) return; detail.classList.remove('hidden'); detail.querySelector('[data-detail-icon]').textContent = service.icon; detail.querySelector('[data-detail-category]').textContent = service.category; detail.querySelector('[data-detail-name]').textContent = service.name; detail.querySelector('[data-detail-description]').textContent = service.description; detail.querySelector('[data-detail-processing]').textContent = service.processing; detail.querySelector('[data-detail-requirements]').innerHTML = service.requirements.map((item) => `<li>${escapeHtml(item)}</li>`).join(''); detail.querySelector('[data-detail-request]').href = `${pagePrefix}request.html?service=${encodeURIComponent(service.name)}`; detail.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
-  const render = () => { const query = search ? search.value.trim().toLowerCase() : ''; const items = serviceCatalog.filter((service) => (category === 'all' || service.category === category) && (!query || `${service.name} ${service.category} ${service.description}`.toLowerCase().includes(query))); grid.innerHTML = items.map((service) => `<article class="service-card"><div class="service-icon" aria-hidden="true">${service.icon}</div><span class="category-label">${escapeHtml(service.category)}</span><h3>${escapeHtml(service.name)}</h3><p>${escapeHtml(service.description)}</p><ul>${service.requirements.slice(0, 3).map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul><span class="processing-time">Estimated: ${escapeHtml(service.processing)}</span><div class="card-actions">${detail ? `<button class="btn btn-ghost small" type="button" data-view-service="${escapeHtml(service.name)}">View Requirements</button>` : `<a class="btn btn-ghost small" href="${pagePrefix}services.html">View Requirements</a>`}<a class="btn btn-primary small" href="${pagePrefix}request.html?service=${encodeURIComponent(service.name)}">Request Service</a></div></article>`).join(''); if (count) count.textContent = items.length; if (empty) empty.classList.toggle('hidden', items.length > 0); grid.querySelectorAll('[data-view-service]').forEach((button) => button.addEventListener('click', () => renderDetail(getService(button.dataset.viewService)))); };
+  const render = () => { const query = search ? search.value.trim().toLowerCase() : ''; const items = serviceCatalog.filter((service) => (category === 'all' || service.category === category) && (!query || `${service.name} ${service.category} ${service.description}`.toLowerCase().includes(query))); grid.innerHTML = items.map((service) => `<article class="service-card"><div class="service-icon" aria-hidden="true">${service.icon}</div><span class="category-label">${escapeHtml(service.category)}</span><h3>${escapeHtml(service.name)}</h3><p>${escapeHtml(service.description)}</p><ul>${service.requirements.slice(0, 3).map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul><span class="processing-time">Estimated: ${escapeHtml(service.processing)}</span><div class="card-actions"><button class="btn btn-ghost small" type="button" data-view-service="${escapeHtml(service.name)}">View Requirements</button><a class="btn btn-primary small" href="${pagePrefix}request.html?service=${encodeURIComponent(service.name)}">Request Service</a></div></article>`).join(''); if (count) count.textContent = items.length; if (empty) empty.classList.toggle('hidden', items.length > 0); grid.querySelectorAll('[data-view-service]').forEach((button) => button.addEventListener('click', () => (detail ? renderDetail : openServiceModal)(getService(button.dataset.viewService)))); };
   document.querySelectorAll('[data-category]').forEach((button) => button.addEventListener('click', () => { category = button.dataset.category; document.querySelectorAll('[data-category]').forEach((tab) => { const active = tab === button; tab.classList.toggle('active', active); tab.setAttribute('aria-selected', String(active)); }); render(); }));
   if (search) search.addEventListener('input', render);
   const clear = document.querySelector('[data-clear-search]');
@@ -350,8 +389,9 @@ function initServices() {
   render();
 }
 
-function setFieldError(field, message) { let error = field.parentElement.querySelector('.field-error'); if (!error) { error = document.createElement('p'); error.className = 'field-error'; field.parentElement.appendChild(error); } error.textContent = message; field.setAttribute('aria-invalid', 'true'); }
-function clearFieldError(field) { const error = field.parentElement.querySelector('.field-error'); if (error) error.textContent = ''; field.removeAttribute('aria-invalid'); }
+function errorHost(field) { return field.closest('.email-suffix-wrap')?.parentElement || field.parentElement; }
+function setFieldError(field, message) { const host = errorHost(field); let error = host.querySelector('.field-error'); if (!error) { error = document.createElement('p'); error.className = 'field-error'; host.appendChild(error); } error.textContent = message; field.setAttribute('aria-invalid', 'true'); }
+function clearFieldError(field) { const error = errorHost(field).querySelector('.field-error'); if (error) error.textContent = ''; field.removeAttribute('aria-invalid'); }
 /** Validates the active request step and writes errors into the form's accessible field hooks. */
 function validateRequest(form, step) {
   const fields = step === 0 ? [form.querySelector('#document-type')] : step === 2 ? Array.from(form.querySelectorAll('.step-panel.active input[required]')) : [];
@@ -443,7 +483,14 @@ function initAdditionalRequestForms() {
   document.querySelectorAll('.request-form[data-success-message]').forEach((form) => {
     const steps = Array.from(form.querySelectorAll('.step-panel'));
     let current = 0;
-    const update = () => { steps.forEach((step, index) => step.classList.toggle('active', index === current)); form.querySelector('[data-step-label]').textContent = `Step ${current + 1} of ${steps.length}`; form.querySelectorAll('[data-next]').forEach((button) => button.classList.toggle('hidden', current === steps.length - 1)); form.querySelector('[data-submit]').classList.toggle('hidden', current !== steps.length - 1); form.querySelectorAll('[data-prev]').forEach((button) => button.classList.toggle('hidden', current === 0)); };
+    const updateConcernReview = () => {
+      if (!form.hasAttribute('data-concern-form')) return;
+      const val = (name) => (form.querySelector(`[name="${name}"]`)?.value || '').trim() || '-';
+      const anonymous = form.querySelector('[name="anonymous"]')?.checked === true;
+      const values = { type: val('concernType'), location: val('location'), urgency: val('urgency'), description: val('description'), reporter: anonymous ? 'Anonymous' : val('fullName') };
+      Object.keys(values).forEach((key) => { const target = form.querySelector(`[data-review-${key}]`); if (target) target.textContent = values[key]; });
+    };
+    const update = () => { steps.forEach((step, index) => step.classList.toggle('active', index === current)); form.querySelector('[data-step-label]').textContent = `Step ${current + 1} of ${steps.length}`; form.querySelectorAll('[data-next]').forEach((button) => button.classList.toggle('hidden', current === steps.length - 1)); form.querySelector('[data-submit]').classList.toggle('hidden', current !== steps.length - 1); form.querySelectorAll('[data-prev]').forEach((button) => button.classList.toggle('hidden', current === 0)); if (current === steps.length - 1) updateConcernReview(); };
     const concernType = form.querySelector('#concern-type');
     const concernLocation = form.querySelector('#concern-location');
     const requiredMessage = 'This field is required.';
@@ -622,7 +669,7 @@ async function renderStaffDashboard() {
   setRequestPageState(body, 'Loading request queue…');
   try {
     const requests = await window.BarangayApi.getRequests();
-    const counts = { total: requests.length, pending: 0, review: 0, approved: 0, rejected: 0, ready: 0 };
+    const counts = { total: requests.length, pending: 0, review: 0, approved: 0, rejected: 0, ready: 0, released: 0 };
     requests.forEach((request) => { if (counts[request.status] !== undefined) counts[request.status] += 1; });
     Object.keys(counts).forEach((key) => {
       const element = document.querySelector(`[data-staff-stat="${key}"]`);
@@ -714,8 +761,6 @@ function initStaffRequest() {
       return;
     }
     Object.entries({ reference: request.reference, name: request.name, address: request.address, contact: request.contact, email: request.email, document: request.document, purpose: request.purpose, date: formatDate(request.submittedAt) }).forEach(([key, value]) => display(key, value));
-    const select = document.querySelector('#status-select');
-    if (select) select.value = request.status;
     const enabledActions = {
       pending: ['review'],
       review: ['approved', 'rejected'],
@@ -920,24 +965,53 @@ function initProfile() { const form = document.querySelector('[data-profile-form
 
 /** Handles demo registration/login forms; credentials and role assignment are frontend-only. */
 function initAuth() {
+  const notice = document.querySelector('[data-login-notice]');
+  if (notice && new URLSearchParams(window.location.search).get('next')) { notice.textContent = 'Please log in to continue. You will be taken to the page you selected after logging in.'; notice.classList.remove('hidden'); }
   document.querySelectorAll('.auth-form').forEach((form) => form.addEventListener('submit', (event) => {
     event.preventDefault();
     let valid = true;
     form.querySelectorAll('[required]').forEach((field) => { clearFieldError(field); if (!field.value.trim()) { setFieldError(field, 'This field is required.'); valid = false; } });
-    const email = form.querySelector('input[type="email"]');
-    if (email && email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) { setFieldError(email, 'Please enter a valid email address.'); valid = false; }
+    const email = form.querySelector('input[type="email"], input[data-gmail-username]');
+    const gmailMode = Boolean(email && email.hasAttribute('data-gmail-username'));
+    // Sign-up only asks for the part before @gmail.com; the domain is added automatically.
+    // The typed text is never rewritten, so an invalid entry stays visible next to its error message.
+    const gmailName = gmailMode ? email.value.trim().toLowerCase().split('@')[0] : '';
+    const fullEmail = email ? (gmailMode ? `${gmailName}@gmail.com` : email.value.trim().toLowerCase()) : '';
+    if (gmailMode && email.value.trim() && /\s/.test(gmailName)) { setFieldError(email, 'Invalid email: spaces are not allowed.'); valid = false; }
+    else if (gmailMode && email.value.trim() && !/^[a-z0-9](?:[a-z0-9.]{4,28}[a-z0-9])$/.test(gmailName)) { setFieldError(email, 'Invalid email: use 6-30 letters, numbers or periods (e.g. juandelacruz).'); valid = false; }
+    else if (!gmailMode && email && email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) { setFieldError(email, 'Please enter a valid email address.'); valid = false; }
     const password = form.querySelector('input[name="password"]');
     const confirm = form.querySelector('input[name="confirmPassword"]');
     if (confirm && password.value !== confirm.value) { setFieldError(confirm, 'Passwords do not match.'); valid = false; }
+    const isRegister = Boolean(form.querySelector('#register-password'));
+    const contact = form.querySelector('input[name="contactNumber"]');
+    if (isRegister && contact && contact.value.trim() && !(/^[0-9+()\-\s]{7,20}$/.test(contact.value.trim()) && contact.value.replace(/\D/g, '').length >= 7)) { setFieldError(contact, 'Please enter a valid contact number.'); valid = false; }
+    if (isRegister && password.value && password.value.length < MIN_PASSWORD_LENGTH) { setFieldError(password, `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`); valid = false; }
+    if (isRegister && valid && email.value && [...DEMO_ACCOUNTS, ...getRegisteredAccounts()].some((item) => item.email === fullEmail)) { setFieldError(email, 'An account with this email already exists.'); valid = false; }
     if (!valid) return;
-    if (form.querySelector('#login-email')) {
-      const account = DEMO_ACCOUNTS.find((item) => item.email === email.value.trim().toLowerCase() && item.password === password.value);
-      if (!account) { setFieldError(password, 'Incorrect demo email or password.'); showToast('Incorrect email or password.', 'error'); return; }
+    if (isRegister) {
+      const data = Object.fromEntries(new FormData(form));
+      const account = { email: fullEmail, password: data.password, role: 'resident', name: data.fullName.trim() };
+      const profile = { name: account.name, address: data.address.trim(), contact: data.contactNumber.trim(), email: account.email };
+      saveRegisteredAccount({ ...account, profile });
       setAuth(account);
-      window.location.href = account.role === 'staff' ? 'staff-dashboard.html' : 'dashboard.html';
+      saveProfile(profile);
+      window.location.href = 'profile.html';
       return;
     }
-    showToast('Account form completed for this prototype.');
+    if (form.querySelector('#login-email')) {
+      const account = [...DEMO_ACCOUNTS, ...getRegisteredAccounts()].find((item) => item.email === fullEmail && item.password === password.value);
+      if (!account) { setFieldError(password, 'Incorrect demo email or password.'); showToast('Incorrect email or password.', 'error'); return; }
+      setAuth(account);
+      if (account.role === 'resident') saveProfile(account.profile || defaultProfile);
+      const next = new URLSearchParams(window.location.search).get('next');
+      const safeNext = next && /^[a-z-]+\.html(\?[\w%=&.+\-]*)?$/.test(next) && !['login.html', 'register.html'].includes(next.split('?')[0]) ? next : null;
+      const staffOnly = ['staff-dashboard.html', 'staff-request.html'];
+      const residentOnly = ['dashboard.html', 'services.html', 'request.html', 'tracking.html', 'history.html', 'profile.html'];
+      const allowed = safeNext && !(account.role === 'staff' ? residentOnly : staffOnly).includes(safeNext.split('?')[0]);
+      window.location.href = allowed ? safeNext : (account.role === 'staff' ? 'staff-dashboard.html' : 'dashboard.html');
+      return;
+    }
   }));
 }
 /** Renders editable barangay details; staff changes persist locally and are visible in resident views. */
@@ -1049,10 +1123,12 @@ function initPhoneFormatting() {
     });
   }
 }
+// Back/forward cache can restore a protected page after logout; re-check the session when that happens.
+window.addEventListener('pageshow', (event) => { if (event.persisted) enforceAuthentication(); });
 // Page bootstrap: run shared initializers once the page hooks are available; absent page sections safely no-op.
 document.addEventListener('DOMContentLoaded', () => {
   if (!enforceAuthentication()) return;
-  initStaffSharedPages(); initLogout(); initPublicNav(); initNavigation(); initServices(); initRequest(); initAdditionalRequestForms(); renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); renderStaffDashboardConcerns(); renderResidentConcerns(); renderStaffConcerns(); initStaffRequest(); initProfile(); initBarangayInfo(); initPhoneFormatting(); initAuth();
+  initStaffSharedPages(); initLogout(); initPublicNav(); initNavigation(); initServices(); initRequest(); initAdditionalRequestForms(); renderDashboard(); renderHistory(); renderTracking(); renderStaffDashboard(); renderStaffDashboardConcerns(); renderResidentConcerns(); renderStaffConcerns(); initStaffRequest(); initProfile(); initProfileName(); initBarangayInfo(); initPhoneFormatting(); initAuth();
   document.querySelectorAll('.toggle-password').forEach((button) => button.addEventListener('click', () => { const input = button.parentElement.querySelector('input'); const visible = input.type === 'password'; input.type = visible ? 'text' : 'password'; button.textContent = visible ? 'Hide' : 'Show'; button.setAttribute('aria-label', visible ? 'Hide password' : 'Show password'); }));
   const modal = document.querySelector('.modal'); const trigger = document.querySelector('[data-open-modal]'); const close = document.querySelector('[data-close-modal]'); if (trigger && modal) trigger.addEventListener('click', () => modal.classList.add('show')); if (close && modal) close.addEventListener('click', () => modal.classList.remove('show')); if (modal) { modal.addEventListener('click', (event) => { if (event.target === modal) modal.classList.remove('show'); }); document.addEventListener('keydown', (event) => { if (event.key === 'Escape') modal.classList.remove('show'); }); }
   window.addEventListener('barangaylink:data', () => { renderStaffDashboardConcerns(); renderResidentConcerns(); renderStaffConcerns(); });

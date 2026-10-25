@@ -7,6 +7,19 @@
     <title>Services | BarangayLink</title>
     <meta name="description" content="Barangay document services available in BarangayLink." />
     <link rel="stylesheet" href="../css/style.css" />
+      <script>
+      /* Early login gate: redirect before the page paints so protected pages never flash. */
+      (function () {
+        try {
+          var raw = localStorage.getItem('barangaylink.auth');
+          var auth = raw ? JSON.parse(raw) : null;
+          if (!auth || (auth.role !== 'resident' && auth.role !== 'staff')) {
+            var page = location.pathname.split('/').pop();
+            location.replace('login.html?next=' + encodeURIComponent(page + location.search));
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <!-- Resident service browser; service cards are generated from the shared catalog in js/app.js. -->

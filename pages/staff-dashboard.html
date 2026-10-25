@@ -7,6 +7,19 @@
     <title>Staff Dashboard | BarangayLink</title>
     <meta name="description" content="Barangay staff dashboard for reviewing requests." />
     <link rel="stylesheet" href="../css/style.css" />
+      <script>
+      /* Early login gate: redirect before the page paints so protected pages never flash. */
+      (function () {
+        try {
+          var raw = localStorage.getItem('barangaylink.auth');
+          var auth = raw ? JSON.parse(raw) : null;
+          if (!auth || (auth.role !== 'resident' && auth.role !== 'staff')) {
+            var page = location.pathname.split('/').pop();
+            location.replace('login.html?next=' + encodeURIComponent(page + location.search));
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <!-- Staff overview and request queue; renderStaffDashboard and concern renderers populate the dashboard tables. -->
@@ -61,6 +74,10 @@
             <div class="value" data-staff-stat="ready">0</div>
           </article>
           <article class="summary-tile">
+            <div class="label">Released</div>
+            <div class="value" data-staff-stat="released">0</div>
+          </article>
+          <article class="summary-tile">
             <div class="label">Rejected</div>
             <div class="value" data-staff-stat="rejected">0</div>
           </article>
@@ -82,6 +99,7 @@
                 <option value="review">Under Review</option>
                 <option value="approved">Approved</option>
                 <option value="ready">Ready for Release</option>
+                <option value="released">Released</option>
                 <option value="rejected">Rejected</option>
               </select>
             </div>

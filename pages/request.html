@@ -7,6 +7,19 @@
     <title>Request a Document | BarangayLink</title>
     <meta name="description" content="Submit a barangay document request online." />
     <link rel="stylesheet" href="../css/style.css" />
+      <script>
+      /* Early login gate: redirect before the page paints so protected pages never flash. */
+      (function () {
+        try {
+          var raw = localStorage.getItem('barangaylink.auth');
+          var auth = raw ? JSON.parse(raw) : null;
+          if (!auth || (auth.role !== 'resident' && auth.role !== 'staff')) {
+            var page = location.pathname.split('/').pop();
+            location.replace('login.html?next=' + encodeURIComponent(page + location.search));
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <!-- Multi-step resident request flow; confirmed requests are created through the Express API. -->
@@ -84,7 +97,7 @@
 
                   <div class="field">
                     <label for="req-email">Email</label>
-                    <input id="req-email" name="email" type="email" placeholder="you@example.com" required />
+                    <input id="req-email" name="email" type="email" placeholder="juandelacruz@gmail.com" required />
                   </div>
 
                   <div class="field">
@@ -135,7 +148,7 @@
                   </div>
                   <div class="detail-item">
                     <span>Email</span>
-                    <strong data-review-email>juan.delacruz@email.com</strong>
+                    <strong data-review-email>juan.delacruz@gmail.com</strong>
                   </div>
                   <div class="detail-item">
                     <span>Purpose</span>
