@@ -88,7 +88,13 @@ function readStorage(key, fallback) {
 
 /** Shared persistence boundary so localStorage write failures are reported consistently. */
 function writeStorage(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)); } catch (error) { showToast('Your browser could not save this change.', 'error'); }
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch (error) {
+    showToast('Your browser could not save this change.', 'error');
+    return false;
+  }
 }
 
 function getProfile() { const profile = readStorage(STORAGE_KEYS.profile, {}); return { ...defaultProfile, ...(profile && typeof profile === 'object' && !Array.isArray(profile) ? profile : {}) }; }
@@ -131,7 +137,11 @@ function getConcerns() {
   writeStorage(STORAGE_KEYS.concerns, SAMPLE_CONCERNS);
   return SAMPLE_CONCERNS.slice();
 }
-function saveConcerns(list) { writeStorage(STORAGE_KEYS.concerns, list); window.dispatchEvent(new Event('barangaylink:data')); }
+function saveConcerns(list) {
+  if (!writeStorage(STORAGE_KEYS.concerns, list)) return false;
+  window.dispatchEvent(new Event('barangaylink:data'));
+  return true;
+}
 function nextConcernId(list) {
   const highest = list.reduce((max, item) => Math.max(max, Number(String(item.id).split('-').pop()) || 0), 0);
   return `CNC-${new Date().getFullYear()}-${String(highest + 1).padStart(4, '0')}`;
@@ -292,7 +302,8 @@ function initNavigation() {
   // Staff sidebar starts OPEN automatically.
   if (isStaff) {
     document.body.classList.add('staff-mode');
-    openMenu();
+    if (window.matchMedia('(max-width: 980px)').matches) closeMenu(false);
+    else openMenu();
   }
 }
 
@@ -305,7 +316,7 @@ function initNavigation() {
  */
 function enforceAuthentication() {
   const page = window.location.pathname.split('/').pop() || 'index.html';
-  const publicPages = ['index.html', 'login.html', 'register.html'];
+  const publicPages = ['index.html', 'login.html', 'register.html', 'forgot-password.html'];
   const staffPages = ['staff-dashboard.html', 'staff-request.html'];
   const protectedPage = !publicPages.includes(page);
   const auth = getAuth();
@@ -334,7 +345,7 @@ function initPublicNav() {
   if (navActions) {
     navActions.innerHTML = auth
       ? '<a href="pages/profile.html" class="btn btn-ghost">Profile</a><a href="pages/login.html" class="btn btn-primary">Logout</a>'
-      : '<a href="pages/register.html" class="btn btn-ghost">Sign Up</a><a href="pages/login.html" class="btn btn-primary">Log In</a>';
+      : '<a href="pages/register.html" class="btn btn-ghost">Sign Up</a><a href="pages/login.html" class="btn btn-secondary">Resident Log In</a><a href="pages/login.html" class="btn btn-primary">Staff/Admin Log In</a>';
   }
   const accountLabel = Array.from(document.querySelectorAll('.dashboard-sidebar-nav .nav-section')).find((el) => el.textContent.trim() === 'Account');
   if (accountLabel) {
@@ -342,7 +353,7 @@ function initPublicNav() {
     while (sibling && sibling.tagName === 'A') { const next = sibling.nextElementSibling; sibling.remove(); sibling = next; }
     accountLabel.insertAdjacentHTML('afterend', auth
       ? '<a href="pages/profile.html">Profile</a><a href="pages/login.html">Logout</a>'
-      : '<a href="pages/register.html">Sign Up</a><a href="pages/login.html">Log In</a>');
+      : '<a href="pages/register.html">Sign Up</a><a href="pages/login.html">Resident Log In</a><a href="pages/login.html">Staff/Admin Log In</a>');
   }
 }
 
@@ -509,7 +520,28 @@ function initAdditionalRequestForms() {
     const validate = () => { let valid = true; form.querySelectorAll('.step-panel.active [required]').forEach((field) => { clearFieldError(field); if (!field.value.trim()) { if (field === concernType) { field.setAttribute('aria-invalid', 'true'); field.options[0].textContent = requiredMessage; } else if (field === concernLocation) { field.setAttribute('aria-invalid', 'true'); field.placeholder = requiredMessage; } else setFieldError(field, requiredMessage); if (valid) field.focus(); valid = false; } }); if (concernLocation && concernLocation.value.trim()) concernLocation.placeholder = 'Street, purok, or landmark'; if (!valid) showToast('Please complete all required fields.', 'error'); return valid; };
     form.querySelectorAll('[data-next]').forEach((button) => button.addEventListener('click', () => { if (!validate()) return; current = Math.min(current + 1, steps.length - 1); update(); }));
     form.querySelectorAll('[data-prev]').forEach((button) => button.addEventListener('click', () => { current = Math.max(current - 1, 0); update(); }));
-    form.addEventListener('submit', (event) => { event.preventDefault(); if (!validate()) return; if (form.hasAttribute('data-concern-form')) saveNewConcern(form); const message = form.querySelector('.form-message'); if (message) { message.textContent = form.dataset.successMessage; message.classList.add('show'); } showToast('Concern submitted successfully.'); });
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!validate()) return;
+      if (form.dataset.submitting === 'true' || form.dataset.submitted === 'true') return;
+      const submit = form.querySelector('[data-submit]');
+      const message = form.querySelector('.form-message');
+      form.dataset.submitting = 'true';
+      if (submit) submit.disabled = true;
+      try {
+        if (form.hasAttribute('data-concern-form') && !saveNewConcern(form)) return;
+        form.dataset.submitted = 'true';
+        if (message) {
+          message.textContent = form.dataset.successMessage;
+          message.classList.add('show');
+        }
+        form.querySelector('.step-actions')?.classList.add('hidden');
+        showToast('Concern submitted successfully.');
+      } finally {
+        form.dataset.submitting = 'false';
+        if (submit && form.dataset.submitted !== 'true') submit.disabled = false;
+      }
+    });
     update();
   });
 }
@@ -630,8 +662,24 @@ function renderTracking() {
         result.querySelector('[data-track-rejection]')?.remove();
       }
       const timeline = document.querySelector('[data-track-timeline]');
-      const currentIndex = request.status === 'rejected' ? -1 : STATUS_ORDER.indexOf(request.status);
-      timeline.innerHTML = ['Submitted', 'Received', 'Under Review', 'Approved', 'Ready for Release', 'Released'].map((label, index) => `<div class="timeline-item ${index <= currentIndex + 1 ? 'done' : ''} ${index === currentIndex + 1 ? 'active' : ''}"><span class="timeline-dot" aria-hidden="true"></span><div><strong>${label}</strong></div></div>`).join('');
+      const stages = [
+        ['pending', 'Pending Review'],
+        ['review', 'Under Review'],
+        ['approved', 'Approved'],
+        ['ready', 'Ready for Release'],
+        ['released', 'Released']
+      ];
+      const currentIndex = STATUS_ORDER.indexOf(request.status);
+      const timelineStages = request.status === 'rejected'
+        ? [...stages.slice(0, 2), ['rejected', 'Rejected']]
+        : stages;
+      timeline.innerHTML = timelineStages.map(([status, label], index) => {
+        const active = status === request.status;
+        const done = !active && (request.status === 'rejected'
+          ? index < timelineStages.length - 1
+          : currentIndex > index);
+        return `<div class="timeline-item ${done ? 'done' : ''} ${active ? 'active' : ''}"${active ? ' aria-current="step"' : ''}><span class="timeline-dot" aria-hidden="true"></span><div><strong>${label}</strong></div></div>`;
+      }).join('');
     } catch (error) {
       if (error.status === 404) {
         empty.classList.remove('hidden');
@@ -852,7 +900,7 @@ function saveNewConcern(form) {
     reportedAt: new Date().toISOString(),
     status: 'submitted'
   };
-  saveConcerns([concern, ...list]);
+  return saveConcerns([concern, ...list]);
 }
 
 function renderStaffDashboardConcerns() {

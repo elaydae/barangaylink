@@ -35,6 +35,73 @@ async function loadApi(fetchImpl) {
   return context.window.BarangayApi;
 }
 
+async function renderTrackingFor(request) {
+  class Element {
+    constructor() {
+      this.classList = { add() {}, remove() {} };
+      this.dataset = {};
+      this.hidden = false;
+      this.listeners = {};
+      this.value = '';
+    }
+    addEventListener(type, listener) { this.listeners[type] = listener; }
+    after() {}
+    removeAttribute() {}
+    setAttribute() {}
+    querySelector() { return null; }
+  }
+
+  const input = new Element();
+  input.value = request.reference;
+  const form = new Element();
+  form.querySelector = (selector) => selector === 'input' ? input : null;
+  const timeline = new Element();
+  const elements = {
+    '.track-form': form,
+    '[data-track-result]': new Element(),
+    '[data-track-empty]': new Element(),
+    '[data-track-reference]': new Element(),
+    '[data-track-document]': new Element(),
+    '[data-track-applicant]': new Element(),
+    '[data-track-date]': new Element(),
+    '[data-track-status]': new Element(),
+    '[data-track-timeline]': timeline
+  };
+  const document = {
+    addEventListener() {},
+    createElement: () => new Element(),
+    querySelector: (selector) => elements[selector] || null
+  };
+  const context = {
+    document,
+    URLSearchParams,
+    window: {
+      addEventListener() {},
+      location: { pathname: '/pages/tracking.html', search: '' },
+      BarangayApi: { getRequest: async () => request }
+    }
+  };
+  vm.runInNewContext(await fs.readFile(path.join(__dirname, '..', 'js', 'app.js'), 'utf8'), context);
+  vm.runInNewContext('renderTracking()', context);
+  form.listeners.submit({ preventDefault() {} });
+  await new Promise((resolve) => setImmediate(resolve));
+  return timeline.innerHTML;
+}
+
+async function loadAppAtPath(pathname) {
+  const redirects = [];
+  const context = {
+    document: { addEventListener() {} },
+    localStorage: { getItem: () => null },
+    window: {
+      addEventListener() {},
+      location: { pathname, search: '', replace: (url) => redirects.push(url) }
+    }
+  };
+  vm.runInNewContext(await fs.readFile(path.join(__dirname, '..', 'js', 'app.js'), 'utf8'), context);
+  return { context, redirects };
+}
+
 afterEach(async () => {
   for (const instance of instances.splice(0)) {
     await closeServer(instance.server);
@@ -257,12 +324,72 @@ test('API client parses a successful JSON response and sends the stable submissi
   assert.equal(requestOptions.options.headers['Idempotency-Key'], 'browser-retry-key-0001');
 });
 
+test('tracking timeline marks the persisted request stage and rejected outcome accurately', async () => {
+  const cases = [
+    ['pending', ['Pending Review'], []],
+    ['review', ['Under Review'], ['Pending Review']],
+    ['approved', ['Approved'], ['Pending Review', 'Under Review']],
+    ['ready', ['Ready for Release'], ['Pending Review', 'Under Review', 'Approved']],
+    ['released', ['Released'], ['Pending Review', 'Under Review', 'Approved', 'Ready for Release']],
+    ['rejected', ['Rejected'], ['Pending Review', 'Under Review']]
+  ];
+  for (const [status, active, done] of cases) {
+    const html = await renderTrackingFor({
+      reference: 'BL-2026-TEST',
+      document: 'Barangay Clearance',
+      name: 'Test Resident',
+      submittedAt: '2026-10-01T00:00:00.000Z',
+      status
+    });
+    const items = Array.from(html.matchAll(/<div class="timeline-item([^"]*)"(?: aria-current="step")?><span class="timeline-dot" aria-hidden="true"><\/span><div><strong>(.*?)<\/strong>/g));
+    assert.deepEqual(items.filter((item) => item[1].includes('active')).map((item) => item[2]), active, `${status} active stage`);
+    assert.deepEqual(items.filter((item) => item[1].includes('done')).map((item) => item[2]), done, `${status} completed stages`);
+  }
+});
+
+test('concern storage failures are reported and do not publish a false update event', async () => {
+  let dispatched = 0;
+  const messages = [];
+  const context = {
+    document: { addEventListener() {} },
+    window: { addEventListener() {}, dispatchEvent() { dispatched += 1; } },
+    localStorage: { setItem() { throw new Error('storage full'); } }
+  };
+  vm.runInNewContext(await fs.readFile(path.join(__dirname, '..', 'js', 'app.js'), 'utf8'), context);
+  context.showToast = (message, kind) => messages.push({ message, kind });
+  assert.equal(context.saveConcerns([{ id: 'CNC-2026-0001' }]), false);
+  assert.equal(dispatched, 0);
+  assert.deepEqual(messages, [{ message: 'Your browser could not save this change.', kind: 'error' }]);
+});
+
+test('forgot-password remains public while protected pages preserve the login redirect', async () => {
+  const forgotPassword = await loadAppAtPath('/pages/forgot-password.html');
+  assert.equal(vm.runInNewContext('enforceAuthentication()', forgotPassword.context), true);
+  assert.deepEqual(forgotPassword.redirects, []);
+
+  const profile = await loadAppAtPath('/pages/profile.html');
+  assert.equal(vm.runInNewContext('enforceAuthentication()', profile.context), false);
+  assert.deepEqual(profile.redirects, ['login.html?next=profile.html']);
+});
+
 test('static application pages remain served and use the backend client on request workflows', async () => {
   const { baseUrl } = await startServer();
-  for (const page of ['index.html', 'pages/request.html', 'pages/history.html', 'pages/tracking.html', 'pages/staff-dashboard.html', 'pages/staff-request.html']) {
+  const root = await fetch(`${baseUrl}/`);
+  const index = await fetch(`${baseUrl}/index.html`);
+  assert.equal(root.status, 200);
+  assert.equal(index.status, 200);
+  assert.equal(await root.text(), await index.text());
+
+  for (const page of ['pages/login.html', 'pages/forgot-password.html', 'pages/profile.html', 'pages/dashboard.html', 'pages/request.html', 'pages/history.html', 'pages/tracking.html', 'pages/staff-dashboard.html', 'pages/staff-request.html']) {
     const response = await fetch(`${baseUrl}/${page}`);
     assert.equal(response.status, 200, `${page} should still be served`);
   }
+  const landing = await (await fetch(`${baseUrl}/`)).text();
+  assert.match(landing, /href="pages\/login\.html" class="btn btn-secondary">Resident Log In<\/a>/);
+  assert.match(landing, /href="pages\/login\.html" class="btn btn-primary">Staff\/Admin Log In<\/a>/);
+  const login = await (await fetch(`${baseUrl}/pages/login.html`)).text();
+  assert.match(login, /Demo Resident/);
+  assert.match(login, /Demo Staff\/Admin/);
   const history = await (await fetch(`${baseUrl}/pages/history.html`)).text();
   assert.match(history, /<script src="\.\.\/js\/api\.js"><\/script>/);
   assert.doesNotMatch(history, /REQ-2026-00124/);

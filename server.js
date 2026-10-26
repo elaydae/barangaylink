@@ -208,6 +208,7 @@ function createApp(options = {}) {
     error: { code: 'ENDPOINT_NOT_FOUND', message: 'The requested API endpoint does not exist.' }
   }));
   app.use('/data', (req, res) => res.sendStatus(404));
+  app.get('/', (req, res) => res.sendFile(path.join(staticDir, 'index.html')));
   app.use(express.static(staticDir));
   app.use((error, req, res, next) => {
     if (res.headersSent) return next(error);

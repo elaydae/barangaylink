@@ -25,6 +25,7 @@ Residents can explore services, review requirements, submit document requests, r
 - Staff status updates and rejection reasons are validated and persisted by the API. The server enforces the existing workflow: pending → review → approved → ready → released; review may instead be rejected.
 - Request forms and API-backed views show loading, empty, success, not-found, and network/server error feedback. Submit buttons lock while a submission is in progress.
 - Request data is not stored in `localStorage`. Browser storage remains for prototype-only profile prefills, demo role state, concerns, and barangay display preferences.
+- Community concerns are separate from the document-request API and stored only in the current browser's `localStorage`; they are not shared across browsers or devices.
 
 ### Local installation and startup
 
@@ -96,7 +97,7 @@ npm run check
 
 The test suite covers health/connectivity, valid and concurrent submissions, duplicate retry idempotency, field and malformed-body validation, unknown references/routes, status transition validation and resident/staff read consistency, persistence after recreating the server, frontend network/unexpected-response handling, and serving existing application pages.
 
-**Verified for the previous API response fix:** live-host probes confirmed the static GitHub Pages API path returns non-JSON 404/405 responses; the automated suite checks the response handling and idempotent retry behavior. Re-run the commands above after changes. No production backend is deployed at the GitHub Pages origin.
+**Milestone 2 audit verification (2026-10-26):** `npm test` passed **19 tests, 0 failed**, and `npm run check` passed. Checks cover API behavior, static-page and root/index serving, tracking statuses, concern-storage failures, forgot-password access, and data-file protection. A browser-driven resident-to-staff request workflow reached release and resident tracking showed the updated status. Responsive checks across sampled widths from 320 to 1440 CSS pixels found no horizontal overflow in the landing, resident, and staff pages checked. Browser checks were manual, native 125%/150% zoom and full accessibility conformance were not tested, and no automated end-to-end browser suite is configured. See [MILESTONE2-VERIFICATION.md](./MILESTONE2-VERIFICATION.md) for the evidence, rubric-oriented assessment, and limitations.
 
 ### Troubleshooting
 
@@ -107,10 +108,12 @@ The test suite covers health/connectivity, valid and concurrent submissions, dup
 
 ### Planned next steps
 
-- Add authenticated server-side staff access and resident-owned request filtering.
+- Before production, add authenticated server-side staff access and resident-owned request filtering. Do not use the current client-side demo roles or unauthenticated API for real resident data.
+- Decide whether concerns remain local-only or require a separately designed backend workflow.
 - Consider a database only when the course/project requires multiple users or concurrent server processes.
 - Decide whether to implement real supporting-document upload and secure storage.
-- Add browser-level responsive and form-flow automation if the project adopts a browser test runner.
+- Add browser-level responsive and form-flow automation; complete keyboard, screen-reader, contrast, and native zoom checks.
+- Keep payment processing, PhilSys integration, digital signatures, AI chatbot, multi-barangay administration, and government API integration outside scope unless explicitly required.
 
 ---
 
@@ -427,7 +430,7 @@ barangaylink/
 
 # 🧪 Testing and Milestone 2 Verification
 
-Run `npm test` for backend integration and static-page serving checks. Run `npm run check` for JavaScript syntax checks. Current verification: **16 tests passed, 0 failed**, and syntax checks passed. `npm install` completed successfully; `npm audit --omit=dev --audit-level=high` reported zero vulnerabilities. Coverage includes API health, valid and duplicate submissions, field validation, unknown IDs, status transitions and consistency, restart persistence, file-origin/network/unexpected-response handling, static page serving, and blocking access to the JSON data file. Local server checks confirmed the homepage and assets load at `http://localhost:3000`, a browser request is sent to `http://localhost:3000/api/requests`, invalid input returns JSON `400 VALIDATION_ERROR`, and both the browser request and API test request remained retrievable after restarting the server. Resident history and staff queue both displayed the browser-submitted record. These are manual and automated checks; no automated browser test suite is configured.
+Run `npm test` for backend integration, static-page serving, tracking, and authentication-guard regression checks. Run `npm run check` for JavaScript syntax checks. The 2026-10-26 audit passed **19 tests, 0 failed**, and syntax checks. Browser workflow and sampled responsive results, plus verification boundaries, are recorded in [MILESTONE2-VERIFICATION.md](./MILESTONE2-VERIFICATION.md). These browser checks are manual; a committed automated browser suite is not configured.
 
 ---
 
@@ -450,7 +453,7 @@ Run `npm test` for backend integration and static-page serving checks. Run `npm 
 | Profile Management         | ✅ Implemented         |
 | Responsive Design          | ✅ Implemented         |
 | Accessibility Improvements | ✅ Implemented         |
-| Browser Storage            | ✅ Prototype-only data |
+| Browser Storage            | ✅ Profile/demo state and local-only concerns |
 | Express Request API        | ✅ Implemented         |
 | JSON Request Persistence   | ✅ Implemented         |
 | Production Authentication  | 🚧 Planned             |
@@ -503,6 +506,8 @@ Authentication, role authorization, resident-level data access, and any producti
 BarangayLink is currently a **frontend academic prototype**.
 
 The current client-side authentication and browser storage are intended only for demonstration and should not be used for real government records.
+
+Community concerns are stored only in browser `localStorage`; they are not server-backed or shared across devices/browsers. The document-request API also does not authenticate users or enforce resident ownership. Do not deploy this prototype publicly or enter real resident information.
 
 A production implementation would require:
 
