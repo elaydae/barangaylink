@@ -217,7 +217,7 @@ The [local application](http://localhost:3000/) is available after you follow th
 #### 🧑 Resident
 
 ```text
-Email:    demo@bl.com
+Email:    juan.delacruz@gmail.com
 Password: 123456
 Role:     Resident
 ```
@@ -227,7 +227,7 @@ Role:     Resident
 #### 👨‍💼 Staff / Admin
 
 ```text
-Email:    staff@bl.com
+Email:    barangay.staff@gmail.com
 Password: 123456
 Role:     Staff/Admin
 ```
